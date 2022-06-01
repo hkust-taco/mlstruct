@@ -1,4 +1,6 @@
-# MLscript
+_This repository contains an implementation of the core language of [MLscript](https://github.com/hkust-taco/mlscript), in a way that is faithful to the paper and that does not contain all the bells and whistles and extra features of the full MLscript._
+
+# MLscript Core Language
 
 What would TypeScript look like if it had been designed with type inference and soundness in mind?
 
@@ -13,6 +15,8 @@ MLscript supports union, intersection, and complement (or negation) connectives,
 Running the tests only requires the Scala Build Tool installed.
 In the terminal, run `sbt mlscriptJVM/test`.
 
+To run the regression tests continuously as you develop,
+launch the SBT shell first with `sbt` and then type `~mlscriptJVM/testOnly mlscript.DiffTests`.
 
 ## Running the demo locally
 
