@@ -44,7 +44,7 @@ object Main {
         case Success(pgrm, index) =>
           println(s"Parsed: $pgrm")
           val (diags, (typeDefs, stmts)) = pgrm.desugared
-          // report(diags) // TODO... currently the MLParser does not report any in desugaring so this is fine
+          // report(diags) // Currently the MLParser does not report any in desugaring so this is fine
           val (typeCheckResult, errorResult) = checkProgramType(pgrm)
           errorResult match {
             case Some(typeCheckResult) => typeCheckResult
@@ -323,7 +323,7 @@ object Main {
             case N => ()
           }
           val ty_sch = PolymorphicType(0, typeType(rhs)(ctx.nextLevel, raise,
-            vars = tps.map(tp => tp.name -> freshVar(noProv/*FIXME*/)(1)).toMap))
+            vars = tps.map(tp => tp.name -> freshVar(noProv)(1)).toMap))
           ctx += nme.name -> ty_sch
           declared += nme -> ty_sch
           results append S(d.nme.name) -> getType(ty_sch).show

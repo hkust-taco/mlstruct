@@ -276,7 +276,7 @@ abstract class TyperHelpers { Typer: Typer =>
       case ComposedType(pol, lhs, rhs) => ComposedType(pol, f(lhs), f(rhs))(prov)
       case NegType(negated) => NegType(f(negated))(prov)
       case ProvType(underlying) => ProvType(f(underlying))(prov)
-      case ProxyType(underlying) => f(underlying) // TODO different?
+      case ProxyType(underlying) => f(underlying)
       case TypeRef(defn, targs) => TypeRef(defn, targs.map(f(_)))(prov)
       case _: TypeVariable | _: ObjectTag | _: ExtrType => this
     }
@@ -294,7 +294,7 @@ abstract class TyperHelpers { Typer: Typer =>
       case NegType(negated) if smart => f(pol.map(!_), negated).neg(prov)
       case NegType(negated) => NegType(f(pol.map(!_), negated))(prov)
       case ProvType(underlying) => ProvType(f(pol, underlying))(prov)
-      case ProxyType(underlying) => f(pol, underlying) // TODO different?
+      case ProxyType(underlying) => f(pol, underlying)
       case tr @ TypeRef(defn, targs) => TypeRef(defn, tr.mapTargs(pol)(f))(prov)
       case _: TypeVariable | _: ObjectTag | _: ExtrType => this
     }
@@ -358,12 +358,10 @@ abstract class TyperHelpers { Typer: Typer =>
     def >:< (that: SimpleType)(implicit ctx: Ctx): Bool =
       (this is that) || this <:< that && that <:< this
     
-    // TODO for composed types and negs, should better first normalize the inequation
+    // For composed types and negs, should better first normalize the inequation
     def <:< (that: SimpleType)(implicit ctx: Ctx, cache: MutMap[ST -> ST, Bool] = MutMap.empty): Bool =
     {
     // trace(s"? $this <: $that") {
-    // trace(s"? $this <: $that   assuming:  ${
-    //     cache.iterator.map(kv => "" + kv._1._1 + (if (kv._2) " <: " else " <? ") + kv._1._2).mkString(" ; ")}") {
       subtypingCalls += 1
       def assume[R](k: MutMap[ST -> ST, Bool] => R): R = k(cache.map(kv => kv._1 -> true))
       (this === that) || ((this, that) match {
@@ -412,13 +410,12 @@ abstract class TyperHelpers { Typer: Typer =>
             case _ => false
           }
         case (_, _: TypeRef) =>
-          false // TODO try to expand them (this requires populating the cache because of recursive types)
+          false // Could try to expand them (this would require populating the cache because of recursive types)
         case (_: ArrayBase, _) | (_, _: ArrayBase)
           | (_: TraitTag, _) | (_, _: TraitTag)
           => false // don't even try
         case (_: FunctionType, _) | (_, _: FunctionType) => false
         case (_: RecordType, _: ObjectTag) | (_: ObjectTag, _: RecordType) => false
-        // case _ => lastWords(s"TODO $this $that ${getClass} ${that.getClass()}")
       })
     // }(r => s"! $r")
     }

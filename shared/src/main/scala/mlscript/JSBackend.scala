@@ -406,7 +406,7 @@ class JSBackend {
     val baseClasses = ty.collectTypeNames.flatMap { name =>
       topLevelScope.getType(name) match {
         case S(sym: ClassSymbol) => S(sym)
-        case S(sym: TraitSymbol) => N // TODO: inherit from traits
+        case S(sym: TraitSymbol) => N
         case S(sym: TypeAliasSymbol) =>
           throw new CodeGenError(s"cannot inherit from type alias $name" )
         case N =>

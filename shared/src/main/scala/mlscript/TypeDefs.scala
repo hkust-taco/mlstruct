@@ -121,7 +121,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
       case AppliedType(b, _) => baseClassesOf(b)
       case Record(_) => Set.empty
       case _: Union => Set.empty
-      case _ => Set.empty // TODO TupleType?
+      case _ => Set.empty
     }
   
   
@@ -223,8 +223,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case k: ObjDefKind =>
             val parentsClasses = MutSet.empty[TypeRef]
             def checkParents(ty: SimpleType): Bool = ty match {
-              // case ClassTag(Var("string"), _) => true // Q: always?
-              case _: ObjectTag => true // Q: always? // FIXME actually no
+              case _: ObjectTag => true
               case tr @ TypeRef(tn2, _) =>
                 val td2 = ctx.tyDefs(tn2.name)
                 td2.kind match {
@@ -307,8 +306,6 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
                         nomTag & RecordType.mk(
                           fieldsRefined ::: tparamTags
                         )(noProv)
-                        // * TODO try later:
-                        // TypeRef(td.nme, td.tparamsargs.unzip._2)(noProv) & RecordType.mk(fieldsRefined)(noProv)
                       )(originProv(td.nme.toLoc, "class constructor", td.nme.name)))
                     case Trt =>
                       val nomTag = trtNameToNomTag(td)(originProv(td.nme.toLoc, "trait", td.nme.name), ctx)

@@ -359,7 +359,6 @@ trait Located {
   private var spanEnd: Int = -1
   private var origin: Opt[Origin] = N
   
-  // TODO just store the Loc directly...
   def withLoc(s: Int, e: Int, ori: Origin): this.type = {
     // assert(origin.isEmpty)
     origin = S(ori)
@@ -392,7 +391,6 @@ trait Located {
   }
   /** Like toLoc, but we make sure the span includes the spans of all subterms. */
   def toCoveringLoc: Opt[Loc] = {
-    // TODO factor logic with above
     def subLocs = (this :: children).iterator.flatMap(_.toLoc.iterator)
     val spanStart =
       subLocs.map(_.spanStart).minOption.getOrElse(return N)
@@ -414,7 +412,7 @@ trait StatementImpl extends Located { self: Statement =>
   private def doDesugar: Ls[Diagnostic] -> Ls[DesugaredStatement] = this match {
     case l @ LetS(isrec, pat, rhs) =>
       val (diags, v, args) = desugDefnPattern(pat, Nil)
-      diags -> (Def(isrec, v, L(args.foldRight(rhs)(Lam(_, _)))).withLocOf(l) :: Nil) // TODO use v, not v.name
+      diags -> (Def(isrec, v, L(args.foldRight(rhs)(Lam(_, _)))).withLocOf(l) :: Nil)
     case t: Term => Nil -> (t :: Nil)
     case d: Decl => Nil -> (d :: Nil)
   }
@@ -422,7 +420,7 @@ trait StatementImpl extends Located { self: Statement =>
   protected def desugDefnPattern(pat: Term, args: Ls[Term]): (Ls[Diagnostic], Var, Ls[Term]) = pat match {
     case App(l, r) => desugDefnPattern(l, r :: args)
     case v: Var => (Nil, v, args)
-    case _ => (TypeError(msg"Unsupported pattern shape" -> pat.toLoc :: Nil) :: Nil, Var("<error>"), args) // TODO
+    case _ => (TypeError(msg"Unsupported pattern shape" -> pat.toLoc :: Nil) :: Nil, Var("<error>"), args)
   }
   
   def children: List[Located] = this match {

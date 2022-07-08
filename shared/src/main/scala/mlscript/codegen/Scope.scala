@@ -20,8 +20,6 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
     */
   def this(name: Str) = {
     this(name, N)
-    // TODO: allow types and values to have the same name
-    // TODO: read built-in symbols from `Typer`.
     Ls(
       "true",
       "false",
@@ -40,10 +38,8 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
     ) foreach { name =>
       register(BuiltinSymbol(name, name))
     }
-    // TODO: add `true`, `false`, and `error` to this list
     register(TypeAliasSymbol("anything", Nil, Top))
     register(TypeAliasSymbol("nothing", Nil, Bot))
-    // TODO: register them in the same way as `Typer` does.
     Ls("int", "number", "bool", "string", "unit") foreach { name =>
       register(TypeAliasSymbol(name, Nil, TypeName(name)))
     }
@@ -55,7 +51,6 @@ class Scope(name: Str, enclosing: Opt[Scope]) {
   def this(name: Str, params: Ls[Str], enclosing: Scope) = {
     this(name, Opt(enclosing))
     params foreach { param =>
-      // TODO: avoid reserved keywords.
       val symbol = ValueSymbol(param, param)
       register(symbol)
     }

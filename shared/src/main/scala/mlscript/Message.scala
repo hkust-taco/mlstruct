@@ -12,7 +12,7 @@ final case class Message(bits: Ls[Message.Bit]) {
   def typeBits: Ls[Type] = bits.collect{ case Message.Code(t) => t }
   def showIn(ctx: ShowCtx): FStr = {
     FStr.join(bits.map {
-      case Message.Code(ty) => ty.showIn(ctx, 0): FStr // TODO make Type use FStr
+      case Message.Code(ty) => ty.showIn(ctx, 0): FStr
       case Message.Text(txt) => txt
     }: _*)
   }

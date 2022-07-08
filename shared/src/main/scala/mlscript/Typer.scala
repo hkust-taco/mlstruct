@@ -98,11 +98,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
   
   val ErrTypeId: SimpleTerm = Var("error")
   
-  // TODO rm this obsolete definition (was there for the old frontend)
-  private val primTypes =
-    List("unit" -> UnitType, "bool" -> BoolType, "int" -> IntType, "number" -> DecType, "string" -> StrType,
-      "anything" -> TopType, "nothing" -> BotType)
-  
   val builtinTypes: Ls[TypeDef] =
     TypeDef(Cls, TypeName("int"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("number")), N) ::
     TypeDef(Cls, TypeName("number"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
@@ -188,7 +183,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         // PolymorphicType(0, fun(singleTup(BoolType), fun(singleTup(v), fun(singleTup(v), v)(noProv))(noProv))(noProv))
         PolymorphicType(0, fun(BoolType, fun(v, fun(v, v)(noProv))(noProv))(noProv))
       },
-    ) ++ primTypes ++ primTypes.map(p => "" + p._1.capitalize -> p._2) // TODO settle on naming convention...
+    )
   }
   
   
@@ -276,7 +271,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           }
         }
       case tv: TypeVar =>
-        // assert(ty.toLoc.isDefined)
         recVars.getOrElse(tv,
           localVars.getOrElseUpdate(tv, freshVar(noProv, tv.identifier.toOption))
             .withProv(tyTp(ty.toLoc, "type variable")))
@@ -316,13 +310,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
   def typeStatement(s: DesugaredStatement, allowPure: Bool)
         (implicit ctx: Ctx, raise: Raise): PolymorphicType \/ Ls[Binding] = s match {
     case Def(false, Var("_"), L(rhs)) => typeStatement(rhs, allowPure)
-    case Def(isrec, nme, L(rhs)) => // TODO reject R(..)
+    case Def(isrec, nme, L(rhs)) =>
       if (nme.name === "_")
         err(msg"Illegal definition name: ${nme.name}", nme.toLoc)(raise)
       val ty_sch = typeLetRhs(isrec, nme.name, rhs)
       ctx += nme.name -> ty_sch
       R(nme.name -> ty_sch :: Nil)
-    case t @ Tup(fs) if !allowPure => // Note: not sure this is still used!
+    case t @ Tup(fs) if !allowPure => // Note: this is currently unused
       val thing = fs match {
         case (S(_), _) :: Nil => "field"
         case Nil => "empty tuple"
@@ -332,7 +326,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
       L(PolymorphicType(0, typeTerm(t)))
     case t: Term =>
       val ty = typeTerm(t)
-      if (!allowPure) {
+      if (!allowPure) { // Note: this is currently unused
         if (t.isInstanceOf[Var] || t.isInstanceOf[Lit])
           warn("Pure expression does nothing in statement position.", t.toLoc)
         else
@@ -370,14 +364,12 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
   }
   
   def mkProxy(ty: SimpleType, prov: TypeProvenance): SimpleType = {
-    if (recordProvenances) ProvType(ty)(prov)
-    else ty // TODO don't do this when debugging errors
-    // TODO switch to return this in perf mode:
+    if (recordProvenances) ProvType(ty)(prov) else ty
+    // Could switch to returning this in perf mode:
     // ty
   }
   
-  // TODO also prevent rebinding of "not"
-  val reservedNames: Set[Str] = Set("|", "&", "~", ",", "neg", "and", "or")
+  val reservedNames: Set[Str] = Set("|", "&", "~", ",")
   
   object ValidVar {
     def unapply(v: Var)(implicit raise: Raise): S[Str] = S {
@@ -463,9 +455,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           case ty: TypeScheme => ty
         }.instantiate
         mkProxy(ty, prov)
-        // ^ TODO maybe use a description passed in param?
-        // currently we get things like "flows into variable reference"
-        // but we used to get the better "flows into object receiver" or "flows into applied expression"...
       case lit: Lit => ClassTag(lit, lit.baseClasses)(prov)
       case App(Var("neg" | "~"), trm) => typeTerm(trm).neg(prov)
       case App(App(Var("|"), lhs), rhs) =>
@@ -506,7 +495,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           // * Note that in modern JS, `undefined` is arguably not a value you're supposed to use explicitly;
           // *  `null` should be used instead for those willing to indulge in the Billion Dollar Mistake.
           TypeRef(TypeName("undefined"), Nil)(noProv).neg(
-            prov.copy(desc = "prohibited undefined element")) // TODO better reporting for this; the prov isn't actually used
+            prov.copy(desc = "prohibited undefined element"))
         con(t_a, ArrayType(elemType)(prov), elemType) |
           TypeRef(TypeName("undefined"), Nil)(prov.copy(desc = "possibly-undefined array access"))
       case pat if ctx.inPattern =>
@@ -519,11 +508,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         newCtx ++= newBindings
         val body_ty = typeTerm(body)(newCtx, raise, vars)
         FunctionType(param_ty, body_ty)(tp(term.toLoc, "function"))
-      case App(App(Var("and"), lhs), rhs) =>
-        val lhs_ty = typeTerm(lhs)
-        val newCtx = ctx.nest // TODO use
-        val rhs_ty = typeTerm(lhs)
-        ??? // TODO
       case App(f, a) =>
         val f_ty = typeTerm(f)
         val a_ty = typeTerm(a)
@@ -533,10 +517,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         val funProv = tp(f.toCoveringLoc, "applied expression")
         val fun_ty = mkProxy(f_ty, funProv)
           // ^ This is mostly not useful, except in test Tuples.fun with `(1, true, "hey").2`
-        val resTy = con(fun_ty, FunctionType(arg_ty, res)(
-          prov
-          // funProv // TODO: better?
-          ), res)
+        val resTy = con(fun_ty, FunctionType(arg_ty, res)(prov), res)
         resTy
       case Sel(obj, fieldName) =>
         // Explicit method calls have the form `x.(Class.Method)`
@@ -573,7 +554,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
               con(mth_ty.toPT.instantiate, FunctionType(singleTup(o_ty), res)(prov), res)
             case N =>
               if (fieldName.name.isCapitalized) err(msg"Method ${fieldName.name} not found", term.toLoc)
-              else rcdSel(obj, fieldName) // TODO: no else?
+              else rcdSel(obj, fieldName)
           }
         obj match {
           case Var(name) if name.isCapitalized && ctx.tyDefs.isDefinedAt(name) => // explicit retrieval
@@ -667,7 +648,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     def field(ft: FieldType): Field = ft match {
       case FieldType(l: TV, u: TV) if l === u =>
         val res = go(u)
-        Field(S(res), res) // TODO improve Field
+        Field(S(res), res)
       case f =>
         Field(S(go(f.lb)), go(f.ub))
     }

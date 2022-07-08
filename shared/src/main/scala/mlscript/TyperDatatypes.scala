@@ -101,7 +101,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   
   case class RecordType(fields: List[(Var, FieldType)])(val prov: TypeProvenance) extends SimpleType {
-    // TODO: assert no repeated fields
     lazy val level: Int = fields.iterator.map(_._2.level).maxOption.getOrElse(0)
     def toInter: SimpleType =
       fields.map(f => RecordType(f :: Nil)(prov)).foldLeft(TopType: ST)(((l, r) => ComposedType(false, l, r)(noProv)))
@@ -254,12 +253,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       else if (that.parentsST.contains(this.id)) S(that)
       else if (this.parentsST.contains(that.id)) S(this)
       else N
-    def lub(that: ClassTag): Set[ClassTag] = // TODO rm? it's unused
-      if (that.id === this.id) Set.single(that)
-      else if (that.parentsST.contains(this.id)) Set.single(this)
-      else if (this.parentsST.contains(that.id)) Set.single(that)
-      // else this.parentsST.union(that.parentsST)
-      else Set(this, that)
     def level: Int = 0
     override def toString = showProvOver(false)(id.idStr+s"<${parents.mkString(",")}>")
   }

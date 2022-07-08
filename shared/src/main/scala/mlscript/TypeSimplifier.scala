@@ -130,7 +130,7 @@ trait TypeSimplifier { self: Typer =>
             // *        and
             // *    - type parameter fields of the current trait tags
             // *        whereas we don't actually reconstruct applied trait types...
-            // *        it would be better to just reconstruct them (TODO)
+            // *        it would be better to just reconstruct them
             
             val trs2 = trs.map {
               case (d, tr @ TypeRef(defn, targs)) =>
@@ -196,8 +196,7 @@ trait TypeSimplifier { self: Typer =>
                 
                 val withType = typeRef & cleanedRcd.sorted
                 
-                tts.toArray.sorted // TODO also filter out tts that are inherited by the class
-                  .foldLeft(withType: ST)(_ & _)
+                tts.toArray.sorted.foldLeft(withType: ST)(_ & _)
                 
               case _ =>
                 lazy val nFields = rcd.fields
@@ -364,7 +363,7 @@ trait TypeSimplifier { self: Typer =>
         case ComposedType(p, l, r) =>
           // println(s">> $pol $l $r")
           if (p === pol) { go(l); go(r) }
-          else { analyze2(l, pol); analyze2(r, pol) } // TODO compute intersection if p =/= pol
+          else { analyze2(l, pol); analyze2(r, pol) } // Improvement: compute intersection if p =/= pol
         case _: BaseType | _: TypeRef => newOccs += st; analyze2(st, pol)
         case tv: TypeVariable =>
           // println(s"$tv ${newOccs.contains(tv)}")
@@ -642,7 +641,7 @@ trait TypeSimplifier { self: Typer =>
     
     val processed = MutSet.empty[TV]
     
-    // TODO imrove: map values should actually be lists as several TVs may have an identical bound
+    // Could be improved: map values should actually be lists as several TVs may have an identical bound
     val consed = allVarPols.iterator.collect { case (tv, S(pol)) =>
       if (pol) (true, tv.lowerBounds.foldLeft(BotType: ST)(_ | _)) -> tv
       else (false, tv.upperBounds.foldLeft(TopType: ST)(_ & _)) -> tv
@@ -708,7 +707,7 @@ trait TypeSimplifier { self: Typer =>
                 (if (p2) tv2.lowerBounds else tv2.upperBounds) match {
                   case b2 :: Nil =>
                     
-                    // TODO could be smarter, using sets of assumed equalities instead of just one:
+                    // Could be smarter, using sets of assumed equalities instead of just one:
                     def unify(ty1: ST, ty2: ST): Bool = {
                       
                       def nope: false = { println(s"Nope(${ty1.getClass.getSimpleName}): $ty1 ~ $ty2"); false }
