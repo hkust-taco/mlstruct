@@ -20,7 +20,7 @@ def test x = case x of
   | Right -> "nope"
   }
 
-def tmp = test (if true then Left 1 else Right 2)
+tmp = test (if true then Left 1 else Right 2)
 
 case tmp of { int -> tmp | string -> 0 }
 
@@ -36,7 +36,7 @@ f 1 2
   </div>
   <script type="text/javascript" src="bin/mlscript-opt.js"></script>
   <br/>
-  <p>The code is available <a href="https://github.com/hkust-taco/mlscript">on github</a>.</p>
+  <p>The code is available <a href="https://github.com/hkust-taco/mlscript-core-language">on github</a>.</p>
   <br/>
   <p>Note: JavaScript code generation (used to evaluate the result) is not prefect yet and has rough edges.
     Also, try typing `window.alert "Hello!"` and see what happens!</p>
