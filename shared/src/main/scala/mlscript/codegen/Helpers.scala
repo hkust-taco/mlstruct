@@ -24,11 +24,7 @@ object Helpers {
       s"Rcd($entries})"
     case Sel(receiver, fieldName)    => s"Sel(${inspect(receiver)}, $fieldName)"
     case Let(isRec, name, rhs, body) => s"Let($isRec, $name, ${inspect(rhs)}, ${inspect(body)})"
-    case Blk(stmts)                  => s"Blk(...)"
-    case Bra(rcd, trm)               => s"Bra(rcd = $rcd, ${inspect(trm)})"
     case Asc(trm, ty)                => s"Asc(${inspect(trm)}, $ty)"
-    case Bind(lhs, rhs)              => s"Bind(${inspect(lhs)}, ${inspect(rhs)})"
-    case Test(trm, ty)               => s"Test(${inspect(trm)}, ${inspect(ty)})"
     case CaseOf(trm, cases) =>
       def inspectCaseBranches(br: CaseBranches): Str = br match {
         case Case(clsNme, body, rest) =>

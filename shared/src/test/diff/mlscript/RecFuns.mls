@@ -1,17 +1,20 @@
 
 // From a comment on the Simple-sub blog post:
 
-let rec r a = r
+rec def r a = r
 //│ r: 'r
 //│   where
 //│     'r :> anything -> 'r
+//│  = [Function: r]
 
-let join a b = if true then a else b
+def join a b = if true then a else b
 //│ join: 'a -> 'a -> 'a
+//│     = [Function: join]
 
 // "Lateral" hash consing
-let s = join r r
+def s = join r r
 //│ s: 'r
 //│   where
 //│     'r :> anything -> 'r
+//│  = [Function: r]
 

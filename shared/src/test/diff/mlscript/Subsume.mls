@@ -249,7 +249,7 @@ def f a b = if gt a b then a else b b // mistake!
 //│ ║         	                     ^^^^^^^^^^
 //│ ╟── Note: constraint arises from application:
 //│ ║  l.240: 	def f a b = if gt a b then a else b b // mistake!
-//│ ║         	                                  ^^^
+//│ ║         	                                  ^^^^^^^^^^^^^^^^
 //│ ╟── from reference:
 //│ ║  l.240: 	def f a b = if gt a b then a else b b // mistake!
 //│ ╙──       	                                  ^

@@ -101,7 +101,7 @@ t.x
 (t: ("oops",int,int,))._1
 //│ ╔══[ERROR] Type mismatch in type ascription:
 //│ ║  l.101: 	(t: ("oops",int,int,))._1
-//│ ║         	 ^
+//│ ║         	^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── integer literal of type `1` does not match type `"oops"`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	     ^

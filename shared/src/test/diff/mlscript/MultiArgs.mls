@@ -115,9 +115,9 @@ f r
 :p
 f = fun ((x, y)) -> add x y
 f((1, 2))
-//│ Parsed: let f = ((((x, y,)),) => ((add (x,)) (y,))); (f (((1, 2,)),));
-//│ Desugared: def f: ((((x, y,)),) => ((add (x,)) (y,)))
-//│ Desugared: (f (((1, 2,)),))
+//│ Parsed: let f = (((x, y,),) => ((add (x,)) (y,))); (f ((1, 2,),));
+//│ Desugared: def f: (((x, y,),) => ((add (x,)) (y,)))
+//│ Desugared: (f ((1, 2,),))
 //│ f: (int, int,) -> int
 //│  = [Function: f1]
 //│ res: int

@@ -36,7 +36,6 @@ abstract class TypeImpl extends Located { self: Type =>
     case Field(_, ub) => ub.showIn(ctx, 0)
   }
   def showIn(ctx: ShowCtx, outerPrec: Int): Str = this match {
-  // TODO remove obsolete pretty-printing hacks
     case Top => "anything"
     case Bot => "nothing"
     case TypeName(name) => name
@@ -155,7 +154,7 @@ abstract class TypeImpl extends Located { self: Type =>
 }
 
 
-final case class ShowCtx(vs: Map[TypeVar, Str], debug: Bool) // TODO make use of `debug` or rm
+final case class ShowCtx(vs: Map[TypeVar, Str])
 object ShowCtx {
   /**
     * Create a context from a list of types. For named variables and
@@ -163,7 +162,7 @@ object ShowCtx {
     * completely new names. If same name exists increment counter suffix
     * in the name.
     */
-  def mk(tys: IterableOnce[Type], pre: Str = "'", debug: Bool = false): ShowCtx = {
+  def mk(tys: IterableOnce[Type], pre: Str = "'"): ShowCtx = {
     val (otherVars, namedVars) = tys.iterator.toList.flatMap(_.typeVarsList).distinct.partitionMap { tv =>
       tv.identifier match { case L(_) => L(tv.nameHint -> tv); case R(nh) => R(nh -> tv) }
     }
@@ -196,7 +195,7 @@ object ShowCtx {
       S(('a' + idx % numLetters).toChar.toString + (if (postfix === 0) "" else postfix.toString), idx + 1)
     }.filterNot(used).map(assignName)
     
-    ShowCtx(namedMap ++ unnamedVars.zip(names), debug)
+    ShowCtx(namedMap ++ unnamedVars.zip(names))
   }
 }
 
@@ -280,10 +279,6 @@ trait TermImpl extends StatementImpl { self: Term =>
   val original: this.type = this
   
   def describe: Str = this match {
-    case Bra(true, Tup(_ :: _ :: _) | Tup((S(_), _) :: _) | Blk(_)) => "record"
-    case Bra(_, trm) => trm.describe
-    case Blk((trm: Term) :: Nil) => trm.describe
-    case Blk(_) => "block of statements"
     case IntLit(value) => "integer literal"
     case DecLit(value) => "decimal literal"
     case StrLit(value) => "string literal"
@@ -302,17 +297,11 @@ trait TermImpl extends StatementImpl { self: Term =>
     case Tup((N, x) :: Nil) => x.describe
     case Tup((S(_), x) :: Nil) => "binding"
     case Tup(xs) => "tuple"
-    case Bind(l, r) => "'as' binding"
-    case Test(l, r) => "'is' test"
     case CaseOf(scrut, cases) =>  "`case` expression" 
     case Subs(arr, idx) => "array access"
   }
   
   override def toString: Str = this match {
-    case Bra(true, trm) => s"{$trm}"
-    case Bra(false, trm) => s"($trm)"
-    case Blk(stmts) => stmts.map("" + _ + ";").mkString(" ")
-    // case Blk(stmts) => stmts.map("" + _ + ";").mkString("‹", " ", "›") // for better legibility in debugging
     case IntLit(value) => value.toString
     case DecLit(value) => value.toString
     case StrLit(value) => '"'.toString + value + '"'
@@ -330,48 +319,11 @@ trait TermImpl extends StatementImpl { self: Term =>
     case Tup(xs) =>
       xs.iterator.map { case (n, t) =>
         n.fold("")(_.name + ": ") + t + "," }.mkString("(", " ", ")")
-    case Bind(l, r) => s"($l as $r)"
-    case Test(l, r) => s"($l is $r)"
     case CaseOf(s, c) => s"case $s of $c"
     case Subs(a, i) => s"$a[$i]"
   }
   
-  def toType: Diagnostic \/ Type =
-    try R(toType_!) catch {
-      case e: NotAType =>
-        import Message._
-        L(TypeError(msg"not a recognized type: ${e.trm.toString}"->e.trm.toLoc::Nil)) }
-  protected def toType_! : Type = (this match {
-    case Var(name) if name.startsWith("`") => TypeVar(R(name.tail), N)
-    case Var(name) => TypeName(name)
-    case App(App(Var("|"), lhs), rhs) => Union(lhs.toType_!, rhs.toType_!)
-    case App(App(Var("&"), lhs), rhs) => Inter(lhs.toType_!, rhs.toType_!)
-    case Lam(lhs, rhs) => Function(lhs.toType_!, rhs.toType_!)
-    case App(lhs, rhs) => lhs.toType_! match {
-      case AppliedType(base, targs) => AppliedType(base, targs :+ rhs.toType_!)
-      case p: TypeName => AppliedType(p, rhs.toType_! :: Nil)
-      case _ => throw new NotAType(this)
-    }
-    // TODO:
-    // case Tup(fields) => ???
-    // case Rcd(fields) => ???
-    // case Sel(receiver, fieldName) => ???
-    // case Let(isRec, name, rhs, body) => ???
-    // case Blk(stmts) => ???
-    // case Bra(rcd, trm) => ???
-    // case Asc(trm, ty) => ???
-    // case Bind(lhs, rhs) => ???
-    // case Test(trm, ty) => ???
-    // case With(trm, fieldNme, fieldVal) => ???
-    // case CaseOf(trm, cases) => ???
-    // case IntLit(value) => ???
-    // case DecLit(value) => ???
-    // case StrLit(value) => ???
-    case _ => throw new NotAType(this)
-  }).withLocOf(this)
-  
 }
-private class NotAType(val trm: Term) extends Throwable
 
 trait LitImpl { self: Lit =>
   def baseClasses: Set[TypeName] = this match {
@@ -463,20 +415,6 @@ trait StatementImpl extends Located { self: Statement =>
     case l @ LetS(isrec, pat, rhs) =>
       val (diags, v, args) = desugDefnPattern(pat, Nil)
       diags -> (Def(isrec, v, L(args.foldRight(rhs)(Lam(_, _)))).withLocOf(l) :: Nil) // TODO use v, not v.name
-    case d @ DataDefn(body) => desugarCases(body :: Nil, Nil)
-    case d @ DatatypeDefn(hd, bod) =>
-      val (diags, v, args) = desugDefnPattern(hd, Nil)
-      val (diags3, targs) = args.partitionMap {
-        case v @ Var(nme) => R(TypeName(nme).withLocOf(v))
-        case t =>
-          import Message._
-          L(TypeError(msg"illegal datatype type parameter shape: ${t.toString}" -> t.toLoc :: Nil))
-      }
-      val (diags2, cs) = desugarCases(bod, targs)
-      val dataDefs = cs.collect{case td: TypeDef => td}
-      (diags ::: diags2 ::: diags3) -> (TypeDef(Als, TypeName(v.name).withLocOf(v), targs,
-          dataDefs.map(td => AppliedType(td.nme, td.tparams)).reduceOption(Union).getOrElse(Bot)
-        ).withLocOf(hd) :: cs)
     case t: Term => Nil -> (t :: Nil)
     case d: Decl => Nil -> (d :: Nil)
   }
@@ -486,80 +424,8 @@ trait StatementImpl extends Located { self: Statement =>
     case v: Var => (Nil, v, args)
     case _ => (TypeError(msg"Unsupported pattern shape" -> pat.toLoc :: Nil) :: Nil, Var("<error>"), args) // TODO
   }
-  protected def desugarCases(bod: Term, baseTargs: Ls[TypeName]): (Ls[Diagnostic], Ls[Decl]) = bod match {
-    case Blk(stmts) => desugarCases(stmts, baseTargs)
-    case Tup(comps) =>
-      val stmts = comps.map {
-        case N -> d => d
-        case S(n) -> d => ???
-      }
-      desugarCases(stmts, baseTargs)
-    case _ => (TypeError(msg"Unsupported data type case shape" -> bod.toLoc :: Nil) :: Nil, Nil)
-  }
-  protected def desugarCases(stmts: Ls[Statement], baseTargs: Ls[TypeName]): (Ls[Diagnostic], Ls[Decl]) = stmts match {
-    case stmt :: stmts =>
-      val (diags0, sts) = stmt.desugared
-      val (diags2, cs) = desugarCases(stmts, baseTargs)
-      val allDiags = Buffer.from(diags0)
-      val res = sts.flatMap {
-        case t: Term =>
-          val (diags1, v, args) = desugDefnPattern(t, Nil)
-          allDiags ++= diags1
-          val tparams = Buffer.from(baseTargs)
-          val fields = SortedMutMap.empty[Var, Type]
-          def getFields(t: Term): Ls[Type] = t match {
-            case v: Var =>
-              // TOOD check not already defined
-              val tp = baseTargs.find(_.name === v.name).map(_.copy()).getOrElse(
-                if (v.name.startsWith("`")) TypeVar(R(v.name.tail), N)
-                else TypeName(v.name) tap (tparams += _)).withLocOf(v)
-              fields += v -> tp
-              tp :: Nil
-            case Blk((t: Term)::Nil) => getFields(t)
-            case Blk(_) => ??? // TODO proper error
-            case Bra(b, Blk((t:Term)::Nil)) => getFields(Bra(b, t))
-            case Bra(false, t) => getFields(t)
-            case Bra(true, Tup(fs)) =>
-              Record(fs.map {
-                case (S(n) -> t) =>
-                  val ty = t.toType match {
-                    case L(d) => allDiags += d; Top
-                    case R(t) => t
-                  }
-                  fields += n -> ty
-                  n -> Field(None, ty)
-                case _ => ???
-              }) :: Nil
-            case Bra(true, t) => lastWords(s"$t ${t.getClass}")
-            case Tup(fs) => // TODO factor with case Bra(true, Tup(fs)) above
-              Tuple(fs.map {
-                case (S(n) -> t) =>
-                  val ty = t.toType match {
-                    case L(d) => allDiags += d; Top
-                    case R(t) => t
-                  }
-                  fields += n -> ty
-                  S(n) -> ty
-                case _ => ???
-              }) :: Nil
-            case _ => ??? // TODO proper error
-          }
-          val params = args.flatMap(getFields)
-          val clsNme = TypeName(v.name).withLocOf(v)
-          val tps = tparams.toList
-          val ctor = Def(false, v, R(PolyType(tps,
-            params.foldRight(AppliedType(clsNme, tps):Type)(Function(_, _))))).withLocOf(stmt)
-          val td = TypeDef(Cls, clsNme, tps, Record(fields.toList.mapValues(Field(None, _)))).withLocOf(stmt)
-          td :: ctor :: cs
-        case _ => ??? // TODO methods in data type defs? nested data type defs?
-      }
-      allDiags ++= diags2
-      allDiags.toList -> res
-    case Nil => Nil -> Nil
-  }
   
   def children: List[Located] = this match {
-    case Bra(_, trm) => trm :: Nil
     case Var(name) => Nil
     case Asc(trm, ty) => trm :: Nil
     case Lam(lhs, rhs) => lhs :: rhs :: Nil
@@ -568,13 +434,8 @@ trait StatementImpl extends Located { self: Statement =>
     case Rcd(fields) => fields.map(_._2)
     case Sel(receiver, fieldName) => receiver :: fieldName :: Nil
     case Let(isRec, name, rhs, body) => rhs :: body :: Nil
-    case Blk(stmts) => stmts
     case LetS(_, pat, rhs) => pat :: rhs :: Nil
-    case DatatypeDefn(head, body) => head :: body :: Nil
-    case DataDefn(body) => body :: Nil
     case _: Lit => Nil
-    case Bind(l, r) => l :: r :: Nil
-    case Test(l, r) => l :: r :: Nil
     case CaseOf(s, c) => s :: c :: Nil
     case d @ Def(_, n, b) => n :: d.body :: Nil
     case TypeDef(kind, nme, tparams, body, _, _) => nme :: tparams ::: body :: Nil
@@ -584,20 +445,9 @@ trait StatementImpl extends Located { self: Statement =>
   
   override def toString: Str = this match {
     case LetS(isRec, name, rhs) => s"let${if (isRec) " rec" else ""} $name = $rhs"
-    case DatatypeDefn(head, body) => s"data type $head of $body"
-    case DataDefn(head) => s"data $head"
     case _: Term => super.toString
     case d: Decl => d.show
   }
-}
-
-trait BlkImpl { self: Blk =>
-  
-  def flatten: Blk = Blk(stmts.flatMap {
-    case b: Blk => b.flatten.stmts
-    case t => t :: Nil
-  })
-  
 }
 
 trait CaseBranchesImpl extends Located { self: CaseBranches =>

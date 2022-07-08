@@ -13,7 +13,7 @@ id
 //│ ║  l.6: 	  id
 //│ ║       	^^^^
 //│ ║  l.7: 	  3 2
-//│ ║       	^^^^^
+//│ ║       	^^^^^^
 //│ ╟── integer literal of type `3` is not a function
 //│ ║  l.7: 	  3 2
 //│ ║       	  ^

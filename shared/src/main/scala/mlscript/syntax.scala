@@ -53,15 +53,11 @@ sealed abstract class Lit                                            extends Sim
 final case class Var(name: Str)                                      extends SimpleTerm with VarImpl
 final case class Lam(lhs: Term, rhs: Term)                           extends Term
 final case class App(lhs: Term, rhs: Term)                           extends Term
-final case class Tup(fields: Ls[Opt[Var] -> Term])         extends Term
+final case class Tup(fields: Ls[Opt[Var] -> Term])                   extends Term
 final case class Rcd(fields: Ls[Var -> Term])                        extends Term
 final case class Sel(receiver: Term, fieldName: Var)                 extends Term
 final case class Let(isRec: Bool, name: Var, rhs: Term, body: Term)  extends Term
-final case class Blk(stmts: Ls[Statement])                           extends Term with BlkImpl
-final case class Bra(rcd: Bool, trm: Term)                           extends Term
 final case class Asc(trm: Term, ty: Type)                            extends Term
-final case class Bind(lhs: Term, rhs: Term)                          extends Term
-final case class Test(trm: Term, ty: Term)                           extends Term
 final case class CaseOf(trm: Term, cases: CaseBranches)              extends Term
 final case class Subs(arr: Term, idx: Term)                          extends Term
 
@@ -79,8 +75,6 @@ sealed abstract class SimpleTerm extends Term with SimpleTermImpl
 
 sealed trait Statement extends StatementImpl
 final case class LetS(isRec: Bool, pat: Term, rhs: Term)  extends Statement
-final case class DataDefn(body: Term)                     extends Statement
-final case class DatatypeDefn(head: Term, body: Term)     extends Statement
 
 sealed trait DesugaredStatement extends Statement with DesugaredStatementImpl
 

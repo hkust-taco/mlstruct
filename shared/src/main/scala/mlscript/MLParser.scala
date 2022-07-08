@@ -51,11 +51,16 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   
   def variable[p: P]: P[Var] = locate(ident.map(Var))
   
-  def parens[p: P]: P[Term] = locate(P( "(" ~/ (kw("mut").!.? ~ term).rep(0, ",") ~ ",".!.? ~ ")" ).map {
-    case (Seq(None -> t), N) => Bra(false, t)
-    case (Seq(Some(_) -> t), N) => Tup(N -> t :: Nil)   // ? single tuple with mutable
-    case (ts, _) => Tup(ts.iterator.map(f => N -> f._2).toList)
+  def parens[p: P]: P[Term] = locate(P( "(" ~/ term.rep(0, ",") ~ ",".!.? ~ ")" ).map {
+    case (Seq(t), N) => t
+    case (Seq(t), N) => Tup(N -> t :: Nil)
+    case (ts, _) => Tup(ts.iterator.map(f => N -> f).toList)
   })
+  
+  def tup[p: P]: P[Tup] = locate(P( "(" ~/ term.rep(0, ",") ~ ",".!.? ~ ")" ).map {
+    case (Seq(t), N) => Tup(N -> t :: Nil)
+    case (ts, _) => Tup(ts.iterator.map(f => N -> f).toList)
+  } | subterm.map(t => Tup(N -> t :: Nil)))
 
   def subtermNoSel[p: P]: P[Term] = P( parens | record | lit | variable )
   
@@ -81,12 +86,12 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
         case L((v, t)) => v -> t
         case R(id) => id -> id }.toList)})
   
-  def fun[p: P]: P[Term] = locate(P( kw("fun") ~/ term ~ "->" ~ term ).map(nb => Lam(toParams(nb._1), nb._2)))
+  def fun[p: P]: P[Term] = locate(P( kw("fun") ~/ tup ~ "->" ~ term ).map(nb => Lam(nb._1, nb._2)))
   
   def let[p: P]: P[Term] = locate(P(
-      kw("let") ~/ kw("rec").!.?.map(_.isDefined) ~ variable ~ subterm.rep ~ "=" ~ term ~ kw("in") ~ term
+      kw("let") ~/ kw("rec").!.?.map(_.isDefined) ~ variable ~ tup.rep ~ "=" ~ term ~ kw("in") ~ term
     ) map {
-      case (rec, id, ps, rhs, bod) => Let(rec, id, ps.foldRight(rhs)((i, acc) => Lam(toParams(i), acc)), bod)
+      case (rec, id, ps, rhs, bod) => Let(rec, id, ps.foldRight(rhs)((i, acc) => Lam(i, acc)), bod)
     })
   
   def ite[p: P]: P[Term] = P( kw("if") ~/ term ~ kw("then") ~ term ~ kw("else") ~ term ).map(ite =>
@@ -96,8 +101,9 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
     case (withs, ascs) => ascs.foldLeft(withs)(Asc)
   }
   
-  def mkApp(lhs: Term, rhs: Term): Term = App(lhs, toParams(rhs))
-  def apps[p: P]: P[Term] = P( subterm.rep(1).map(_.reduce(mkApp)) )
+  def apps[p: P]: P[Term] = P( (subterm | tup) ~ tup.rep ).map {
+    case (prefix, argLists) => argLists.foldLeft(prefix)(App)
+  }
   
   def _match[p: P]: P[CaseOf] =
     locate(P( kw("case") ~/ term ~ "of" ~ "{" ~ "|".? ~ matchArms ~ "}" ).map(CaseOf.tupled))
@@ -169,8 +175,8 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   def defDecl[p: P]: P[Def] =
     locate(P((kw("def") ~ variable ~ tyParams ~ ":" ~/ ty map {
       case (id, tps, t) => Def(true, id, R(PolyType(tps, t)))
-    }) | (kw("rec").!.?.map(_.isDefined) ~ kw("def") ~/ variable ~ subterm.rep ~ "=" ~ term map {
-      case (rec, id, ps, bod) => Def(rec, id, L(ps.foldRight(bod)((i, acc) => Lam(toParams(i), acc))))
+    }) | (kw("rec").!.?.map(_.isDefined) ~ kw("def") ~/ variable ~ tup.rep ~ "=" ~ term map {
+      case (rec, id, ps, bod) => Def(rec, id, L(ps.foldRight(bod)((i, acc) => Lam(i, acc))))
     })))
   
   def tyKind[p: P]: P[TypeDefKind] = (kw("class") | kw("trait") | kw("type")).! map {
@@ -193,9 +199,9 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
       case (id, ts, t) => R(MethodDef[Right[Term, Type]](true, prt, id, ts, R(t)))
     })
   def mthDef[p: P](prt: TypeName): P[L[MethodDef[Left[Term, Type]]]] = 
-    P(kw("rec").!.?.map(_.isDefined) ~ kw("method") ~ variable ~ tyParams ~ subterm.rep ~ "=" ~/ term map {
+    P(kw("rec").!.?.map(_.isDefined) ~ kw("method") ~ variable ~ tyParams ~ tup.rep ~ "=" ~/ term map {
       case (rec, id, ts, ps, bod) =>
-        L(MethodDef(rec, prt, id, ts, L(ps.foldRight(bod)((i, acc) => Lam(toParams(i), acc)))))
+        L(MethodDef(rec, prt, id, ts, L(ps.foldRight(bod)((i, acc) => Lam(i, acc)))))
     })
   
   def ty[p: P]: P[Type] = P( tyNoAs ~ ("as" ~ tyVar).rep ).map {

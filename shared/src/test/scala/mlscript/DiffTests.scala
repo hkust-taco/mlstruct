@@ -47,7 +47,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
     def outputSourceCode(code: SourceCode) = code.lines.foreach{line => out.println(outputMarker + line.toString())}
     val allStatements = mutable.Buffer.empty[DesugaredStatement]
     val typer = new Typer(dbg = false, verbose = false, explainErrors = false) {
-      override def funkyTuples = file.ext =:= "fun"
       // override def emitDbg(str: String): Unit = if (stdout) System.out.println(str) else output(str)
       override def emitDbg(str: String): Unit = output(str)
     }
@@ -173,10 +172,8 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
         val globalStartLineNum = allLines.size - lines.size + 1
 
         // try to parse block of text into mlscript ast
-        val ans = try parse(processedBlockStr,
-          p => if (file.ext =:= "fun") new Parser(Origin(fileName, globalStartLineNum, fph)).pgrm(p)
-            else new MLParser(Origin(fileName, globalStartLineNum, fph)).pgrm(p),
-          verboseFailures = true)
+        val ans = try parse(processedBlockStr, p =>
+          new MLParser(Origin(fileName, globalStartLineNum, fph)).pgrm(p), verboseFailures = true)
         match {
           case f: Failure =>
             val Failure(lbl, index, extra) = f

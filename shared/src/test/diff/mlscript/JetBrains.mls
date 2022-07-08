@@ -106,7 +106,7 @@ def evalN3 evalN3 x = case x of {
 //│ ║        	^^^
 //│ ╟── but it flows into application with expected type `int`
 //│ ║  l.+2: 	  Neg -> 0 - (evalN2 x.underlying)
-//│ ╙──      	              ^^^^^^^^^^^^^^^^^^^
+//│ ╙──      	             ^^^^^^^^^^^^^^^^^^^^^
 //│ evalN3: ('a -> 'rhs -> int & 'a) -> (Add & {lhs: 'rhs, rhs: 'rhs} | Lit & {val: 'val} | Neg & {underlying: 'b -> nothing -> int & 'b}) -> (error | int | 'val)
 
 def evalN3 evalN3 x = case x of {
@@ -130,7 +130,7 @@ evalN3 evalN3 e
 //│ ║         	^^^
 //│ ╟── Note: constraint arises from application:
 //│ ║  l.113: 	  Neg -> 0 - (evalN3 x.underlying)
-//│ ╙──       	              ^^^^^^^^^^^^^^^^^^^
+//│ ╙──       	             ^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	evalN3 evalN3 e
 //│ ║        	^^^^^^^^^^^^^^^

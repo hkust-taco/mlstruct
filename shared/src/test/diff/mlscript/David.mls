@@ -182,7 +182,7 @@ concat "Three" (addOne "Two")
 //│ ║         	                       ^^^^^^^^^^^^^^
 //│ ╟── but it flows into application with expected type `int`
 //│ ║  l.175: 	(addOne 1) + 1
-//│ ╙──       	 ^^^^^^^^
+//│ ╙──       	^^^^^^^^^^
 //│ res: error | int
 //│    = 3
 //│ ╔══[ERROR] Type mismatch in application:

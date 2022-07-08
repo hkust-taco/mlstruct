@@ -327,8 +327,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
             rec(lhs, r, true)
           case (p @ ProxyType(und), _) => rec(und, rhs, true)
           case (_, p @ ProxyType(und)) => rec(lhs, und, true)
-          case (_, TupleType(f :: Nil)) if funkyTuples =>
-            rec(lhs, f._2, true) // FIXME actually needs reified coercion! not a true subtyping relationship
           case (err @ ClassTag(ErrTypeId, _), FunctionType(l1, r1)) =>
             rec(l1, err, false)
             rec(err, r1, false)

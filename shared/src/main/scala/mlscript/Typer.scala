@@ -16,7 +16,6 @@ import mlscript.Message._
 class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     extends TypeDefs with TypeSimplifier {
   
-  def funkyTuples: Bool = false
   def doFactorize: Bool = false
   
   var recordProvenances: Boolean = true
@@ -133,8 +132,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     Nil
   val primitiveTypes: Set[Str] =
     builtinTypes.iterator.map(_.nme.name).flatMap(n => n.decapitalize :: n.capitalize :: Nil).toSet
-  def singleTup(ty: ST): ST =
-    if (funkyTuples) ty else TupleType((N, ty) :: Nil)(noProv)
+  def singleTup(ty: ST): ST = TupleType((N, ty) :: Nil)(noProv)
   val builtinBindings: Bindings = {
     val tv = freshVar(noProv)(1)
     import FunctionType.{ apply => fun }
@@ -434,7 +432,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     }
     term match {
       case v @ Var("_") =>
-        if (ctx.inPattern || funkyTuples) freshVar(tp(v.toLoc, "wildcard"))
+        if (ctx.inPattern) freshVar(tp(v.toLoc, "wildcard"))
         else err(msg"Widlcard in expression position.", v.toLoc)
       case Asc(trm, ty) =>
         val trm_ty = typeTerm(trm)
@@ -488,8 +486,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           val fprov = tp(App(n, t).toLoc, "record field")
           (n, tym.toUpper(fprov))
         })(prov)
-      case tup: Tup if funkyTuples =>
-        typeTerms(tup :: Nil, false, Nil)
       case Tup(fs) =>
         TupleType(fs.map { case (n, t) =>
           val tym = typeTerm(t)
@@ -513,11 +509,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
             prov.copy(desc = "prohibited undefined element")) // TODO better reporting for this; the prov isn't actually used
         con(t_a, ArrayType(elemType)(prov), elemType) |
           TypeRef(TypeName("undefined"), Nil)(prov.copy(desc = "possibly-undefined array access"))
-      case Bra(false, trm: Blk) => typeTerm(trm)
-      case Bra(rcd, trm @ (_: Tup | _: Blk)) if funkyTuples => typeTerms(trm :: Nil, rcd, Nil)
-      case Bra(_, trm) => typeTerm(trm)
-      case Blk((s: Term) :: Nil) => typeTerm(s)
-      case Blk(Nil) => UnitType.withProv(prov)
       case pat if ctx.inPattern =>
         err(msg"Unsupported pattern shape${
           if (dbg) " ("+pat.getClass.toString+")" else ""}:", pat.toLoc)(raise)
@@ -599,22 +590,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         val newCtx = ctx.nest
         newCtx += nme.name -> n_ty
         typeTerm(bod)(newCtx, raise)
-      // case Blk(s :: stmts) =>
-      //   val (newCtx, ty) = typeStatement(s)
-      //   typeTerm(Blk(stmts))(newCtx, lvl, raise)
-      case Blk(stmts) => typeTerms(stmts, false, Nil)(ctx.nest, raise, prov)
-      case Bind(l, r) =>
-        val l_ty = typeTerm(l)
-        val newCtx = ctx.nest // so the pattern's context don't merge with the outer context!
-        val r_ty = typePattern(r)(newCtx, raise)
-        ctx ++= newCtx.env
-        con(l_ty, r_ty, r_ty)
-      case Test(l, r) =>
-        val l_ty = typeTerm(l)
-        val newCtx = ctx.nest
-        val r_ty = typePattern(r)(newCtx, raise) // TODO make these bindings flow
-        con(l_ty, r_ty, TopType)
-        BoolType
       case CaseOf(s, cs) =>
         val s_ty = typeTerm(s)
         val (tys, cs_ty) = typeArms(s |>? {
@@ -676,80 +651,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           (patTy -> TopType, bod_ty, typeArms(scrutVar, rest))
       }
       (req_ty :: tys) -> (bod_ty | rest_ty)
-  }
-  
-  def typeTerms(term: Ls[Statement], rcd: Bool, fields: List[Opt[Var] -> SimpleType])
-        (implicit ctx: Ctx, raise: Raise, prov: TypeProvenance): SimpleType
-      = term match {
-    case (trm @ Var(nme)) :: sts if rcd => // field punning
-      typeTerms(Tup(S(trm) -> trm :: Nil) :: sts, rcd, fields)
-    case Blk(sts0) :: sts1 => typeTerms(sts0 ::: sts1, rcd, fields)
-    case Tup(Nil) :: sts => typeTerms(sts, rcd, fields)
-    case Tup((no, trm) :: ofs) :: sts =>
-      val ty = {
-        trm match  {
-          case Bra(false, t) if ctx.inPattern => // we use syntax `(x: (p))` to type `p` as a pattern and not a type...
-            typePattern(t)
-          case _ => ctx.copy(inPattern = ctx.inPattern && no.isEmpty) |> { implicit ctx => // TODO change this?
-            if (ofs.isEmpty) typeTerm(Bra(rcd, trm))
-            // ^ This is to type { a: ... } as { a: { ... } } to facilitate object literal definitions;
-            //   not sure that's a good idea...
-            else typeTerm(trm)
-          }
-        }
-      }
-      val res_ty = no |> {
-        case S(nme) if ctx.inPattern =>
-          // TODO in 'opaque' definitions we should give the exact specified type and not something more precise
-          // as in `(x: Int) => ...` should not try to refine the type of `x` further
-          
-          val prov = tp(trm.toLoc, "parameter type")
-          val t_ty =
-            // TODO in positive position, this should create a new VarType instead! (i.e., an existential)
-            new TypeVariable(lvl, Nil, Nil)(prov)//.tap(ctx += nme -> _)
-          
-          // constrain(ty, t_ty)(raise, prov)
-          constrain(t_ty, ty)(raise, prov, ctx)
-          ctx += nme.name -> t_ty
-          
-          t_ty
-          // ty
-          // ComposedType(false, t_ty, ty)(prov)
-          // ComposedType(true, t_ty, ty)(prov) // loops!
-          
-        case S(nme) =>
-          ctx += nme.name -> ty
-          ty
-        case _ =>
-          ty
-      }
-      typeTerms(Tup(ofs) :: sts, rcd, (no, res_ty) :: fields)
-    case (trm: Term) :: Nil =>
-      if (fields.nonEmpty)
-        warn("Previous field definitions are discarded by this returned expression.", trm.toLoc)
-      typeTerm(trm)
-    // case (trm: Term) :: Nil =>
-    //   assert(!rcd)
-    //   val ty = typeTerm(trm)
-    //   typeBra(Nil, rcd, (N, ty) :: fields)
-    case s :: sts =>
-      val (diags, desug) = s.desugared
-      diags.foreach(raise)
-      val newBindings = desug.flatMap(typeStatement(_, allowPure = false).toOption)
-      ctx ++= newBindings.flatten
-      typeTerms(sts, rcd, fields)
-    case Nil =>
-      if (rcd) {
-        val fs = fields.reverseIterator.zipWithIndex.map {
-          case ((S(n), t), i) =>
-            n -> t.toUpper(noProv)
-          case ((N, t), i) =>
-            // err("Missing name for record field", t.prov.loco)
-            warn("Missing name for record field", t.prov.loco)
-            (Var("_" + (i + 1)), t.toUpper(noProv))
-        }.toList
-        RecordType.mk(fs)(prov)
-      } else TupleType(fields.reverseIterator.toList)(prov)
   }
   
   

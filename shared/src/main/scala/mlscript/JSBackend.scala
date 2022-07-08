@@ -48,10 +48,9 @@ class JSBackend {
     case Asc(trm, _) => translatePattern(trm)
     // Replace literals with wildcards.
     case _: Lit      => JSWildcardPattern()
-    case Bra(_, trm) => translatePattern(trm)
     case Tup(fields) => JSArrayPattern(fields map { case (_, t) => translatePattern(t) })
     // Others are not supported yet.
-    case _: Lam | _: App | _: Sel | _: Let | _: Blk | _: Bind | _: Test | _: CaseOf | _: Subs =>
+    case _: Lam | _: App | _: Sel | _: Let | _: CaseOf | _: Subs =>
       throw CodeGenError(s"term ${inspect(t)} is not a valid pattern")
   }
 
@@ -153,18 +152,6 @@ class JSBackend {
         letScope.tempVars `with` translateTerm(body)(letScope),
         translateTerm(value) :: Nil
       )
-    case Blk(stmts) =>
-      val blkScope = scope.derive("Blk")
-      JSImmEvalFn(
-        N,
-        Nil,
-        R(blkScope.tempVars `with` (stmts flatMap (_.desugared._2) map {
-          case t: Term             => JSExprStmt(translateTerm(t))
-          // TODO: find out if we need to support this.
-          case _: Def | _: TypeDef => throw CodeGenError("unexpected definitions in blocks")
-        })),
-        Nil
-      )
     // Pattern match with only one branch -> comma expression
     case CaseOf(trm, Wildcard(default)) =>
       JSCommaExpr(translateTerm(trm) :: translateTerm(default) :: Nil)
@@ -188,13 +175,10 @@ class JSBackend {
     case UnitLit(value) => JSLit(if (value) "undefined" else "null")
     // `Asc(x, ty)` <== `x: Type`
     case Asc(trm, _) => translateTerm(trm)
-    case Bra(_, trm) => translateTerm(trm)
     case Tup(terms) =>
       JSArray(terms map { case (_, term) => translateTerm(term) })
     case Subs(arr, idx) =>
       JSMember(translateTerm(arr), translateTerm(idx))
-    case _: Bind | _: Test =>
-      throw CodeGenError(s"cannot generate code for term ${inspect(term)}")
   }
 
   private def translateCaseBranch(scrut: JSExpr, branch: CaseBranches)(implicit

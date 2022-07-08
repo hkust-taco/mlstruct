@@ -64,7 +64,7 @@ def test: {x: 1} & (1, 2, 3)
 //│ ║        	               ^^^
 //│ ╟── but it flows into array access with expected type `Array[?b]`
 //│ ║  l.58: 	(arr[0])[1][2]
-//│ ╙──      	 ^^^^^^
+//│ ╙──      	^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in array access:
 //│ ║  l.58: 	(arr[0])[1][2]
 //│ ║        	^^^^^^^^^^^^^^
