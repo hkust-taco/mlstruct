@@ -87,7 +87,7 @@ Cons.HeadOption l0
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 39
+//│ constrain calls  : 41
 //│ annoying  calls  : 27
 //│ subtyping calls  : 64
 
@@ -102,7 +102,7 @@ Cons.HeadOption l1
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 39
+//│ constrain calls  : 41
 //│ annoying  calls  : 27
 //│ subtyping calls  : 64
 
@@ -112,7 +112,7 @@ Cons.HeadOption l
 //│ res: Some[0 | 1]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 48
+//│ constrain calls  : 50
 //│ annoying  calls  : 27
 //│ subtyping calls  : 89
 
@@ -120,7 +120,7 @@ Cons.HeadOption l
 o = l.(Cons.HeadOption)
 //│ o: Some[0 | 1]
 //│  = undefined
-//│ constrain calls  : 46
+//│ constrain calls  : 48
 //│ annoying  calls  : 27
 //│ subtyping calls  : 89
 

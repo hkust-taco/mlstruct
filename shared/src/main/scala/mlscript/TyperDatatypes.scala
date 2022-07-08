@@ -95,7 +95,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   case class FunctionType(lhs: SimpleType, rhs: SimpleType)(val prov: TypeProvenance) extends MiscBaseType {
     lazy val level: Int = lhs.level max rhs.level
     override def toString = s"(${lhs match {
-      case TupleType((N, f) :: Nil) => f.toString
+      case TupleType((N, f) :: Nil) => ""+f
       case lhs => lhs
     }} -> $rhs)"
   }
@@ -127,21 +127,21 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   
   sealed abstract class ArrayBase extends MiscBaseType {
-    def inner: FieldType
+    def inner: SimpleType
   }
 
-  case class ArrayType(val inner: FieldType)(val prov: TypeProvenance) extends ArrayBase {
+  case class ArrayType(val inner: SimpleType)(val prov: TypeProvenance) extends ArrayBase {
     def level: Int = inner.level
     override def toString = s"Array‹$inner›"
   }
 
-  case class TupleType(fields: List[Opt[Var] -> FieldType])(val prov: TypeProvenance) extends ArrayBase {
-    lazy val inner: FieldType = fields.map(_._2).reduceLeftOption(_ || _).getOrElse(BotType.toUpper(noProv))
+  case class TupleType(fields: List[Opt[Var] -> SimpleType])(val prov: TypeProvenance) extends ArrayBase {
+    lazy val inner: SimpleType = fields.map(_._2).reduceLeftOption(_ | _).getOrElse(BotType)
     lazy val level: Int = fields.iterator.map(_._2.level).maxOption.getOrElse(0)
     lazy val toArray: ArrayType = ArrayType(inner)(prov)  // upcast to array
     override lazy val toRecord: RecordType =
       RecordType(
-        fields.zipWithIndex.map { case ((_, t), i) => (Var("_"+(i+1)), t) }
+        fields.zipWithIndex.map { case ((_, t), i) => (Var("_"+(i+1)), t.toUpper(t.prov)) }
         // Note: In line with TypeScript, tuple field names are pure type system fictions,
         //    with no runtime existence. Therefore, they should not be included in the record type
         //    corresponding to this tuple type.
@@ -203,7 +203,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
         if (paramTags) RecordType.mk(td.tparamsargs.map { case (tp, tv) =>
             val tvv = td.getVariancesOrDefault
             tparamField(defn, tp) -> FieldType(
-              Some(if (tvv(tv).isCovariant) BotType else tv),
+              if (tvv(tv).isCovariant) BotType else tv,
               if (tvv(tv).isContravariant) TopType else tv)(prov)
           }.toList)(noProv)
         else TopType
@@ -285,18 +285,21 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       }
   }
   
-  case class FieldType(lb: Option[SimpleType], ub: SimpleType)(val prov: TypeProvenance) {
-    def level: Int = lb.map(_.level).getOrElse(ub.level) max ub.level
+  /** This class represents either a normal record field OR a type paarameter in a class,
+    *   which are encoded using fields.
+    * The lower bound `lb` will only be non-bottom when the field is used as a type parameter. */
+  case class FieldType(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) {
+    def level: Int = lb.level max ub.level
     def <:< (that: FieldType)(implicit ctx: Ctx, cache: MutMap[ST -> ST, Bool] = MutMap.empty): Bool =
-      (that.lb.getOrElse(BotType) <:< this.lb.getOrElse(BotType)) && (this.ub <:< that.ub)
+      (that.lb <:< this.lb) && (this.ub <:< that.ub)
     def && (that: FieldType, prov: TypeProvenance = noProv): FieldType =
-      FieldType(lb.fold(that.lb)(l => Some(that.lb.fold(l)(l | _))), ub & that.ub)(prov)
+      FieldType(lb | that.lb, ub & that.ub)(prov)
     def || (that: FieldType, prov: TypeProvenance = noProv): FieldType =
-      FieldType(for {l <- lb; r <- that.lb} yield (l & r), ub | that.ub)(prov)
+      FieldType(lb & that.lb, ub | that.ub)(prov)
     def update(lb: SimpleType => SimpleType, ub: SimpleType => SimpleType): FieldType =
-      FieldType(this.lb.map(lb), ub(this.ub))(prov)
+      FieldType(lb(this.lb), ub(this.ub))(prov)
     override def toString =
-      lb.fold(s"$ub")(lb => s"mut ${if (lb === BotType) "" else lb}..$ub")
+      if (lb === BotType) s"$ub" else s"$lb..$ub"
   }
   
   /** A type variable living at a certain polymorphism level `level`, with mutable bounds.
@@ -319,9 +322,9 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       * Note that if we have something like 'a :> Bot <: 'a -> Top, 'a is not truly recursive
       *   and its bounds can actually be inlined. */
     private final def lbRecOccs_$(implicit ctx: Ctx): Opt[Opt[Bool]] =
-      TupleType(lowerBounds.map(N -> _.toUpper(noProv)))(noProv).getVarsPol(S(true)).get(this)
+      TupleType(lowerBounds.map(N -> _))(noProv).getVarsPol(S(true)).get(this)
     private final def ubRecOccs_$(implicit ctx: Ctx): Opt[Opt[Bool]] =
-      TupleType(upperBounds.map(N -> _.toUpper(noProv)))(noProv).getVarsPol(S(false)).get(this)
+      TupleType(upperBounds.map(N -> _))(noProv).getVarsPol(S(false)).get(this)
     
     override def toString: String = showProvOver(false)(nameHint.getOrElse("α") + uid + "'" * level)
   }

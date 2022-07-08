@@ -93,24 +93,18 @@ abstract class TyperHelpers { Typer: Typer =>
     }
     // }(r => s"= $r")
   
-  /** Substitutes only at the syntactic level, without updating type variables nor traversing their bounds. */
-  def substSyntax(st: SimpleType)(map: PartialFunction[SimpleType, SimpleType]): SimpleType =
-    // trace(s"substSyntax $st") {
-      map.applyOrElse[ST, ST](st, _.map(substSyntax(_)(map)))
-    // }(r => s"=> $r")
-  
-  def tupleIntersection(fs1: Ls[Opt[Var] -> FieldType], fs2: Ls[Opt[Var] -> FieldType]): Ls[Opt[Var] -> FieldType] = {
+  def tupleIntersection(fs1: Ls[Opt[Var] -> ST], fs2: Ls[Opt[Var] -> ST]): Ls[Opt[Var] -> ST] = {
     require(fs1.size === fs2.size)
     (fs1 lazyZip fs2).map {
-      case ((S(n1), t1), (S(n2), t2)) if n1 =/= n2 => (N, t1 && t2)
-      case ((no1, t1), (no2, t2)) => (no1 orElse no2, t1 && t2)
+      case ((S(n1), t1), (S(n2), t2)) if n1 =/= n2 => (N, t1 & t2)
+      case ((no1, t1), (no2, t2)) => (no1 orElse no2, t1 & t2)
     }
   }
-  def tupleUnion(fs1: Ls[Opt[Var] -> FieldType], fs2: Ls[Opt[Var] -> FieldType]): Ls[Opt[Var] -> FieldType] = {
+  def tupleUnion(fs1: Ls[Opt[Var] -> ST], fs2: Ls[Opt[Var] -> ST]): Ls[Opt[Var] -> ST] = {
     require(fs1.size === fs2.size)
     (fs1 lazyZip fs2).map {
-      case ((S(n1), t1), (S(n2), t2)) => (Option.when(n1 === n2)(n1), t1 || t2)
-      case ((no1, t1), (no2, t2)) => (N, t1 || t2)
+      case ((S(n1), t1), (S(n2), t2)) => (Option.when(n1 === n2)(n1), t1 | t2)
+      case ((no1, t1), (no2, t2)) => (N, t1 | t2)
     }
   }
   
@@ -221,8 +215,8 @@ abstract class TyperHelpers { Typer: Typer =>
   
   def mapPol(bt: BaseType, pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType): BaseType = bt match {
     case FunctionType(lhs, rhs) => FunctionType(f(pol.map(!_), lhs), f(pol, rhs))(bt.prov)
-    case TupleType(fields) => TupleType(fields.mapValues(_.update(f(pol.map(!_), _), f(pol, _))))(bt.prov)
-    case ArrayType(inner) => ArrayType(inner.update(f(pol.map(!_), _), f(pol, _)))(bt.prov)
+    case TupleType(fields) => TupleType(fields.mapValues(f(pol, _)))(bt.prov)
+    case ArrayType(inner) => ArrayType(f(pol, inner))(bt.prov)
     case _: ClassTag => bt
   }
   
@@ -277,8 +271,8 @@ abstract class TyperHelpers { Typer: Typer =>
       case TypeBounds(lb, ub) => TypeBounds(f(lb), f(ub))(prov)
       case FunctionType(lhs, rhs) => FunctionType(f(lhs), f(rhs))(prov)
       case RecordType(fields) => RecordType(fields.mapValues(_.update(f, f)))(prov)
-      case TupleType(fields) => TupleType(fields.mapValues(_.update(f, f)))(prov)
-      case ArrayType(inner) => ArrayType(inner.update(f, f))(prov)
+      case TupleType(fields) => TupleType(fields.mapValues(f))(prov)
+      case ArrayType(inner) => ArrayType(f(inner))(prov)
       case ComposedType(pol, lhs, rhs) => ComposedType(pol, f(lhs), f(rhs))(prov)
       case NegType(negated) => NegType(f(negated))(prov)
       case ProvType(underlying) => ProvType(f(underlying))(prov)
@@ -305,8 +299,8 @@ abstract class TyperHelpers { Typer: Typer =>
       case _: TypeVariable | _: ObjectTag | _: ExtrType => this
     }
     
-    def toUpper(prov: TypeProvenance): FieldType = FieldType(None, this)(prov)
-    def toLower(prov: TypeProvenance): FieldType = FieldType(Some(this), TopType)(prov)
+    def toUpper(prov: TypeProvenance): FieldType = FieldType(BotType, this)(prov)
+    def toLower(prov: TypeProvenance): FieldType = FieldType(this, TopType)(prov)
     
     def | (that: SimpleType, prov: TypeProvenance = noProv, swapped: Bool = false): SimpleType = (this, that) match {
       case (TopType, _) => TopType
@@ -475,7 +469,7 @@ abstract class TyperHelpers { Typer: Typer =>
     
     def childrenPol(pol: Opt[Bool])(implicit ctx: Ctx): List[Opt[Bool] -> SimpleType] = {
       def childrenPolField(fld: FieldType): List[Opt[Bool] -> SimpleType] =
-        fld.lb.map(pol.map(!_) -> _).toList ::: pol -> fld.ub :: Nil
+        pol.map(!_) -> fld.lb :: pol -> fld.ub :: Nil
       this match {
         case tv: TypeVariable =>
           (if (pol =/= S(false)) tv.lowerBounds.map(S(true) -> _) else Nil) :::
@@ -483,8 +477,8 @@ abstract class TyperHelpers { Typer: Typer =>
         case FunctionType(l, r) => pol.map(!_) -> l :: pol -> r :: Nil
         case ComposedType(_, l, r) => pol -> l :: pol -> r :: Nil
         case RecordType(fs) => fs.unzip._2.flatMap(childrenPolField)
-        case TupleType(fs) => fs.unzip._2.flatMap(childrenPolField)
-        case ArrayType(fld) => childrenPolField(fld)
+        case TupleType(fs) => fs.unzip._2.map(pol -> _)
+        case ArrayType(fld) => pol -> fld :: Nil
         case NegType(n) => pol.map(!_) -> n :: Nil
         case ExtrType(_) => Nil
         case ProxyType(und) => pol -> und :: Nil
@@ -525,9 +519,9 @@ abstract class TyperHelpers { Typer: Typer =>
       case tv: TypeVariable => if (includeBounds) tv.lowerBounds ::: tv.upperBounds else Nil
       case FunctionType(l, r) => l :: r :: Nil
       case ComposedType(_, l, r) => l :: r :: Nil
-      case RecordType(fs) => fs.flatMap(f => f._2.lb.toList ::: f._2.ub :: Nil)
-      case TupleType(fs) => fs.flatMap(f => f._2.lb.toList ::: f._2.ub :: Nil)
-      case ArrayType(inner) => inner.lb.toList ++ (inner.ub :: Nil)
+      case RecordType(fs) => fs.flatMap(f => f._2.lb :: f._2.ub :: Nil)
+      case TupleType(fs) => fs.unzip._2
+      case ArrayType(inner) => inner :: Nil
       case NegType(n) => n :: Nil
       case ExtrType(_) => Nil
       case ProxyType(und) => und :: Nil
@@ -589,8 +583,8 @@ abstract class TyperHelpers { Typer: Typer =>
       case FunctionType(l, r) => apply(pol.map(!_))(l); apply(pol)(r)
       case ComposedType(_, l, r) => apply(pol)(l); apply(pol)(r)
       case RecordType(fs) => fs.unzip._2.foreach(applyField(pol))
-      case TupleType(fs) => fs.unzip._2.foreach(applyField(pol))
-      case ArrayType(fld) => applyField(pol)(fld)
+      case TupleType(fs) => fs.unzip._2.foreach(apply(pol))
+      case ArrayType(fld) => apply(pol)(fld)
       case NegType(n) => apply(pol.map(!_))(n)
       case ExtrType(_) => ()
       case ProxyType(und) => apply(pol)(und)
@@ -599,14 +593,14 @@ abstract class TyperHelpers { Typer: Typer =>
       case TypeBounds(lb, ub) => apply(S(false))(lb); apply(S(true))(ub)
     }
     def applyField(pol: Opt[Bool])(fld: FieldType): Unit = {
-      fld.lb.foreach(apply(pol.map(!_)))
+      apply(pol.map(!_))(fld.lb)
       apply(pol)(fld.ub)
     }
   }
   object Traverser {
     trait InvariantFields extends Traverser {
       override def applyField(pol: Opt[Bool])(fld: FieldType): Unit =
-        if (fld.lb.exists(_ === fld.ub)) apply(N)(fld.ub)
+        if (fld.lb === fld.ub) apply(N)(fld.ub)
         else super.applyField(pol)(fld)
     }
   }

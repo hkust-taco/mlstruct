@@ -403,12 +403,6 @@ final class TsTypegenCodeBuilder {
           SourceCode.ampersand
         )
       case Record(fields) =>
-        // ts can only handle fields that have only out type or the same in out types
-        if (fields.iterator
-          .map(field => field._2.in.map(in => in === field._2.out).getOrElse(true))
-          .exists(!_))
-            throw CodeGenError("Cannot convert mutable record field with different in out types to typescript")
-
         SourceCode.recordWithEntries(
           fields.map(entry => 
             if (entry._2.in.isDefined)
@@ -417,12 +411,6 @@ final class TsTypegenCodeBuilder {
               (SourceCode(s"readonly ${entry._1.name}"), toTsType(entry._2.out))
         ))
       case Tuple(fields) =>
-        // ts can only handle fields that have only out type or the same in out types
-        if (fields.iterator
-          .map(field => field._2.in.map(in => in === field._2.out).getOrElse(true))
-          .exists(!_))
-            throw CodeGenError("Cannot convert mutable tuple field with different in out types to typescript")
-
         // tuple that is a function argument becomes
         // multi-parameter argument list
         // ! Note: No equivalent to readonly fields for tuples
@@ -430,7 +418,7 @@ final class TsTypegenCodeBuilder {
           val argList = fields
             .map{ case field =>
               val arg = typegenCtx.termScope.declareRuntimeSymbol("arg")
-              val argType = toTsType(field._2.out)
+              val argType = toTsType(field._2)
               SourceCode(s"$arg: ") ++ argType
             }
             .toList
@@ -438,7 +426,7 @@ final class TsTypegenCodeBuilder {
         }
         // regular tuple becomes fixed length array
         else {
-          val tupleArrayCode = SourceCode.horizontalArray(fields.map(field => toTsType(field._2.out)))
+          val tupleArrayCode = SourceCode.horizontalArray(fields.map(field => toTsType(field._2)))
           // don't add a readonly if all fields in the tuple are mutable
           // this is because readonly is a weak constraint and can easily
           // be upcasted to non-readonly
@@ -551,6 +539,7 @@ final class TsTypegenCodeBuilder {
           case Some(true) => toTsType(ub)
           // negative polarity takes lower bound
           case Some(false) => toTsType(lb)
+          case _ if lb === Bot => toTsType(ub)
           // TODO: Yet to handle invariant types
           case None =>
             throw CodeGenError(s"Cannot generate type for invariant type $mlType")

@@ -74,15 +74,15 @@ class NormalForms extends TyperDatatypes { self: Typer =>
             if (expandTupleFields)
               r1Final = RecordType(mergeSortedMap(r1Final.fields, tup.toRecord.fields)(_ && _).toList)(noProv)
             S(TupleType(fs.map { ty =>
-              ty._1 -> (ar && ty._2)
+              ty._1 -> (ar & ty._2)
             })(noProv))
           case (S(TupleType(fs)), ArrayType(ar)) =>
             S(TupleType(fs.map { ty =>
-              ty._1 -> (ty._2 && ar)
+              ty._1 -> (ty._2 & ar)
             })(noProv))
           case (S(ArrayType(i1)), ArrayType(i2)) =>
             // Array[p] & Array[q] => Array[p & q]
-            S(ArrayType(i1 && i2)(noProv))
+            S(ArrayType(i1 & i2)(noProv))
             
           case (S(_), _) => N
           case (N, tup: TupleType) =>
@@ -203,13 +203,13 @@ class NormalForms extends TyperDatatypes { self: Typer =>
         if (fs1.size =/= fs2.size) 
           RhsBases(ps, S(L(t1.toArray)), trs) | t2.toArray // upcast tuples of different sizes to array
         else S(RhsBases(ps, S(L(TupleType(fs1.lazyZip(fs2).map {
-          case ((S(n1), ty1), (S(n2), ty2)) => (if (n1 === n2) S(n1) else N, ty1 || ty2)
-          case ((n1o, ty1), (n2o, ty2)) => (n1o orElse n2o, ty1 || ty2)
+          case ((S(n1), ty1), (S(n2), ty2)) => (if (n1 === n2) S(n1) else N, ty1 | ty2)
+          case ((n1o, ty1), (n2o, ty2)) => (n1o orElse n2o, ty1 | ty2)
         })(noProv))), trs))
       case (RhsBases(ps, S(L(ArrayType(_))), trs), t@TupleType(_)) => this | t.toArray
       case (RhsBases(ps, S(L(t@TupleType(_))), trs), ar@ArrayType(_)) => RhsBases(ps, S(L(t.toArray)), trs) | ar
       case (RhsBases(ps, S(L(ArrayType(ar1))), trs), ArrayType(ar2)) => 
-        S(RhsBases(ps, S(L(ArrayType(ar1 || ar2)(noProv))), trs))
+        S(RhsBases(ps, S(L(ArrayType(ar1 | ar2)(noProv))), trs))
       case (RhsBases(ps, S(L(bt)), trs), _) if (that === bt) => S(this)
       case (RhsBases(ps, S(L(FunctionType(l0, r0))), trs), FunctionType(l1, r1)) =>
         S(RhsBases(ps, S(L(FunctionType(l0 & l1, r0 | r1)(noProv))), trs))
@@ -337,16 +337,16 @@ class NormalForms extends TyperDatatypes { self: Typer =>
               LhsRefined(S(FunctionType(l1 & l2, r1 | r2)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
           case (S(tup1 @ TupleType(fs1)), S(tup2 @ TupleType(fs2))) => // TODO Q: records ok here?!
             if (fs1.size =/= fs2.size) S(Conjunct(
-              LhsRefined(S(ArrayType(tup1.inner || tup2.inner)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
+              LhsRefined(S(ArrayType(tup1.inner | tup2.inner)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
             else S(Conjunct(
               LhsRefined(S(TupleType(tupleUnion(fs1, fs2))(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
           case (S(tup @ TupleType(fs)), S(ArrayType(ar))) =>
-            S(Conjunct(LhsRefined(S(ArrayType(tup.inner || ar)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
+            S(Conjunct(LhsRefined(S(ArrayType(tup.inner | ar)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
           case (S(ArrayType(ar)), S(tup @ TupleType(fs))) =>
             S(Conjunct(
-              LhsRefined(S(ArrayType(tup.inner || ar)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
+              LhsRefined(S(ArrayType(tup.inner | ar)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
           case (S(ArrayType(ar1)), S(ArrayType(ar2))) =>
-            S(Conjunct(LhsRefined(S(ArrayType(ar1 || ar2)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
+            S(Conjunct(LhsRefined(S(ArrayType(ar1 | ar2)(noProv)), ts, rcdU, trs1), vs1, RhsBot, nvs1))
           case (N, N)
             | (S(_: FunctionType), S(_: ArrayBase)) | (S(_: ArrayBase), S(_: FunctionType))
           =>

@@ -271,13 +271,17 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
             lazy val checkAbstractAddCtors = {
               val (decls, defns) = gatherMthNames(td)
               val isTraitWithMethods = (k is Trt) && defns.nonEmpty
-              val fields = fieldsOf(td.bodyTy, true)
+              // val fields = fieldsOf(td.bodyTy, true)
+              println(td.bodyTy)
+              val fields = fieldsOf(freshenAbove(0, td.bodyTy), true)
               fields.foreach {
                 // * Make sure the LB/UB of all inherited type args are consistent.
                 // * This is not actually necessary for soundness
                 // *  (if they aren't, the object type just won't be instantiable),
                 // *  but will help report inheritance errors earlier (see test BadInherit2).
-                case (nme, FieldType(S(lb), ub)) => constrain(lb, ub)
+                case (nme, FieldType(lb, ub)) =>
+                  println(s"F $nme $lb $ub")
+                  constrain(lb, ub)
                 case _ => ()
               }
               (decls -- defns) match {
@@ -287,7 +291,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
                 case _ =>
                   val fields = fieldsOf(td.bodyTy, paramTags = true)
                   val tparamTags = td.tparamsargs.map { case (tp, tv) =>
-                    tparamField(td.nme, tp) -> FieldType(Some(tv), tv)(tv.prov) }
+                    tparamField(td.nme, tp) -> FieldType(tv, tv)(tv.prov) }
                   val ctor = k match {
                     case Cls =>
                       val nomTag = clsNameToNomTag(td)(originProv(td.nme.toLoc, "class", td.nme.name), ctx)
@@ -297,10 +301,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
                           val fv = freshVar(noProv,
                             S(f._1.name.drop(f._1.name.indexOf('#') + 1)) // strip any "...#" prefix
                           )(1).tap(_.upperBounds ::= f._2.ub)
-                          f._1 -> (
-                            if (f._2.lb.isDefined) FieldType(Some(fv), fv)(f._2.prov)
-                            else fv.toUpper(f._2.prov)
-                          )
+                          f._1 -> fv.toUpper(f._2.prov)
                         }).toList
                       PolymorphicType(0, FunctionType(
                         singleTup(RecordType.mk(fieldsRefined.filterNot(_._1.name.isCapitalized))(noProv)),
@@ -583,7 +584,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
       */
     def updateVariance(ty: SimpleType, curVariance: VarianceInfo)(implicit tyDef: TypeDef, visited: MutSet[Bool -> TypeVariable]): Unit = {
       def fieldVarianceHelper(fieldTy: FieldType): Unit = {
-          fieldTy.lb.foreach(lb => updateVariance(lb, curVariance.flip))
+          updateVariance(fieldTy.lb, curVariance.flip)
           updateVariance(fieldTy.ub, curVariance)
       }
       
@@ -637,9 +638,9 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case TypeBounds(lb, ub) =>
             updateVariance(lb, VarianceInfo.contra)
             updateVariance(ub, VarianceInfo.co)
-          case ArrayType(inner) => fieldVarianceHelper(inner)
+          case ArrayType(inner) => updateVariance(inner, curVariance)
           case TupleType(fields) => fields.foreach {
-              case (_ , fieldTy) => fieldVarianceHelper(fieldTy)
+              case (_ , fieldTy) => updateVariance(fieldTy, curVariance)
             }
           case FunctionType(lhs, rhs) =>
             updateVariance(lhs, curVariance.flip)

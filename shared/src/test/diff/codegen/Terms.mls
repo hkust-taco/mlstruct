@@ -346,32 +346,25 @@ case A { a = 0 } of
 
 
 
-class M: {mut x : int}
+class M: {x : int}
 //│ Defined class M
 
 :js
-a1 = M {mut x = 233}
-a1.x <- 666
+a1 = M {x = 233}
 a1.x
 //│ // Query 1
 //│ globalThis.a1 = new M({ x: 233 });
 //│ res = a1;
 //│ // Query 2
-//│ res = (a1.x = 666, []);
-//│ // Query 3
 //│ res = a1.x;
 //│ // End of generated code
-//│ a1: M & {mut x: 'x}
-//│   where
-//│     'x :> 233
-//│        <: int
+//│ a1: M & {x: 233}
 //│   = M { x: 233 }
-//│ = []
 //│ res: 233
-//│    = 666
+//│    = 233
 
 :js
-t1 = (mut "hello", mut true)
+t1 = ("hello", true)
 //│ // Query 1
 //│ globalThis.t1 = [
 //│   "hello",
@@ -379,80 +372,35 @@ t1 = (mut "hello", mut true)
 //│ ];
 //│ res = t1;
 //│ // End of generated code
-//│ t1: (mut 'a, mut 'b,)
-//│   where
-//│     'b :> true
-//│     'a :> "hello"
+//│ t1: ("hello", true,)
 //│   = [ 'hello', true ]
 
 :js
-t1._1 <- "bye"
 t1._1
 //│ // Query 1
-//│ res = (t1["_1"] = "bye", []);
-//│ // Query 2
 //│ res = t1["_1"];
 //│ // End of generated code
-//│ = []
 //│ res: "hello"
-//│    = 'bye'
+//│    = undefined
 
 :js
-def muta1 : MutArray[int]
-muta1 = (mut 1, mut 2, mut 3, mut 4)
-//│ // Query 1 is empty
-//│ // Query 2
-//│ globalThis.muta1 = [
-//│   1,
-//│   2,
-//│   3,
-//│   4
-//│ ];
-//│ res = muta1;
-//│ // End of generated code
-//│ muta1: MutArray[int]
-//│      = <missing implementation>
-//│ (mut 'a, mut 'b, mut 'c, mut 'd,)
-//│   where
-//│     'd :> 4
-//│     'c :> 3
-//│     'b :> 2
-//│     'a :> 1
-//│   <:  muta1:
-//│ MutArray[int]
-//│      = [ 1, 2, 3, 4 ]
-
-:js
-muta1[1] <- 233
-muta1
-//│ // Query 1
-//│ res = (muta1[1] = 233, []);
-//│ // Query 2
-//│ res = muta1;
-//│ // End of generated code
-//│ = []
-//│ res: MutArray[int]
-//│    = [ 1, 233, 3, 4 ]
-
-:js
-def xpp rc = (fun _ -> rc) (rc.x <- rc.x + 1)
+def xpp rc = (fun _ -> rc) (rc.x + 1)
 xpp a1
 //│ // Query 1
 //│ globalThis.xpp = function xpp(rc) {
-//│   return ((_) => rc)((rc.x = rc.x + 1, []));
+//│   return ((_) => rc)(rc.x + 1);
 //│ };
 //│ res = xpp;
 //│ // Query 2
 //│ res = xpp(a1);
 //│ // End of generated code
-//│ xpp: ({mut x: int} & 'a) -> 'a
+//│ xpp: ({x: int} & 'a) -> 'a
 //│    = [Function: xpp]
-//│ res: M
-//│    = M { x: 667 }
+//│ res: M & {x: 233}
+//│    = M { x: 233 }
 
 :js
-tu = (mut (), mut 2)
-tu._1 <- (tu._2 <- 3)
+tu = ((), 2)
 tu._1
 tu._2
 //│ // Query 1
@@ -462,19 +410,13 @@ tu._2
 //│ ];
 //│ res = tu;
 //│ // Query 2
-//│ res = (tu["_1"] = (tu["_2"] = 3, []), []);
-//│ // Query 3
 //│ res = tu["_1"];
-//│ // Query 4
+//│ // Query 3
 //│ res = tu["_2"];
 //│ // End of generated code
-//│ tu: (mut 'a, mut 'b,)
-//│   where
-//│     'b :> 2
-//│     'a :> ()
+//│ tu: ((), 2,)
 //│   = [ [], 2 ]
-//│ = []
 //│ res: ()
-//│    = []
+//│    = undefined
 //│ res: 2
-//│    = 3
+//│    = undefined

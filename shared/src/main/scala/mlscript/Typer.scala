@@ -120,7 +120,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     {
       val tv = freshVar(noTyProv)(1)
       val tyDef = TypeDef(Als, TypeName("Array"), List(TypeName("A") -> tv), Nil,
-        ArrayType(FieldType(None, tv)(noTyProv))(noTyProv), Nil, Nil, Set.empty, N)
+        ArrayType(tv)(noTyProv), Nil, Nil, Set.empty, N)
         // * ^ Note that the `noTyProv` here is kind of a problem
         // *    since we currently expand primitive types eagerly in DNFs.
         // *  For instance, see `inn2 v1` in test `Yicong.mls`.
@@ -130,18 +130,11 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
       tyDef.tvarVariances = S(MutMap(tv -> VarianceInfo.co))
       tyDef
     } ::
-    {
-      val tv = freshVar(noTyProv)(1)
-      val tyDef = TypeDef(Als, TypeName("MutArray"), List(TypeName("A") -> tv), Nil,
-        ArrayType(FieldType(Some(tv), tv)(noTyProv))(noTyProv), Nil, Nil, Set.empty, N)
-      tyDef.tvarVariances = S(MutMap(tv -> VarianceInfo.in))
-      tyDef
-    } ::
     Nil
   val primitiveTypes: Set[Str] =
     builtinTypes.iterator.map(_.nme.name).flatMap(n => n.decapitalize :: n.capitalize :: Nil).toSet
   def singleTup(ty: ST): ST =
-    if (funkyTuples) ty else TupleType((N, ty.toUpper(ty.prov) ) :: Nil)(noProv)
+    if (funkyTuples) ty else TupleType((N, ty) :: Nil)(noProv)
   val builtinBindings: Bindings = {
     val tv = freshVar(noProv)(1)
     import FunctionType.{ apply => fun }
@@ -233,9 +226,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         TypeBounds(ExtrType(true)(p), ExtrType(false)(p))(p)
       case Bounds(lb, ub) => TypeBounds(rec(lb), rec(ub))(tyTp(ty.toLoc, "type bounds"))
       case Tuple(fields) =>
-        TupleType(fields.mapValues(f =>
-            FieldType(f.in.map(rec), rec(f.out))(tp(f.toLoc, "tuple field"))
-          ))(tyTp(ty.toLoc, "tuple type"))
+        TupleType(fields.mapValues(rec))(tyTp(ty.toLoc, "tuple type"))
       case Inter(lhs, rhs) => (if (simplify) rec(lhs) & (rec(rhs), _: TypeProvenance)
           else ComposedType(false, rec(lhs), rec(rhs)) _
         )(tyTp(ty.toLoc, "intersection type"))
@@ -253,7 +244,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         RecordType.mk(fs.map { nt =>
           if (nt._1.name.isCapitalized)
             err(msg"Field identifiers must start with a small letter", nt._1.toLoc)(raise)
-          nt._1 -> FieldType(nt._2.in.map(rec), rec(nt._2.out))(
+          nt._1 -> FieldType(nt._2.in.fold(BotType:ST)(rec), rec(nt._2.out))(
             tp(App(nt._1, Var("").withLocOf(nt._2)).toCoveringLoc,
               (if (nt._2.in.isDefined) "mutable " else "") + "record field"))
         })(prov)
@@ -490,28 +481,20 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
               :: fieldNames.map(tp => msg"Declared at" -> tp.toLoc))(raise)
           case _ =>
         }
-        RecordType.mk(fs.map { case (n, (t, mut)) => 
+        RecordType.mk(fs.map { case (n, t) => 
           if (n.name.isCapitalized)
             err(msg"Field identifiers must start with a small letter", term.toLoc)(raise)
           val tym = typeTerm(t)
-          val fprov = tp(App(n, t).toLoc, (if (mut) "mutable " else "") + "record field")
-          if (mut) {
-            val res = freshVar(fprov, S(n.name))
-            val rs = con(tym, res, res)
-            (n, FieldType(Some(rs), rs)(fprov))
-          } else (n, tym.toUpper(fprov))
+          val fprov = tp(App(n, t).toLoc, "record field")
+          (n, tym.toUpper(fprov))
         })(prov)
       case tup: Tup if funkyTuples =>
         typeTerms(tup :: Nil, false, Nil)
       case Tup(fs) =>
-        TupleType(fs.map { case (n, (t, mut)) =>
+        TupleType(fs.map { case (n, t) =>
           val tym = typeTerm(t)
-          val fprov = tp(t.toLoc, (if (mut) "mutable " else "") + "tuple field")
-          if (mut) {
-            val res = freshVar(fprov, n.map(_.name))
-            val rs = con(tym, res, res)
-            (n, FieldType(Some(rs), rs)(fprov))
-          } else (n, tym.toUpper(fprov))
+          val fprov = tp(t.toLoc, "tuple field")
+          (n, tym)
         })(fs match {
           case Nil | ((N, _) :: Nil) => noProv
           case _ => tp(term.toLoc, "tuple literal")
@@ -528,35 +511,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           // *  `null` should be used instead for those willing to indulge in the Billion Dollar Mistake.
           TypeRef(TypeName("undefined"), Nil)(noProv).neg(
             prov.copy(desc = "prohibited undefined element")) // TODO better reporting for this; the prov isn't actually used
-        con(t_a, ArrayType(elemType.toUpper(tp(i.toLoc, "array element")))(prov), elemType) |
+        con(t_a, ArrayType(elemType)(prov), elemType) |
           TypeRef(TypeName("undefined"), Nil)(prov.copy(desc = "possibly-undefined array access"))
-      case Assign(s @ Sel(r, f), rhs) =>
-        val o_ty = typeTerm(r)
-        val sprov = tp(s.toLoc, "assigned selection")
-        val fieldType = freshVar(sprov, Opt.when(!f.name.startsWith("_"))(f.name))
-        val obj_ty =
-          // Note: this proxy does not seem to make any difference:
-          mkProxy(o_ty, tp(r.toCoveringLoc, "receiver"))
-        con(obj_ty, RecordType.mk((f, FieldType(Some(fieldType), TopType)(
-          tp(f.toLoc, "assigned field")
-        )) :: Nil)(sprov), fieldType)
-        val vl = typeTerm(rhs)
-        con(vl, fieldType, UnitType.withProv(prov))
-      case Assign(s @ Subs(a, i), rhs) => 
-        val a_ty = typeTerm(a)
-        val sprov = tp(s.toLoc, "assigned array element")
-        val elemType = freshVar(sprov)
-        val arr_ty =
-            // Note: this proxy does not seem to make any difference:
-            mkProxy(a_ty, tp(a.toCoveringLoc, "receiver"))
-        con(arr_ty, ArrayType(FieldType(Some(elemType), elemType)(sprov))(prov), TopType)
-        val i_ty = typeTerm(i)
-        con(i_ty, IntType, TopType)
-        val vl = typeTerm(rhs)
-        con(vl, elemType, UnitType.withProv(prov))
-      case Assign(lhs, rhs) =>
-        err(msg"Illegal assignment" -> prov.loco
-          :: msg"cannot assign to ${lhs.describe}" -> lhs.toLoc :: Nil)
       case Bra(false, trm: Blk) => typeTerm(trm)
       case Bra(rcd, trm @ (_: Tup | _: Blk)) if funkyTuples => typeTerms(trm :: Nil, rcd, Nil)
       case Bra(_, trm) => typeTerm(trm)
@@ -726,10 +682,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         (implicit ctx: Ctx, raise: Raise, prov: TypeProvenance): SimpleType
       = term match {
     case (trm @ Var(nme)) :: sts if rcd => // field punning
-      typeTerms(Tup(S(trm) -> (trm -> false) :: Nil) :: sts, rcd, fields)
+      typeTerms(Tup(S(trm) -> trm :: Nil) :: sts, rcd, fields)
     case Blk(sts0) :: sts1 => typeTerms(sts0 ::: sts1, rcd, fields)
     case Tup(Nil) :: sts => typeTerms(sts, rcd, fields)
-    case Tup((no, (trm, tmut)) :: ofs) :: sts =>
+    case Tup((no, trm) :: ofs) :: sts =>
       val ty = {
         trm match  {
           case Bra(false, t) if ctx.inPattern => // we use syntax `(x: (p))` to type `p` as a pattern and not a type...
@@ -793,7 +749,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
             (Var("_" + (i + 1)), t.toUpper(noProv))
         }.toList
         RecordType.mk(fs)(prov)
-      } else TupleType(fields.reverseIterator.mapValues(_.toUpper(noProv)).toList)(prov)
+      } else TupleType(fields.reverseIterator.toList)(prov)
   }
   
   
@@ -808,11 +764,11 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     val seenVars = mutable.Set.empty[TV]
     
     def field(ft: FieldType): Field = ft match {
-      case FieldType(S(l: TV), u: TV) if l === u =>
+      case FieldType(l: TV, u: TV) if l === u =>
         val res = go(u)
         Field(S(res), res) // TODO improve Field
       case f =>
-        Field(f.lb.map(go), go(f.ub))
+        Field(S(go(f.lb)), go(f.ub))
     }
     
     def go(st: SimpleType): Type =
@@ -833,11 +789,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         case ComposedType(true, l, r) => Union(go(l), go(r))
         case ComposedType(false, l, r) => Inter(go(l), go(r))
         case RecordType(fs) => Record(fs.mapValues(field))
-        case TupleType(fs) => Tuple(fs.mapValues(field))
-        case ArrayType(FieldType(None, ub)) => AppliedType(TypeName("Array"), go(ub) :: Nil)
-        case ArrayType(f) =>
-          val f2 = field(f)
-          AppliedType(TypeName("MutArray"), Bounds(f2.in.getOrElse(Bot), f2.out) :: Nil)
+        case TupleType(fs) => Tuple(fs.mapValues(go))
+        case ArrayType(ub) => AppliedType(TypeName("Array"), go(ub) :: Nil)
         case NegType(t) => Neg(go(t))
         case ExtrType(true) => Bot
         case ExtrType(false) => Top

@@ -508,7 +508,7 @@ f_manual error
 //│      f_manual is not implemented
 
 def f_manual_ns: 'a | ('b & (({a: 'd & 'c} as 'c) | ~{a: 'e | int} | ~{}) & (({a: 'd & 'c} as 'c) | ~{a: 'e | int}) & (({a: 'f} as 'c) as 'f) & (int | ~{a: 'e | int} | ~{}) & (int | ~{a: 'e | int}) & int & int) -> ('g | 'd | ('b | 'h & {a: 'e | int} as 'h))
-//│ f_manual_ns: ('f & 'b & (int & 'c | int & ~{a: int})) -> 'b
+//│ f_manual_ns: ('b & 'f & (int & 'c | int & ~{a: int})) -> 'b
 //│   where
 //│     'c <: {a: 'b & 'c}
 //│     'f <: {a: 'f}

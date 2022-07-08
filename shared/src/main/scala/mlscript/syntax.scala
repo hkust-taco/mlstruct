@@ -53,8 +53,8 @@ sealed abstract class Lit                                            extends Sim
 final case class Var(name: Str)                                      extends SimpleTerm with VarImpl
 final case class Lam(lhs: Term, rhs: Term)                           extends Term
 final case class App(lhs: Term, rhs: Term)                           extends Term
-final case class Tup(fields: Ls[Opt[Var] -> (Term -> Bool)])         extends Term
-final case class Rcd(fields: Ls[Var -> (Term -> Bool)])              extends Term
+final case class Tup(fields: Ls[Opt[Var] -> Term])         extends Term
+final case class Rcd(fields: Ls[Var -> Term])                        extends Term
 final case class Sel(receiver: Term, fieldName: Var)                 extends Term
 final case class Let(isRec: Bool, name: Var, rhs: Term, body: Term)  extends Term
 final case class Blk(stmts: Ls[Statement])                           extends Term with BlkImpl
@@ -64,7 +64,6 @@ final case class Bind(lhs: Term, rhs: Term)                          extends Ter
 final case class Test(trm: Term, ty: Term)                           extends Term
 final case class CaseOf(trm: Term, cases: CaseBranches)              extends Term
 final case class Subs(arr: Term, idx: Term)                          extends Term
-final case class Assign(lhs: Term, rhs: Term)                        extends Term
 
 sealed abstract class CaseBranches extends CaseBranchesImpl
 final case class Case(pat: SimpleTerm, body: Term, rest: CaseBranches) extends CaseBranches
@@ -98,7 +97,7 @@ final case class Union(lhs: Type, rhs: Type)             extends Composed(true)
 final case class Inter(lhs: Type, rhs: Type)             extends Composed(false)
 final case class Function(lhs: Type, rhs: Type)          extends Type
 final case class Record(fields: Ls[Var -> Field])        extends Type
-final case class Tuple(fields: Ls[Opt[Var] -> Field])    extends Type
+final case class Tuple(fields: Ls[Opt[Var] -> Type])    extends Type
 final case class Recursive(uv: TypeVar, body: Type)      extends Type
 final case class AppliedType(base: TypeName, targs: List[Type]) extends Type
 final case class Neg(base: Type)                         extends Type

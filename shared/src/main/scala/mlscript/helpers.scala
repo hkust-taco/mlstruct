@@ -33,21 +33,16 @@ abstract class TypeImpl extends Located { self: Type =>
   
   private def parensIf(str: Str, cnd: Boolean): Str = if (cnd) "(" + str + ")" else str
   private def showField(f: Field, ctx: ShowCtx): Str = f match {
-    case Field(N, ub) => ub.showIn(ctx, 0)
-    case Field(S(lb), ub) if lb === ub => ub.showIn(ctx, 0)
-    case Field(S(Bot), ub) => s"out ${ub.showIn(ctx, 0)}"
-    case Field(S(lb), Top) => s"in ${lb.showIn(ctx, 0)}"
-    case Field(S(lb), ub) => s"in ${lb.showIn(ctx, 0)} out ${ub.showIn(ctx, 0)}"
+    case Field(_, ub) => ub.showIn(ctx, 0)
   }
   def showIn(ctx: ShowCtx, outerPrec: Int): Str = this match {
   // TODO remove obsolete pretty-printing hacks
     case Top => "anything"
     case Bot => "nothing"
     case TypeName(name) => name
-    // case uv: TypeVar => ctx.vs.getOrElse(uv, s"[??? $uv ???]")
     case uv: TypeVar => ctx.vs(uv)
     case Recursive(n, b) => parensIf(s"${b.showIn(ctx, 2)} as ${ctx.vs(n)}", outerPrec > 1)
-    case Function(Tuple((N,Field(N,l)) :: Nil), r) => Function(l, r).showIn(ctx, outerPrec)
+    case Function(Tuple((N, l) :: Nil), r) => Function(l, r).showIn(ctx, outerPrec)
     case Function(l, r) => parensIf(l.showIn(ctx, 31) + " -> " + r.showIn(ctx, 30), outerPrec > 30)
     case Neg(t) => s"~${t.showIn(ctx, 100)}"
     case Record(fs) => fs.map { nt =>
@@ -59,10 +54,10 @@ abstract class TypeImpl extends Located { self: Type =>
           case Field(S(lb), Top) => s"$nme :> ${lb.showIn(ctx, 0)}"
           case Field(S(lb), ub) => s"$nme :> ${lb.showIn(ctx, 0)} <: ${ub.showIn(ctx, 0)}"
         }
-        else s"${nt._2.mutStr}${nme}: ${showField(nt._2, ctx)}"
+        else s"${nme}: ${showField(nt._2, ctx)}"
       }.mkString("{", ", ", "}")
     case Tuple(fs) =>
-      fs.map(nt => s"${nt._2.mutStr}${nt._1.fold("")(_.name + ": ")}${showField(nt._2, ctx)},").mkString("(", " ", ")")
+      fs.map(nt => s"${nt._1.fold("")(_.name + ": ")}${nt._2.showIn(ctx, 0)},").mkString("(", " ", ")")
     case Union(TypeName("true"), TypeName("false")) | Union(TypeName("false"), TypeName("true")) =>
       TypeName("bool").showIn(ctx, 0)
     // case Union(l, r) => parensIf(l.showIn(ctx, 20) + " | " + r.showIn(ctx, 20), outerPrec > 20)
@@ -110,7 +105,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Bounds(l, r) => l :: r :: Nil
     case Neg(b) => b :: Nil
     case Record(fs) => fs.flatMap(f => f._2.in.toList ++ (f._2.out :: Nil))
-    case Tuple(fs) => fs.flatMap(f => f._2.in ++ (f._2.out :: Nil))
+    case Tuple(fs) => fs.unzip._2
     case Union(l, r) => l :: r :: Nil.toList
     case Inter(l, r) => l :: r :: Nil
     case Recursive(n, b) => b :: Nil
@@ -304,14 +299,13 @@ trait TermImpl extends StatementImpl { self: Term =>
     case Rcd(fields) => "record"
     case Sel(receiver, fieldName) => "field selection"
     case Let(isRec, name, rhs, body) => "let binding"
-    case Tup((N, (x, _)) :: Nil) => x.describe
+    case Tup((N, x) :: Nil) => x.describe
     case Tup((S(_), x) :: Nil) => "binding"
     case Tup(xs) => "tuple"
     case Bind(l, r) => "'as' binding"
     case Test(l, r) => "'is' test"
     case CaseOf(scrut, cases) =>  "`case` expression" 
     case Subs(arr, idx) => "array access"
-    case Assign(lhs, rhs) => "assignment"
   }
   
   override def toString: Str = this match {
@@ -329,18 +323,17 @@ trait TermImpl extends StatementImpl { self: Term =>
     case App(lhs, rhs) => s"($lhs $rhs)"
     case Rcd(fields) =>
       fields.iterator.map(nv =>
-        (if (nv._2._2) "mut " else "") + nv._1.name + ": " + nv._2._1).mkString("{", ", ", "}")
+        nv._1.name + ": " + nv._2).mkString("{", ", ", "}")
     case Sel(receiver, fieldName) => receiver.toString + "." + fieldName
     case Let(isRec, name, rhs, body) =>
       s"(let${if (isRec) " rec" else ""} $name = $rhs; $body)"
     case Tup(xs) =>
       xs.iterator.map { case (n, t) =>
-        (if (t._2) "mut " else "") + n.fold("")(_.name + ": ") + t._1 + "," }.mkString("(", " ", ")")
+        n.fold("")(_.name + ": ") + t + "," }.mkString("(", " ", ")")
     case Bind(l, r) => s"($l as $r)"
     case Test(l, r) => s"($l is $r)"
     case CaseOf(s, c) => s"case $s of $c"
     case Subs(a, i) => s"$a[$i]"
-    case Assign(lhs, rhs) => s" $lhs <- $rhs"
   }
   
   def toType: Diagnostic \/ Type =
@@ -405,8 +398,6 @@ trait SimpleTermImpl extends Ordered[SimpleTerm] { self: SimpleTerm =>
 trait FieldImpl extends Located { self: Field =>
   def children: List[Located] =
     self.in.toList ::: self.out :: Nil
-  def isMutabe: Bool = in.isDefined
-  def mutStr: Str = if (isMutabe) "mut " else ""
 }
 
 trait Located {
@@ -499,8 +490,8 @@ trait StatementImpl extends Located { self: Statement =>
     case Blk(stmts) => desugarCases(stmts, baseTargs)
     case Tup(comps) =>
       val stmts = comps.map {
-        case N -> (d -> _) => d
-        case S(n) -> (d -> _) => ???
+        case N -> d => d
+        case S(n) -> d => ???
       }
       desugarCases(stmts, baseTargs)
     case _ => (TypeError(msg"Unsupported data type case shape" -> bod.toLoc :: Nil) :: Nil, Nil)
@@ -530,7 +521,7 @@ trait StatementImpl extends Located { self: Statement =>
             case Bra(false, t) => getFields(t)
             case Bra(true, Tup(fs)) =>
               Record(fs.map {
-                case (S(n) -> (t -> tmut)) =>
+                case (S(n) -> t) =>
                   val ty = t.toType match {
                     case L(d) => allDiags += d; Top
                     case R(t) => t
@@ -542,13 +533,13 @@ trait StatementImpl extends Located { self: Statement =>
             case Bra(true, t) => lastWords(s"$t ${t.getClass}")
             case Tup(fs) => // TODO factor with case Bra(true, Tup(fs)) above
               Tuple(fs.map {
-                case (S(n) -> (t -> tmut)) =>
+                case (S(n) -> t) =>
                   val ty = t.toType match {
                     case L(d) => allDiags += d; Top
                     case R(t) => t
                   }
                   fields += n -> ty
-                  S(n) -> Field(None, ty)
+                  S(n) -> ty
                 case _ => ???
               }) :: Nil
             case _ => ??? // TODO proper error
@@ -573,8 +564,8 @@ trait StatementImpl extends Located { self: Statement =>
     case Asc(trm, ty) => trm :: Nil
     case Lam(lhs, rhs) => lhs :: rhs :: Nil
     case App(lhs, rhs) => lhs :: rhs :: Nil
-    case Tup(fields) => fields.map(_._2._1)
-    case Rcd(fields) => fields.map(_._2._1)
+    case Tup(fields) => fields.map(_._2)
+    case Rcd(fields) => fields.map(_._2)
     case Sel(receiver, fieldName) => receiver :: fieldName :: Nil
     case Let(isRec, name, rhs, body) => rhs :: body :: Nil
     case Blk(stmts) => stmts
@@ -588,7 +579,6 @@ trait StatementImpl extends Located { self: Statement =>
     case d @ Def(_, n, b) => n :: d.body :: Nil
     case TypeDef(kind, nme, tparams, body, _, _) => nme :: tparams ::: body :: Nil
     case Subs(a, i) => a :: i :: Nil
-    case Assign(lhs, rhs) => lhs :: rhs :: Nil
   }
   
   

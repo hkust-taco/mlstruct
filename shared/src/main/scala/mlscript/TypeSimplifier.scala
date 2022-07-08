@@ -69,7 +69,7 @@ trait TypeSimplifier { self: Typer =>
             tvv(td.tparamsargs.find(_._1.name === postfix).getOrElse(die)._2) match {
               case VarianceInfo(true, true) => Nil
               case VarianceInfo(co, contra) =>
-                if (co) v -> FieldType(S(BotType), process(fty.ub, N))(fty.prov) :: Nil
+                if (co) v -> FieldType(BotType, process(fty.ub, N))(fty.prov) :: Nil
                 else if (contra) v -> FieldType(fty.lb.map(process(_, N)), TopType)(fty.prov) :: Nil
                 else  v -> default :: Nil
             })
@@ -156,11 +156,11 @@ trait TypeSimplifier { self: Typer =>
                 // * Reconstruct a TypeRef from its current structural components
                 val typeRef = TypeRef(td.nme, td.tparamsargs.zipWithIndex.map { case ((tp, tv), tpidx) =>
                   val fieldTagNme = tparamField(clsTyNme, tp)
-                  val fromTyRef = trs2.get(clsTyNme).map(_.targs(tpidx) |> { ta => FieldType(S(ta), ta)(noProv) })
+                  val fromTyRef = trs2.get(clsTyNme).map(_.targs(tpidx) |> { ta => FieldType(ta, ta)(noProv) })
                   fromTyRef.++(rcd2.fields.iterator.filter(_._1 === fieldTagNme).map(_._2))
                     .foldLeft((BotType: ST, TopType: ST)) {
                       case ((acc_lb, acc_ub), FieldType(lb, ub)) =>
-                        (acc_lb | lb.getOrElse(BotType), acc_ub & ub)
+                        (acc_lb | lb, acc_ub & ub)
                     }.pipe {
                       case (lb, ub) =>
                         vs(tv) match {
@@ -221,14 +221,14 @@ trait TypeSimplifier { self: Typer =>
                       )
                     val componentFieldsMap = componentFields.toMap
                     val tupleComponents = fs.iterator.zipWithIndex.map { case ((nme, ty), i) =>
-                      nme -> (ty && componentFieldsMap.getOrElse(i + 1, TopType.toUpper(noProv))).update(go(_, pol.map(!_)), go(_, pol))
+                      nme -> (ty.toUpper(noProv) && componentFieldsMap.getOrElse(i + 1, TopType.toUpper(noProv))).update(go(_, pol.map(!_)), go(_, pol))
                     }.toList
-                    S(TupleType(tupleComponents)(tt.prov)) -> rcdFields.mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
+                    S(TupleType(tupleComponents.mapValues(_.ub))(tt.prov)) -> rcdFields.mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
                   case S(ct: ClassTag) => S(ct) -> nFields
                   case S(ft @ FunctionType(l, r)) =>
                     S(FunctionType(go(l, pol.map(!_)), go(r, pol))(ft.prov)) -> nFields
                   case S(at @ ArrayType(inner)) =>
-                    S(ArrayType(inner.update(go(_, pol.map(!_)), go(_, pol)))(at.prov)) -> nFields
+                    S(ArrayType(go(inner, pol))(at.prov)) -> nFields
                   case N => N -> nFields
                 }
                 LhsRefined(res, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2).toType(sort = true)
@@ -335,11 +335,9 @@ trait TypeSimplifier { self: Typer =>
         // trace(s"analyze2[${printPol(S(pol))}] $st       ${analyzed2}") {
           analyzed2.setAndIfUnset(st -> pol) {
             st match {
-      case RecordType(fs) => fs.foreach { f => f._2.lb.foreach(analyze2(_, !pol)); analyze2(f._2.ub, pol) }
-      case TupleType(fs) => fs.foreach { f => f._2.lb.foreach(analyze2(_, !pol)); analyze2(f._2.ub, pol) }
-      case ArrayType(inner) =>
-        inner.lb.foreach(analyze2(_, !pol))
-        analyze2(inner.ub, pol)
+      case RecordType(fs) => fs.foreach { f => analyze2(f._2.lb, !pol); analyze2(f._2.ub, pol) }
+      case TupleType(fs) => fs.foreach { f => analyze2(f._2, pol) }
+      case ArrayType(inner) => analyze2(inner, pol)
       case FunctionType(l, r) => analyze2(l, !pol); analyze2(r, pol)
       case tv: TypeVariable => process(tv, pol)
       case _: ObjectTag | ExtrType(_) => ()
@@ -542,15 +540,15 @@ trait TypeSimplifier { self: Typer =>
     def transform(st: SimpleType, pol: Opt[Bool], parent: Opt[TV]): SimpleType =
           trace(s"transform[${printPol(pol)}] $st") {
         def transformField(f: FieldType): FieldType = f match {
-          case FieldType(S(lb), ub) if lb === ub =>
+          case FieldType(lb, ub) if lb === ub =>
             val b = transform(ub, N, N)
-            FieldType(S(b), b)(f.prov)
+            FieldType(b, b)(f.prov)
           case _ => f.update(transform(_, pol.map(!_), N), transform(_, pol, N))
         }
         st match {
       case RecordType(fs) => RecordType(fs.mapValues(_ |> transformField))(st.prov)
-      case TupleType(fs) => TupleType(fs.mapValues(_ |> transformField))(st.prov)
-      case ArrayType(inner) => ArrayType(inner |> transformField)(st.prov)
+      case TupleType(fs) => TupleType(fs.mapValues(transform(_, pol, N)))(st.prov)
+      case ArrayType(inner) => ArrayType(transform(inner, pol, N))(st.prov)
       case FunctionType(l, r) => FunctionType(transform(l, pol.map(!_), N), transform(r, pol, N))(st.prov)
       case _: ObjectTag | ExtrType(_) => st
       case tv: TypeVariable if parent.exists(_ === tv) =>
@@ -716,8 +714,7 @@ trait TypeSimplifier { self: Typer =>
                       def nope: false = { println(s"Nope(${ty1.getClass.getSimpleName}): $ty1 ~ $ty2"); false }
                       
                       def unifyF(f1: FieldType, f2: FieldType): Bool = (f1, f2) match {
-                        case (FieldType(S(l1), u1), FieldType(S(l2), u2)) => unify(l1, l2) && unify(u1, u2)
-                        case (FieldType(N, u1), FieldType(N, u2)) => unify(u1, u2)
+                        case (FieldType(l1, u1), FieldType(l2, u2)) => unify(l1, l2) && unify(u1, u2)
                         case _ => nope
                       }
                       
@@ -726,9 +723,9 @@ trait TypeSimplifier { self: Typer =>
                         case (v1: TypeVariable, v2: TypeVariable) => (v1 is v2) || nope
                         case (NegType(negated1), NegType(negated2)) => unify(negated1, negated2)
                         case (ClassTag(id1, parents1), ClassTag(id2, parents2)) => id1 === id2 || nope
-                        case (ArrayType(inner1), ArrayType(inner2)) => unifyF(inner1, inner2)
+                        case (ArrayType(inner1), ArrayType(inner2)) => unify(inner1, inner2)
                         case (TupleType(fields1), TupleType(fields2)) =>
-                          (fields1.size === fields2.size || nope) && fields1.map(_._2).lazyZip(fields2.map(_._2)).forall(unifyF)
+                          (fields1.size === fields2.size || nope) && fields1.map(_._2).lazyZip(fields2.map(_._2)).forall(unify)
                         case (FunctionType(lhs1, rhs1), FunctionType(lhs2, rhs2)) => unify(lhs1, lhs2) && unify(rhs1, rhs2)
                         case (TraitTag(id1), TraitTag(id2)) => id1 === id2 || nope
                         case (ExtrType(pol1), ExtrType(pol2)) => pol1 === pol2 || nope

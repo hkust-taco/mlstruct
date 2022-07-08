@@ -23,11 +23,11 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   
   def toParams(t: Term): Tup = t match {
     case t: Tup => t
-    case _ => Tup((N, (t, false)) :: Nil)
+    case _ => Tup((N, t) :: Nil)
   }
   def toParamsTy(t: Type): Tuple = t match {
     case t: Tuple => t
-    case _ => Tuple((N, Field(None, t)) :: Nil)
+    case _ => Tuple((N, t) :: Nil)
   }
   
   def letter[p: P]     = P( lowercase | uppercase )
@@ -53,8 +53,8 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   
   def parens[p: P]: P[Term] = locate(P( "(" ~/ (kw("mut").!.? ~ term).rep(0, ",") ~ ",".!.? ~ ")" ).map {
     case (Seq(None -> t), N) => Bra(false, t)
-    case (Seq(Some(_) -> t), N) => Tup(N -> (t, true) :: Nil)   // ? single tuple with mutable
-    case (ts, _) => Tup(ts.iterator.map(f => N -> (f._2, f._1.isDefined)).toList)
+    case (Seq(Some(_) -> t), N) => Tup(N -> t :: Nil)   // ? single tuple with mutable
+    case (ts, _) => Tup(ts.iterator.map(f => N -> f._2).toList)
   })
 
   def subtermNoSel[p: P]: P[Term] = P( parens | record | lit | variable )
@@ -67,20 +67,19 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
     // Array subscripts:
     ("[" ~ term ~/ "]" ~~ Index).map {Right(_)}
     // Assignment:
-    ).rep ~ ("<-" ~ term).?).map {
-      case (i0, st, sels, a) =>
-        val base = sels.foldLeft(st)((acc, t) => t match {
+    ).rep).map {
+      case (i0, st, sels) =>
+        sels.foldLeft(st)((acc, t) => t match {
           case Left(se) => Sel(acc, se)
           case Right((su, i1)) => Subs(acc, su).withLoc(i0, i1, origin)
         })
-        a.fold(base)(Assign(base, _))
     }
 
   def record[p: P]: P[Rcd] = locate(P(
-      "{" ~/ (kw("mut").!.? ~ variable ~ "=" ~ term map L.apply).|(kw("mut").!.? ~ variable map R.apply).rep(sep = ";") ~ "}"
+      "{" ~/ (variable ~ "=" ~ term map L.apply).|(variable map R.apply).rep(sep = ";") ~ "}"
     ).map { fs => Rcd(fs.map{ 
-        case L((mut, v, t)) => v -> (t -> mut.isDefined)
-        case R(mut -> id) => id -> (id -> mut.isDefined) }.toList)})
+        case L((v, t)) => v -> t
+        case R(id) => id -> id }.toList)})
   
   def fun[p: P]: P[Term] = locate(P( kw("fun") ~/ term ~ "->" ~ term ).map(nb => Lam(toParams(nb._1), nb._2)))
   
@@ -220,17 +219,13 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   def tyVar[p: P]: P[TypeVar] = locate(P("'" ~ ident map (id => TypeVar(R("'" + id), N))))
   def tyWild[p: P]: P[Bounds] = locate(P("?".! map (_ => Bounds(Bot, Top))))
   def rcd[p: P]: P[Record] =
-    locate(P( "{" ~/ ( kw("mut").!.? ~ variable ~ ":" ~ ty).rep(sep = ";") ~ "}" )
+    locate(P( "{" ~/ ( variable ~ ":" ~ ty).rep(sep = ";") ~ "}" )
       .map(_.toList.map {
-        case (None, v, t) => v -> Field(None, t)
-        case (Some(_), v, t) => v -> Field(Some(t), t)
+        case (v, t) => v -> Field(None, t)
       } pipe Record))
-  def parTy[p: P]: P[Type] = locate(P( "(" ~/ (kw("mut").!.? ~ ty).rep(0, ",").map(_.map(N -> _).toList) ~ ",".!.? ~ ")" ).map {
-    case (N -> (N -> ty) :: Nil, N) => ty
-    case (fs, _) => Tuple(fs.map {
-        case (l, N -> t) => l -> Field(None, t)
-        case (l, S(_) -> t) => l -> Field(Some(t), t)
-      })
+  def parTy[p: P]: P[Type] = locate(P( "(" ~/ ty.rep(0, ",").map(_.map(N -> _).toList) ~ ",".!.? ~ ")" ).map {
+    case (N -> ty :: Nil, N) => ty
+    case (fs, _) => Tuple(fs)
   })
   def litTy[p: P]: P[Type] = P( lit.map(l => Literal(l).withLocOf(l)) )
   

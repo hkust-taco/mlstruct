@@ -66,7 +66,7 @@ let lockA = Lock 20 in let lockB = Lock 30 in (Bank lockA 2000).Better(Bank lock
 //│     Better(arg: Bank): bool
 //│ }
 //│ export declare const Lock<pins>: (arg: pins) => Lock<pins>
-//│ export declare const Bank<lock, cash>: (arg: Lock<int> & lock) => (arg1: int & cash) => Bank & {readonly cash: cash, readonly lock: lock}
+//│ export declare const Bank<lock, cash>: (arg: Lock<int> & lock) => (arg1: int & cash) => Bank & {cash: cash, lock: lock}
 //│ export declare const res: bool
 //│ // end ts
 

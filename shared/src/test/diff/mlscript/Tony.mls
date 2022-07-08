@@ -34,7 +34,7 @@ flatMap3 (fun x -> add x.value x.payload) arg
 //│ ╙──     	                                        ^^^
 //│ res: error | int | None
 //│    = NaN
-//│ constrain calls  : 93
+//│ constrain calls  : 94
 //│ annoying  calls  : 20
 //│ subtyping calls  : 50
 

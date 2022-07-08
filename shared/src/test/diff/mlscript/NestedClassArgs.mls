@@ -178,7 +178,7 @@ c = c6
 //│         <: C5[C6['A]]
 //│   <:  c:
 //│ 'a -> C6['a]
-//│ constrain calls  : 86
+//│ constrain calls  : 89
 //│ annoying  calls  : 25
 //│ subtyping calls  : 154
 
