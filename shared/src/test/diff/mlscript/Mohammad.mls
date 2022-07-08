@@ -235,13 +235,20 @@ trait Oops
 //│ }();
 //│ // End of generated code
 
+:e
 :js
 oo = Oops 2
 //│ // Query 1
 //│ globalThis.oo = Oops.build(2);
 //│ res = oo;
 //│ // End of generated code
-//│ oo: 2 & oops
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.240: 	oo = Oops 2
+//│ ║         	     ^^^^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.212: 	trait Oops
+//│ ╙──       	      ^^^^
+//│ oo: error
 //│   = [Number: 2]
 
 :js

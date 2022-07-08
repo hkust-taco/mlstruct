@@ -3,13 +3,29 @@ trait T
 
 // Traits with Primitives
 
-t = T 1
-//│ t: 1 & t
-//│  = [Number: 1]
+class C: T
+//│ Defined class C
 
+t = C 1
+//│ t: C
+//│  = C {}
+
+:e
 t + 1
-//│ res: int
-//│    = 2
+//│ ╔══[ERROR] Type mismatch in operator application:
+//│ ║  l.14: 	t + 1
+//│ ║        	^^^
+//│ ╟── application of type `C` is not an instance of type `int`
+//│ ║  l.9: 	t = C 1
+//│ ║       	    ^^^
+//│ ╟── but it flows into reference with expected type `int`
+//│ ║  l.14: 	t + 1
+//│ ║        	^
+//│ ╟── Note: class C is defined at:
+//│ ║  l.6: 	class C: T
+//│ ╙──     	      ^
+//│ res: error | int
+//│    = '[object Object]1'
 
 case t of { T -> 0 }
 //│ res: 0

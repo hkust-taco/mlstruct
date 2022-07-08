@@ -6,22 +6,26 @@ class C: { x: 0 | 1 }
 //│ Defined class C
 
 
+:e
 A { x = 1 }
-//│ res: {x: 1} & a
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.10: 	A { x = 1 }
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.1: 	trait A: { x: int }
+//│ ╙──     	      ^^^^^^^^^^^^^
+//│ res: error
 //│    = { x: 1 }
 
 :e
 A {}
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.14: 	A {}
-//│ ║        	^^^^
-//│ ╟── record literal of type `anything` does not have field 'x'
-//│ ║  l.14: 	A {}
-//│ ║        	  ^^
-//│ ╟── Note: constraint arises from record type:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.21: 	A {}
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.1: 	trait A: { x: int }
-//│ ╙──     	         ^^^^^^^^^^
-//│ res: error | a
+//│ ╙──     	      ^^^^^^^^^^^^^
+//│ res: error
 //│    = {}
 
 
@@ -41,10 +45,10 @@ error: A & B
 :e
 def dv = D{}
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.42: 	def dv = D{}
+//│ ║  l.46: 	def dv = D{}
 //│ ║        	         ^^^
 //│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
-//│ ║  l.42: 	def dv = D{}
+//│ ║  l.46: 	def dv = D{}
 //│ ╙──      	          ^^
 //│ dv: D & {x: nothing, y: nothing} | error
 //│   = D { x: undefined, y: undefined }
@@ -56,16 +60,16 @@ def dv = D { x = 0; y = "hello" }
 :e
 dv: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.57: 	dv: nothing
+//│ ║  l.61: 	dv: nothing
 //│ ║        	^^
 //│ ╟── application of type `D & {x: ?x, y: ?y}` does not match type `nothing`
-//│ ║  l.52: 	def dv = D { x = 0; y = "hello" }
+//│ ║  l.56: 	def dv = D { x = 0; y = "hello" }
 //│ ║        	         ^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `nothing`
-//│ ║  l.57: 	dv: nothing
+//│ ║  l.61: 	dv: nothing
 //│ ║        	^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.57: 	dv: nothing
+//│ ║  l.61: 	dv: nothing
 //│ ╙──      	    ^^^^^^^
 //│ res: nothing
 //│    = D { x: 0, y: 'hello' }
@@ -77,13 +81,13 @@ dv: A & B
 :e
 dv: A & B: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.78: 	dv: A & B: nothing
+//│ ║  l.82: 	dv: A & B: nothing
 //│ ║        	^^
 //│ ╟── type `A & B` does not match type `nothing`
-//│ ║  l.78: 	dv: A & B: nothing
+//│ ║  l.82: 	dv: A & B: nothing
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.78: 	dv: A & B: nothing
+//│ ║  l.82: 	dv: A & B: nothing
 //│ ╙──      	           ^^^^^^^
 //│ res: nothing
 //│    = D { x: 0, y: 'hello' }
@@ -98,11 +102,11 @@ class E: Indirect
 :e
 E{}
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.99: 	E{}
-//│ ║        	^^^
+//│ ║  l.103: 	E{}
+//│ ║         	^^^
 //│ ╟── record literal of type `anything` does not have field 'x'
-//│ ║  l.99: 	E{}
-//│ ╙──      	 ^^
+//│ ║  l.103: 	E{}
+//│ ╙──       	 ^^
 //│ res: E & {x: nothing} | error
 //│    = E {}
 
@@ -119,33 +123,50 @@ trait T1: C & A
 
 :e
 def t = T1 (A { x = 1 })
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.121: 	def t = T1 (A { x = 1 })
-//│ ║         	        ^^^^^^^^^^^^^^^^
-//│ ╟── record literal of type `{x: 1}` does not match type `C | ~a`
-//│ ║  l.121: 	def t = T1 (A { x = 1 })
-//│ ║         	              ^^^^^^^^^
-//│ ╟── but it flows into application with expected type `C | ~a`
-//│ ║  l.121: 	def t = T1 (A { x = 1 })
-//│ ║         	            ^^^^^^^^^^^
-//│ ╟── Note: constraint arises from type reference:
-//│ ║  l.117: 	trait T1: C & A
-//│ ║         	          ^
-//│ ╟── from intersection type:
-//│ ║  l.117: 	trait T1: C & A
-//│ ╙──       	          ^^^^^
-//│ t: error | {x: 1} & a & t1
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.125: 	def t = T1 (A { x = 1 })
+//│ ║         	        ^^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.121: 	trait T1: C & A
+//│ ╙──       	      ^^^^^^^^^
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.125: 	def t = T1 (A { x = 1 })
+//│ ║         	            ^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.1: 	trait A: { x: int }
+//│ ╙──     	      ^^^^^^^^^^^^^
+//│ t: error
 //│  = { x: 1 }
 
+:e
 def t = T1 (A (C { x = 1 }))
-//│ t: C & {x: 1} & a & t1
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.142: 	def t = T1 (A (C { x = 1 }))
+//│ ║         	        ^^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.121: 	trait T1: C & A
+//│ ╙──       	      ^^^^^^^^^
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.142: 	def t = T1 (A (C { x = 1 }))
+//│ ║         	            ^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.1: 	trait A: { x: int }
+//│ ╙──     	      ^^^^^^^^^^^^^
+//│ t: error
 //│  = C { x: 1 }
 
 class CA: C & A
 //│ Defined class CA
 
+:e
 def t = T1 (CA { x = 1 })
-//│ t: CA & {x: 1} & t1
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.162: 	def t = T1 (CA { x = 1 })
+//│ ║         	        ^^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.121: 	trait T1: C & A
+//│ ╙──       	      ^^^^^^^^^
+//│ t: error
 //│  = CA { x: 1 }
 
 
@@ -155,10 +176,10 @@ class C1: B & T1 & { y: "hi" | "hello" }
 :e
 def c1 = C1 { }
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.156: 	def c1 = C1 { }
+//│ ║  l.177: 	def c1 = C1 { }
 //│ ║         	         ^^^^^^
 //│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
-//│ ║  l.156: 	def c1 = C1 { }
+//│ ║  l.177: 	def c1 = C1 { }
 //│ ╙──       	            ^^^
 //│ c1: C1 & {x: nothing, y: nothing} | error
 //│   = C1 { y: undefined, x: undefined }

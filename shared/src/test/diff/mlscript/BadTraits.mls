@@ -9,19 +9,13 @@ trait T: A & B
 
 :e
 T {}
-//│ ╔══[ERROR] Type mismatch in application:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
 //│ ║  l.11: 	T {}
-//│ ║        	^^^^
-//│ ╟── record literal of type `anything` is not an instance of type `A`
-//│ ║  l.11: 	T {}
-//│ ║        	  ^^
-//│ ╟── Note: constraint arises from type reference:
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^
-//│ ╟── from intersection type:
-//│ ║  l.7: 	trait T: A & B
-//│ ╙──     	         ^^^^^
-//│ res: error | t
+//│ ╙──     	      ^^^^^^^^
+//│ res: error
 //│    = {}
 
 def a = A{}
@@ -30,25 +24,13 @@ def a = A{}
 
 :e
 T a
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.32: 	T a
-//│ ║        	^^^
-//│ ╟── application of type `A` is not an instance of type `B`
-//│ ║  l.27: 	def a = A{}
-//│ ║        	        ^^^
-//│ ╟── but it flows into reference with expected type `B`
-//│ ║  l.32: 	T a
-//│ ║        	  ^
-//│ ╟── Note: constraint arises from type reference:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.26: 	T a
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.7: 	trait T: A & B
-//│ ║       	             ^
-//│ ╟── from intersection type:
-//│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^^^^^
-//│ ╟── Note: class A is defined at:
-//│ ║  l.1: 	class A
-//│ ╙──     	      ^
-//│ res: A & t | error
+//│ ╙──     	      ^^^^^^^^
+//│ res: error
 //│    = A {}
 
 :e
@@ -57,47 +39,35 @@ T A
 //│ // Query 1
 //│ res = T.build((x) => new A(x));
 //│ // End of generated code
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.56: 	T A
-//│ ║        	^^^
-//│ ╟── reference of type `anything -> A` is not an instance of type `A`
-//│ ║  l.56: 	T A
-//│ ║        	  ^
-//│ ╟── Note: constraint arises from type reference:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.38: 	T A
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^
-//│ ╟── from intersection type:
-//│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^^^^^
-//│ ╟── Note: class constructor A is defined at:
-//│ ║  l.1: 	class A
-//│ ╙──     	      ^
-//│ res: anything -> A & t | error
+//│ ╙──     	      ^^^^^^^^
+//│ res: error
 //│    = [Function (anonymous)]
 
 :e
 T (B {})
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.79: 	T (B {})
-//│ ║        	^^^^^^^^
-//│ ╟── application of type `B` is not an instance of type `A`
-//│ ║  l.79: 	T (B {})
-//│ ║        	   ^^^^
-//│ ╟── Note: constraint arises from type reference:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.52: 	T (B {})
+//│ ║        	^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^
-//│ ╟── from intersection type:
-//│ ║  l.7: 	trait T: A & B
-//│ ║       	         ^^^^^
-//│ ╟── Note: class B is defined at:
-//│ ║  l.2: 	class B
-//│ ╙──     	      ^
-//│ res: B & t | error
+//│ ╙──     	      ^^^^^^^^
+//│ res: error
 //│    = B {}
 
-:re
+:e
 def t = T error
-//│ t: nothing
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.63: 	def t = T error
+//│ ║        	        ^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.7: 	trait T: A & B
+//│ ╙──     	      ^^^^^^^^
+//│ t: error
 //│ Runtime error:
 //│   Error: unexpected runtime error
 
@@ -120,21 +90,28 @@ t: Als
 :e
 class D0: T
 //│ ╔══[ERROR] class D0 cannot inherit from class B as it already inherits from class A
-//│ ║  l.121: 	class D0: T
-//│ ╙──       	      ^^^^^
+//│ ║  l.91: 	class D0: T
+//│ ╙──      	      ^^^^^
 
 :e
 class D1: B & T
 //│ ╔══[ERROR] class D1 cannot inherit from class A as it already inherits from class B
-//│ ║  l.127: 	class D1: B & T
-//│ ╙──       	      ^^^^^^^^^
+//│ ║  l.97: 	class D1: B & T
+//│ ╙──      	      ^^^^^^^^^
 
 
 trait S: { x: int }
 //│ Defined trait S
 
+:e
 s = S{ x = 1 }
-//│ s: {x: 1} & s
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.107: 	s = S{ x = 1 }
+//│ ║         	    ^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.103: 	trait S: { x: int }
+//│ ╙──       	      ^^^^^^^^^^^^^
+//│ s: error
 //│  = { x: 1 }
 
 t = s: s
@@ -144,13 +121,13 @@ t = s: s
 :e
 t.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.145: 	t.x
+//│ ║  l.122: 	t.x
 //│ ║         	^^^
 //│ ╟── type `s` does not have field 'x'
-//│ ║  l.140: 	t = s: s
+//│ ║  l.117: 	t = s: s
 //│ ║         	       ^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.145: 	t.x
+//│ ║  l.122: 	t.x
 //│ ╙──       	^
 //│ res: error
 //│    = 1
@@ -176,14 +153,14 @@ class Hey
 :e
 class H: Lol & Hey
 //│ ╔══[ERROR] An overriding method definition must be given when inheriting from multiple method definitions
-//│ ║  l.177: 	class H: Lol & Hey
+//│ ║  l.154: 	class H: Lol & Hey
 //│ ║         	      ^
 //│ ╟── Definitions of method Foo inherited from:
 //│ ╟── • Lol
-//│ ║  l.168: 	  method Foo = 1
+//│ ║  l.145: 	  method Foo = 1
 //│ ║         	         ^^^^^^^
 //│ ╟── • Hey
-//│ ║  l.170: 	  method Foo = "oops"
+//│ ║  l.147: 	  method Foo = "oops"
 //│ ╙──       	         ^^^^^^^^^^^^
 //│ Defined class H
 
@@ -197,10 +174,10 @@ h = Hey{}
 :e
 l = Lol h
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.198: 	l = Lol h
+//│ ║  l.175: 	l = Lol h
 //│ ║         	    ^^^
-//│ ╟── Note that traits with methods are always considered abstract
-//│ ║  l.167: 	trait Lol
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.144: 	trait Lol
 //│ ╙──       	      ^^^
 //│ l: error
 //│  = Hey {}
@@ -209,10 +186,10 @@ l = Lol h
 e = Lol
 e
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.209: 	e = Lol
+//│ ║  l.186: 	e = Lol
 //│ ║         	    ^^^
-//│ ╟── Note that traits with methods are always considered abstract
-//│ ║  l.167: 	trait Lol
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.144: 	trait Lol
 //│ ╙──       	      ^^^
 //│ e: error
 //│  = [Function: build]
@@ -234,10 +211,10 @@ trait Lol2: Lol
 :e
 Lol2
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.235: 	Lol2
+//│ ║  l.212: 	Lol2
 //│ ║         	^^^^
-//│ ╟── Note that traits with methods are always considered abstract
-//│ ║  l.231: 	trait Lol2: Lol
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.208: 	trait Lol2: Lol
 //│ ╙──       	      ^^^^^^^^^
 //│ res: error
 //│    = [Function: build]

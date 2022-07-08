@@ -81,10 +81,8 @@ if true then 1 else 2
 //│ res: 1 | 2
 //│    = 1
 
-// App(Var(callee), ...): Construct objects conforming some traits
 :js
 trait T: { x: int }
-T { x = 0 }
 //│ Defined trait T
 //│ // Prelude
 //│ const T = function () {
@@ -108,11 +106,7 @@ T { x = 0 }
 //│     }
 //│   });
 //│ }();
-//│ // Query 1
-//│ res = T.build({ x: 0 });
 //│ // End of generated code
-//│ res: {x: 0} & t
-//│    = { x: 0 }
 
 // App(callee, Tup(args)): Call a constructor
 :js

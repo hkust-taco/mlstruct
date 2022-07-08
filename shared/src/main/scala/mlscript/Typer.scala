@@ -450,13 +450,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           .getOrElse(new TypeVariable(lvl, Nil, Nil)(prov).tap(ctx += nme -> _))
       case v @ ValidVar(name) =>
         val ty = ctx.get(name).fold(err("identifier not found: " + name, term.toLoc): TypeScheme) {
-          case AbstractConstructor(absMths, traitWithMths) =>
+          case AbstractConstructor(absMths, isTrait) =>
             val td = ctx.tyDefs(name)
             err((msg"Instantiation of an abstract type is forbidden" -> term.toLoc)
               :: (
-                if (traitWithMths) {
+                if (isTrait) {
                   assert(td.kind is Trt)
-                  msg"Note that traits with methods are always considered abstract" -> td.toLoc :: Nil
+                  msg"Note that traits are always considered abstract" -> td.toLoc :: Nil
                 } else
                   msg"Note that ${td.kind.str} ${td.nme} is abstract:" -> td.toLoc
                   :: absMths.map { case mn => msg"Hint: method ${mn.name} is abstract" -> mn.toLoc }.toList

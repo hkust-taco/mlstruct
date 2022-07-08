@@ -145,8 +145,15 @@ rcd = { x = 1 }
 //│ rcd: {x: 1}
 //│    = { x: 1 }
 
+:e
 T rcd
-//│ res: {x: 1} & t
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.149: 	T rcd
+//│ ║         	^
+//│ ╟── Note that traits are always considered abstract
+//│ ║  l.132: 	trait T: { x: int }
+//│ ╙──       	      ^^^^^^^^^^^^^
+//│ res: error
 //│    = { x: 1 }
 
 res: { x: int }

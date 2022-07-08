@@ -8,19 +8,13 @@ trait Hey: { x: int }
 
 :e
 Hey t
-//│ ╔══[ERROR] Type mismatch in application:
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
 //│ ║  l.10: 	Hey t
-//│ ║        	^^^^^
-//│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
-//│ ║  l.2: 	t = (1, 2, 3)
-//│ ║       	    ^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `{x: int}`
-//│ ║  l.10: 	Hey t
-//│ ║        	    ^
-//│ ╟── Note: constraint arises from record type:
+//│ ║        	^^^
+//│ ╟── Note that traits are always considered abstract
 //│ ║  l.6: 	trait Hey: { x: int }
-//│ ╙──     	           ^^^^^^^^^^
-//│ res: (1, 2, 3,) & hey | error
+//│ ╙──     	      ^^^^^^^^^^^^^^^
+//│ res: error
 //│    = [ 1, 2, 3 ]
 
 f ((a, b, c)) = { a; b; c }
@@ -38,16 +32,16 @@ f ((a, b)) = add a b
 :e
 f t
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.39: 	f t
+//│ ║  l.33: 	f t
 //│ ║        	^^^
 //│ ╟── tuple literal of type `(1, 2, 3,)` does not match type `(?a, ?b,)`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `(?c, ?d,)`
-//│ ║  l.39: 	f t
+//│ ║  l.33: 	f t
 //│ ║        	  ^
 //│ ╟── Note: constraint arises from tuple literal:
-//│ ║  l.34: 	f ((a, b)) = add a b
+//│ ║  l.28: 	f ((a, b)) = add a b
 //│ ╙──      	   ^^^^^^
 //│ res: error | int
 //│    = 3
@@ -92,13 +86,13 @@ t._2
 :e
 t.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.93: 	t.x
+//│ ║  l.87: 	t.x
 //│ ║        	^^^
 //│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.93: 	t.x
+//│ ║  l.87: 	t.x
 //│ ╙──      	^
 //│ res: error
 //│    = undefined
@@ -106,13 +100,13 @@ t.x
 :e
 (t: ("oops",int,int,))._1
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.107: 	(t: ("oops",int,int,))._1
+//│ ║  l.101: 	(t: ("oops",int,int,))._1
 //│ ║         	 ^
 //│ ╟── integer literal of type `1` does not match type `"oops"`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	     ^
 //│ ╟── Note: constraint arises from literal type:
-//│ ║  l.107: 	(t: ("oops",int,int,))._1
+//│ ║  l.101: 	(t: ("oops",int,int,))._1
 //│ ╙──       	     ^^^^^^
 //│ res: "oops"
 //│    = undefined

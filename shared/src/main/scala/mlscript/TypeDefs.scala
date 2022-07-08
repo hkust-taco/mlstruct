@@ -270,9 +270,8 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
             }
             lazy val checkAbstractAddCtors = {
               val (decls, defns) = gatherMthNames(td)
-              val isTraitWithMethods = (k is Trt) && defns.nonEmpty
+              val isTrait = k is Trt
               // val fields = fieldsOf(td.bodyTy, true)
-              println(td.bodyTy)
               val fields = fieldsOf(freshenAbove(0, td.bodyTy), true)
               fields.foreach {
                 // * Make sure the LB/UB of all inherited type args are consistent.
@@ -285,9 +284,9 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
                 case _ => ()
               }
               (decls -- defns) match {
-                case absMths if absMths.nonEmpty || isTraitWithMethods =>
+                case absMths if absMths.nonEmpty || isTrait =>
                   if (ctx.get(n.name).isEmpty) // The class may already be defined in an erroneous program
-                    ctx += n.name -> AbstractConstructor(absMths, isTraitWithMethods)
+                    ctx += n.name -> AbstractConstructor(absMths, isTrait)
                 case _ =>
                   val fields = fieldsOf(td.bodyTy, paramTags = true)
                   val tparamTags = td.tparamsargs.map { case (tp, tv) =>
