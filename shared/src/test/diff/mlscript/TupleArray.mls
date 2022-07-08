@@ -201,7 +201,7 @@ test: { _1: 'a }
 //│    = <no result>
 //│      test is not implemented
 
-// TODO: One could expect ("hello", 1,) here,
+// One could expect ("hello", 1,) here,
 //    but we currently don't recover the intersected positional field from the record
 //    when constraining refined tuples.
 test: ('a, 1)
@@ -209,7 +209,7 @@ test: ('a, 1)
 //│    = <no result>
 //│      test is not implemented
 
-// TODO in principe, we could narrow the refinement to ` & { _1: 1 }` here...
+// In principe, we could narrow the refinement to ` & { _1: 1 }` here...
 def test3: Array[1] & { _1: int }
 //│ test3: Array[1] & {_1: int}
 //│      = <missing implementation>

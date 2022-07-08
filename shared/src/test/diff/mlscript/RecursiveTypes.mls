@@ -1,5 +1,4 @@
-// TODO: remove after recursive function is fixed
-:AllowRuntimeErrors
+
 
 // From Simple-sub tests:
 :js
@@ -197,6 +196,8 @@ if true then l else r
 // ------ // ------ // ------ // ------ // ------ // ------ //
 
 
+:NoJS
+
 
 class C[A]: { a: A }
 //│ Defined class C[+A]
@@ -211,19 +212,16 @@ rec def foo (c: C['a]) = foo (c.a)
 //│          <: 'a0 -> 'b
 //│     'a <: 'a0
 //│     'a0 <: C['a]
-//│    = [Function: foo]
 
 foo
 //│ res: 'a -> nothing
 //│   where
 //│     'a <: C['a]
-//│    = [Function: foo]
 
 type Rec = C[Rec]
 def foo_ty: Rec -> nothing
 //│ Defined type alias Rec
 //│ foo_ty: Rec -> nothing
-//│       = <missing implementation>
 
 foo_ty = foo
 //│ 'a -> nothing
@@ -231,21 +229,17 @@ foo_ty = foo
 //│     'a <: C['a]
 //│   <:  foo_ty:
 //│ Rec -> nothing
-//│       = [Function: foo]
 
 def foo_ty2: (C['r] as 'r) -> nothing
 //│ foo_ty2: 'r -> nothing
 //│   where
 //│     'r <: C['r]
-//│        = <missing implementation>
 
 :ns
 foo_ty2
 //│ res: 'r -> nothing
 //│   where
 //│     'r := C['r]
-//│    = <no result>
-//│      foo_ty2 is not implemented
 
 foo_ty = foo_ty2
 //│ 'r -> nothing
@@ -253,8 +247,6 @@ foo_ty = foo_ty2
 //│     'r <: C['r]
 //│   <:  foo_ty:
 //│ Rec -> nothing
-//│       = <no result>
-//│         foo_ty2 is not implemented
 
 foo_ty2 = foo_ty
 //│ Rec -> nothing
@@ -262,8 +254,6 @@ foo_ty2 = foo_ty
 //│ 'r -> nothing
 //│   where
 //│     'r <: C['r]
-//│        = <no result>
-//│          foo_ty and foo_ty2 are not implemented
 
 foo_ty2 = foo
 //│ 'a -> nothing
@@ -273,22 +263,17 @@ foo_ty2 = foo
 //│ 'r -> nothing
 //│   where
 //│     'r <: C['r]
-//│        = [Function: foo]
-
 
 
 rec def bar = C { a = bar }
 //│ bar: 'A
 //│   where
 //│     'A :> C['A]
-//│ Runtime error:
-//│   ReferenceError: bar is not defined
 
 type Rec2 = C[Rec2]
 def bar_ty: Rec2
 //│ Defined type alias Rec2
 //│ bar_ty: Rec2
-//│       = <missing implementation>
 
 bar_ty = bar
 //│ 'A
@@ -296,29 +281,22 @@ bar_ty = bar
 //│     'A :> C['A]
 //│   <:  bar_ty:
 //│ Rec2
-//│ Runtime error:
-//│   ReferenceError: bar is not defined
 
 def bar_ty2: C['r] as 'r
 //│ bar_ty2: 'r
 //│   where
 //│     'r :> C['r]
-//│        = <missing implementation>
 
 :ns
 bar_ty2
 //│ res: 'r
 //│   where
 //│     'r := C['r]
-//│    = <no result>
-//│      bar_ty2 is not implemented
 
 bar_ty2
 //│ res: 'r
 //│   where
 //│     'r :> C['r]
-//│    = <no result>
-//│      bar_ty2 is not implemented
 
 bar_ty = bar_ty2
 //│ 'r
@@ -326,8 +304,6 @@ bar_ty = bar_ty2
 //│     'r :> C['r]
 //│   <:  bar_ty:
 //│ Rec2
-//│       = <no result>
-//│         bar_ty2 is not implemented
 
 bar_ty2 = bar_ty
 //│ Rec2
@@ -335,8 +311,6 @@ bar_ty2 = bar_ty
 //│ 'r
 //│   where
 //│     'r :> C['r]
-//│        = <no result>
-//│          bar_ty and bar_ty2 are not implemented
 
 bar_ty2 = bar
 //│ 'A
@@ -346,8 +320,6 @@ bar_ty2 = bar
 //│ 'r
 //│   where
 //│     'r :> C['r]
-//│ Runtime error:
-//│   ReferenceError: bar is not defined
 
 
 
@@ -356,13 +328,11 @@ type Rec3 = { x: Rec3 }
 
 def bar2_ty: Rec3
 //│ bar2_ty: Rec3
-//│        = <missing implementation>
 
 def bar2_ty2: { x: 'r } as 'r
 //│ bar2_ty2: 'r
 //│   where
 //│     'r :> {x: 'r}
-//│         = <missing implementation>
 
 bar2_ty = bar2_ty2
 //│ 'r
@@ -370,8 +340,6 @@ bar2_ty = bar2_ty2
 //│     'r :> {x: 'r}
 //│   <:  bar2_ty:
 //│ Rec3
-//│        = <no result>
-//│          bar2_ty2 is not implemented
 
 bar2_ty2 = bar2_ty
 //│ Rec3
@@ -379,8 +347,6 @@ bar2_ty2 = bar2_ty
 //│ 'r
 //│   where
 //│     'r :> {x: 'r}
-//│         = <no result>
-//│           bar2_ty and bar2_ty2 are not implemented
 
 :e
 bar2_ty2 = bar_ty2
@@ -392,19 +358,17 @@ bar2_ty2 = bar_ty2
 //│   where
 //│     'r :> {x: 'r}
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.386: 	bar2_ty2 = bar_ty2
+//│ ║  l.352: 	bar2_ty2 = bar_ty2
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type `C[?r]` does not match type `{x: ?r0} | 'r`
-//│ ║  l.302: 	def bar_ty2: C['r] as 'r
+//│ ║  l.285: 	def bar_ty2: C['r] as 'r
 //│ ║         	             ^^^^^
 //│ ╟── but it flows into reference with expected type `{x: ?r1} | 'r`
-//│ ║  l.386: 	bar2_ty2 = bar_ty2
+//│ ║  l.352: 	bar2_ty2 = bar_ty2
 //│ ║         	           ^^^^^^^
 //│ ╟── Note: constraint arises from local type binding:
-//│ ║  l.361: 	def bar2_ty2: { x: 'r } as 'r
+//│ ║  l.332: 	def bar2_ty2: { x: 'r } as 'r
 //│ ╙──       	              ^^^^^^^^^
-//│ Runtime error:
-//│   ReferenceError: bar_ty21 is not defined
 
 :e
 bar_ty2 = bar2_ty2
@@ -416,43 +380,41 @@ bar_ty2 = bar2_ty2
 //│   where
 //│     'r :> C['r]
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type `{x: ?r}` does not match type `C[?r0] | 'r`
-//│ ║  l.361: 	def bar2_ty2: { x: 'r } as 'r
+//│ ║  l.332: 	def bar2_ty2: { x: 'r } as 'r
 //│ ║         	              ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `C[?r1] | 'r`
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	          ^^^^^^^^
 //│ ╟── Note: constraint arises from local type binding:
-//│ ║  l.302: 	def bar_ty2: C['r] as 'r
+//│ ║  l.285: 	def bar_ty2: C['r] as 'r
 //│ ╙──       	             ^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type `{x: ?r}` does not match type `C[?r0] | 'r`
-//│ ║  l.361: 	def bar2_ty2: { x: 'r } as 'r
+//│ ║  l.332: 	def bar2_ty2: { x: 'r } as 'r
 //│ ║         	              ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `C[?r1] | 'r`
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	          ^^^^^^^^
 //│ ╟── Note: constraint arises from local type binding:
-//│ ║  l.302: 	def bar_ty2: C['r] as 'r
+//│ ║  l.285: 	def bar_ty2: C['r] as 'r
 //│ ╙──       	             ^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── type `{x: ?r}` does not match type `C[?r0] | 'r`
-//│ ║  l.361: 	def bar2_ty2: { x: 'r } as 'r
+//│ ║  l.332: 	def bar2_ty2: { x: 'r } as 'r
 //│ ║         	              ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `C[?r1] | 'r`
-//│ ║  l.410: 	bar_ty2 = bar2_ty2
+//│ ║  l.374: 	bar_ty2 = bar2_ty2
 //│ ║         	          ^^^^^^^^
 //│ ╟── Note: constraint arises from local type binding:
-//│ ║  l.302: 	def bar_ty2: C['r] as 'r
+//│ ║  l.285: 	def bar_ty2: C['r] as 'r
 //│ ╙──       	             ^^^^^
-//│ Runtime error:
-//│   ReferenceError: bar2_ty21 is not defined
 
 
 
@@ -464,149 +426,114 @@ def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as '
 //│ f_manual: 'a -> 'a
 //│   where
 //│     'a <: {a: 'a}
-//│         = <missing implementation>
 
 :e
 f_manual 1
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.470: 	f_manual 1
+//│ ║  l.431: 	f_manual 1
 //│ ║         	^^^^^^^^^^
 //│ ╟── integer literal of type `1` does not have field 'a'
-//│ ║  l.470: 	f_manual 1
+//│ ║  l.431: 	f_manual 1
 //│ ║         	         ^
 //│ ╟── Note: constraint arises from record type:
-//│ ║  l.463: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
+//│ ║  l.425: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
 //│ ║         	                ^^^^^^^^^^^^^^^^^
 //│ ╟── from intersection type:
-//│ ║  l.463: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
+//│ ║  l.425: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
 //│ ╙──       	              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: 1 | error
-//│    = <no result>
-//│      f_manual is not implemented
 
 :e
 f_manual { a = 1 }
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.488: 	f_manual { a = 1 }
+//│ ║  l.447: 	f_manual { a = 1 }
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── integer literal of type `1` does not have field 'a'
-//│ ║  l.488: 	f_manual { a = 1 }
+//│ ║  l.447: 	f_manual { a = 1 }
 //│ ║         	               ^
 //│ ╟── Note: constraint arises from record type:
-//│ ║  l.463: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
+//│ ║  l.425: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
 //│ ║         	                ^^^^^^^^^^^^^^^^^
 //│ ╟── from intersection type:
-//│ ║  l.463: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
+//│ ║  l.425: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
 //│ ╙──       	                    ^^^^^^^^^^^^
 //│ res: 1 | error | {a: 1}
-//│    = <no result>
-//│      f_manual is not implemented
 
 f_manual error
 //│ res: nothing
-//│    = <no result>
-//│      f_manual is not implemented
 
 def f_manual_ns: 'a | ('b & (({a: 'd & 'c} as 'c) | ~{a: 'e | int} | ~{}) & (({a: 'd & 'c} as 'c) | ~{a: 'e | int}) & (({a: 'f} as 'c) as 'f) & (int | ~{a: 'e | int} | ~{}) & (int | ~{a: 'e | int}) & int & int) -> ('g | 'd | ('b | 'h & {a: 'e | int} as 'h))
 //│ f_manual_ns: ('b & 'f & (int & 'c | int & ~{a: int})) -> 'b
 //│   where
 //│     'c <: {a: 'b & 'c}
 //│     'f <: {a: 'f}
-//│            = <missing implementation>
 
 :e
 f_manual_ns ainf
 //│ ╔══[ERROR] identifier not found: ainf
-//│ ║  l.518: 	f_manual_ns ainf
+//│ ║  l.472: 	f_manual_ns ainf
 //│ ╙──       	            ^^^^
 //│ res: error
-//│    = <no result>
-//│      f_manual_ns is not implemented
 
 def f_manual_2: (({a: 'a} as 'a) & 'b) -> ('b | 'c & {a: int} as 'c)
 //│ f_manual_2: ('a & 'b) -> 'b
 //│   where
 //│     'a <: {a: 'a}
-//│           = <missing implementation>
 
 f_manual_2 // [test:T2]
 //│ res: ('a & 'b) -> 'b
 //│   where
 //│     'a <: {a: 'a}
-//│    = <no result>
-//│      f_manual_2 is not implemented
 
 
 
 rec def f x = if error then f x else x
 //│ f: 'a -> 'a
-//│  = [Function: f]
 
 r = f 1
 //│ r: 1
-//│ Runtime error:
-//│   Error: unexpected runtime error
 
 r + 1
 //│ res: int
-//│ Runtime error:
-//│   ReferenceError: r7 is not defined
 
 :e
 r.a
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.556: 	r.a
+//│ ║  l.500: 	r.a
 //│ ║         	^^^
 //│ ╟── integer literal of type `1` does not have field 'a'
-//│ ║  l.545: 	r = f 1
+//│ ║  l.493: 	r = f 1
 //│ ║         	      ^
 //│ ╟── but it flows into reference with expected type `{a: ?a}`
-//│ ║  l.556: 	r.a
+//│ ║  l.500: 	r.a
 //│ ╙──       	^
 //│ res: error
-//│ Runtime error:
-//│   ReferenceError: r7 is not defined
 
 case r of {int -> 0 | _ -> r.a}
 //│ res: 0
-//│ Runtime error:
-//│   ReferenceError: r7 is not defined
 
 r2 = case r of {int -> error | _ -> r}
 //│ r2: nothing
-//│ Runtime error:
-//│   ReferenceError: r7 is not defined
 
 r2.a
 //│ res: nothing
-//│ Runtime error:
-//│   ReferenceError: r21 is not defined
 
 r2 + 1
 //│ res: int
-//│ Runtime error:
-//│   ReferenceError: r21 is not defined
 
 r: int
 //│ res: int
-//│ Runtime error:
-//│   ReferenceError: r7 is not defined
 
 
 
 rec def f x = if error then f x else x
 //│ f: 'a -> 'a
-//│  = [Function: f1]
 
 r = f 1
 //│ r: 1
-//│ Runtime error:
-//│   Error: unexpected runtime error
 
 r: int
 //│ res: int
-//│ Runtime error:
-//│   ReferenceError: r8 is not defined
 
 
 // Field removal also blocks proper simplification
@@ -614,14 +541,10 @@ r: int
 def fancyBottom1: 'a & ('a -> 'a) as 'a
 def fancyBottom2: 'a as 'a
 //│ fancyBottom1: nothing
-//│             = <missing implementation>
 //│ fancyBottom2: nothing
-//│             = <missing implementation>
 
 fancyBottom2: nothing
 //│ res: nothing
-//│    = <no result>
-//│      fancyBottom2 is not implemented
 
 
 
@@ -633,47 +556,28 @@ fancyBottom2: nothing
 
 def impossible: 'a -> ('a & int)
 //│ impossible: 'a -> (int & 'a)
-//│           = <missing implementation>
 
 rec def f (x: int | string) = f (impossible x) + 1
 //│ f: (int | string) -> int
-//│  = <no result>
-//│    impossible is not implemented
 
 rec def f (x: int | string) = (case x of {int -> f "ok" | string -> f (impossible x)}) + 1
 //│ f: (int | string) -> int
-//│  = <no result>
-//│    impossible is not implemented
 
 rec def f x = (case x of {int -> f "ok" | string -> f (impossible x)}) + 1
 //│ f: (int | string & (int | string | ~int)) -> int
-//│  = <no result>
-//│    impossible is not implemented
 
 f 1
 f "a"
 //│ res: int
-//│    = <no result>
-//│      f and impossible are not implemented
 //│ res: int
-//│    = <no result>
-//│      f and impossible are not implemented
 
 rec def f x = case x of {int -> f "ok" | string -> f (impossible x) | _ -> x}
 //│ f: (int | string & (int | string | ~int) | 'a & ~int & ~string) -> 'a
-//│  = <no result>
-//│    impossible is not implemented
 
 f 1
 f "a"
 f false
 //│ res: nothing
-//│    = <no result>
-//│      f and impossible are not implemented
 //│ res: nothing
-//│    = <no result>
-//│      f and impossible are not implemented
 //│ res: false
-//│    = <no result>
-//│      f and impossible are not implemented
 

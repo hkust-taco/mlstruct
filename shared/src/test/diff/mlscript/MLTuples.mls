@@ -51,7 +51,6 @@ g arg = case arg of { Hey -> arg.x | _ -> () }
 //│ g: ({x: 'x} & hey | ~hey) -> (() | 'x)
 //│  = [Function: g]
 
-// TODO: pattern match for traits in JavaScript
 g arg = case arg of { Hey -> arg.x | _ -> arg.y }
 //│ g: ({x: 'x} & hey | {y: 'x} & ~hey) -> 'x
 //│  = [Function: g1]
@@ -86,13 +85,13 @@ t._2
 :e
 t.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.87: 	t.x
+//│ ║  l.86: 	t.x
 //│ ║        	^^^
 //│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.87: 	t.x
+//│ ║  l.86: 	t.x
 //│ ╙──      	^
 //│ res: error
 //│    = undefined
@@ -100,13 +99,13 @@ t.x
 :e
 (t: ("oops",int,int,))._1
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.101: 	(t: ("oops",int,int,))._1
+//│ ║  l.100: 	(t: ("oops",int,int,))._1
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── integer literal of type `1` does not match type `"oops"`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	     ^
 //│ ╟── Note: constraint arises from literal type:
-//│ ║  l.101: 	(t: ("oops",int,int,))._1
+//│ ║  l.100: 	(t: ("oops",int,int,))._1
 //│ ╙──       	     ^^^^^^
 //│ res: "oops"
 //│    = undefined

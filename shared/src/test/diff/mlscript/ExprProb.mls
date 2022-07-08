@@ -519,7 +519,6 @@ prettier22 done (eval1 done)
 //│     'd <: Nega[?] & {arg: 'a}
 //│    = [Function (anonymous)]
 
-// TODO could probably merge `a` and `b` here!
 :stats
 prettier2 done (eval2 done)
 //│ res: 'a -> string

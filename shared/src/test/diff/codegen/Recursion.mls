@@ -72,7 +72,7 @@ let x = { f = x } in x
 //│   unresolved symbol x
 
 
-//  TODO later: code generation for recursive method
+// Recursive method are not yet supported by JS code-gen
 :ge
 class A
   rec method M x = M

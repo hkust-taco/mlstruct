@@ -32,12 +32,11 @@ def g x y = if x.b == 1 then x else x.a
 //│ fact: int -> int
 //│ g: ({a: 'a, b: int} & 'a) -> anything -> 'a
 
-// FIXME
 // :ts
 rec def l (a: int) = l
 rec def m (a: int) (b: int) = m
 def f: ('c -> 'a as 'a) -> 'c -> int
-// recursion type functions
+// recursive types
 //│ l: 'l
 //│   where
 //│     'l :> int -> 'l
@@ -53,19 +52,19 @@ def f: ('c -> 'a as 'a) -> 'c -> int
 1: ?
 { a = "hello" }: { a: string } & { b: int }
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.53: 	1: ?
+//│ ║  l.52: 	1: ?
 //│ ║        	^
 //│ ╟── integer literal of type `1` does not match type `nothing`
 //│ ╟── Note: constraint arises from type wildcard:
-//│ ║  l.53: 	1: ?
+//│ ║  l.52: 	1: ?
 //│ ╙──      	   ^
 //│ res: anything
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.54: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.53: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ║        	^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{a: "hello"}` does not have field 'b'
 //│ ╟── Note: constraint arises from intersection type:
-//│ ║  l.54: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.53: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ╙──      	                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: {a: string, b: int}
 
@@ -102,7 +101,6 @@ def l: ((1, 2), (3, 4)) -> 5
 //│ l: ((1, 2,), (3, 4,),) -> 5
 
 
-// FIXME
 // :ts
 def weird: ((int, int) -> 'a) as 'a
 def weird: ('a -> (int, int)) as 'a

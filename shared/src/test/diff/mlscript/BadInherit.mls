@@ -142,7 +142,7 @@ class Stupid: ~Parent1
 //│ ║  l.140: 	class Stupid: ~Parent1
 //│ ╙──       	      ^^^^^^^^^^^^^^^^
 
-:e // TODO don't report several times
+:e
 :ge
 class Cycle1: Cycle2
 class Cycle2: Cycle1
@@ -190,8 +190,8 @@ class Cycle: N[Cycle]
 
 
 
+// This should be forbidden in the future:
 :ng
-// TODO forbid
 class D: int
 //│ Defined class D
 
@@ -202,7 +202,7 @@ add (D{}) 2
 //│   unresolved symbol D
 
 
-// TODO forbid
+// This should be forbidden in the future:
 class E: 1
 //│ Defined class E
 
@@ -302,7 +302,7 @@ class B: Id[A]
 //│   cannot inherit from type alias Id
 
 
-:e // TODO improve prov of the TV
+:e
 class Class3A
 class Class3B: Class3A & 'a
 //│ ╔══[ERROR] cannot inherit from a type variable

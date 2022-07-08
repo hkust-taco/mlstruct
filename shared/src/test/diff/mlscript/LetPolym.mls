@@ -6,7 +6,7 @@ def test f =
 //│ test: ((1 | 2) -> int) -> (int -> int, int -> int,)
 //│     = [Function: test]
 
-:re // TODO
+:re // Positional acessors are not yet supported by JS code-gen
 f_g = test succ
 f_g._1 42
 f_g._2 42

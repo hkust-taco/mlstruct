@@ -156,7 +156,7 @@ eval2_fixed_2 e2
 
 
 
-// FIXME should be a code-gen error
+// This should be a code-gen error
 :re
 rec def eval1_fixed = eval1f (eval1f eval1_fixed)
 //│ eval1_fixed: 'a -> int

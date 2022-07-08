@@ -1,0 +1,31 @@
+
+:e
+:w
+class Covar[A]
+  method CovarMtd =
+    let tmp = (error : Covar[{ x: int }]) : Covar[{}]
+    in ()
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.6: 	    let tmp = (error : Covar[{ x: int }]) : Covar[{}]
+//│ ║       	              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── type `anything` does not have field 'x'
+//│ ║  l.6: 	    let tmp = (error : Covar[{ x: int }]) : Covar[{}]
+//│ ║       	                                                  ^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.6: 	    let tmp = (error : Covar[{ x: int }]) : Covar[{}]
+//│ ╙──     	                             ^^^^^^^^^^
+//│ Defined class Covar[±A]
+//│ Defined Covar.CovarMtd: Covar[?] -> ()
+//│ ╔══[WARNING] Type definition Covar has bivariant type parameters:
+//│ ║  l.4: 	class Covar[A]
+//│ ║       	      ^^^^^
+//│ ╟── A is irrelevant and may be removed
+//│ ║  l.4: 	class Covar[A]
+//│ ╙──     	            ^
+
+:re
+(error : Covar[{ x: int }]) : Covar[{}]
+//│ res: Covar[?]
+//│ Runtime error:
+//│   Error: unexpected runtime error
+
