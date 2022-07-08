@@ -194,21 +194,7 @@ trait TypeSimplifier { self: Typer =>
                 
                 val rcd2Fields  = rcd2.fields.unzip._1.toSet
                 
-                // * Which fields were NOT part of the original type,
-                // *  and should therefore be excluded from the reconstructed TypeRef:
-                val removedFields = clsFields.keysIterator
-                  .filterNot(field => field.name.isCapitalized || rcd2Fields.contains(field)).toSortedSet
-                val withoutType = if (removedFields.isEmpty) typeRef
-                  else typeRef.without(removedFields)
-                
-                // * Whether we need a `with` (which overrides field types)
-                // *  as opposed to simply an intersection (which refines them):
-                val needsWith = !rcd2.fields.forall {
-                  case (field, fty) =>
-                    clsFields.get(field).forall(cf => fty <:< cf || rcdMap.get(field).exists(_ <:< cf))
-                }
-                val withType = if (needsWith) if (cleanedRcd.fields.isEmpty) withoutType
-                  else WithType(withoutType, cleanedRcd.sorted)(noProv) else typeRef & cleanedRcd.sorted
+                val withType = typeRef & cleanedRcd.sorted
                 
                 tts.toArray.sorted // TODO also filter out tts that are inherited by the class
                   .foldLeft(withType: ST)(_ & _)
@@ -243,9 +229,6 @@ trait TypeSimplifier { self: Typer =>
                     S(FunctionType(go(l, pol.map(!_)), go(r, pol))(ft.prov)) -> nFields
                   case S(at @ ArrayType(inner)) =>
                     S(ArrayType(inner.update(go(_, pol.map(!_)), go(_, pol)))(at.prov)) -> nFields
-                  case S(wt @ Without(b: ComposedType, ns @ empty())) =>
-                    S(Without(b.map(go(_, pol)), ns)(wt.prov)) -> nFields // FIXME very hacky
-                  case S(wt @ Without(b, ns)) => S(Without(go(b, pol), ns)(wt.prov)) -> nFields
                   case N => N -> nFields
                 }
                 LhsRefined(res, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2).toType(sort = true)
@@ -368,7 +351,6 @@ trait TypeSimplifier { self: Typer =>
           if (pol =/= S(false)) analyze2(ta, true)
           if (pol =/= S(true)) analyze2(ta, false)
         }
-      case Without(base, names) => analyze2(base, pol)
       case TypeBounds(lb, ub) =>
         if (pol) analyze2(ub, true) else analyze2(lb, false)
     }
@@ -633,15 +615,9 @@ trait TypeSimplifier { self: Typer =>
       case ty @ ComposedType(true, l, r) => transform(l, pol, parent) | transform(r, pol, parent)
       case ty @ ComposedType(false, l, r) => transform(l, pol, parent) & transform(r, pol, parent)
       case NegType(und) => transform(und, pol.map(!_), N).neg()
-      case WithType(base, RecordType(fs)) => WithType(transform(base, pol, N), 
-        RecordType(fs.mapValues(_.update(transform(_, pol.map(!_), N), transform(_, pol, N))))(noProv))(noProv)
       case ProxyType(underlying) => transform(underlying, pol, parent)
       case tr @ TypeRef(defn, targs) =>
         TypeRef(defn, tr.mapTargs(pol)((pol, ty) => transform(ty, pol, N)))(tr.prov)
-      case wo @ Without(base, names) =>
-        if (names.isEmpty) transform(base, pol, N)
-        else if (pol === S(true)) transform(base, pol, N).withoutPos(names)
-        else transform(base, pol, N).without(names)
       case tb @ TypeBounds(lb, ub) =>
         pol.fold[ST](TypeBounds.mk(transform(lb, S(false), parent), transform(ub, S(true), parent), noProv))(pol =>
           if (pol) transform(ub, S(true), parent) else transform(lb, S(false), parent))
@@ -754,7 +730,6 @@ trait TypeSimplifier { self: Typer =>
                         case (TupleType(fields1), TupleType(fields2)) =>
                           (fields1.size === fields2.size || nope) && fields1.map(_._2).lazyZip(fields2.map(_._2)).forall(unifyF)
                         case (FunctionType(lhs1, rhs1), FunctionType(lhs2, rhs2)) => unify(lhs1, lhs2) && unify(rhs1, rhs2)
-                        case (Without(base1, names1), Without(base2, names2)) => unify(base1, base2) && (names1 === names2 || nope)
                         case (TraitTag(id1), TraitTag(id2)) => id1 === id2 || nope
                         case (ExtrType(pol1), ExtrType(pol2)) => pol1 === pol2 || nope
                         case (TypeBounds(lb1, ub1), TypeBounds(lb2, ub2)) =>
@@ -764,8 +739,6 @@ trait TypeSimplifier { self: Typer =>
                         case (RecordType(fields1), RecordType(fields2)) =>
                           fields1.size === fields2.size && fields1.lazyZip(fields2).forall((f1, f2) =>
                             (f1._1 === f2._1 || nope) && unifyF(f1._2, f2._2))
-                        case (WithType(base1, rcd1), WithType(base2, rcd2)) =>
-                          unify(base1, base2) && unify(rcd1, rcd2)
                         case (ProxyType(underlying1), _) => unify(underlying1, ty2)
                         case (_, ProxyType(underlying2)) => unify(ty1, underlying2)
                         case (TypeRef(defn1, targs1), TypeRef(defn2, targs2)) =>

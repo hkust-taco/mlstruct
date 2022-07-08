@@ -68,7 +68,7 @@ class Bar1: Foo1[int]
 //│ Defined class Bar1
 
 Bar1
-//│ res: {x: int & 'x} -> (Bar1 with {x: 'x})
+//│ res: {x: int & 'x} -> (Bar1 & {x: 'x})
 //│    = [Function: res]
 
 g = Bar1 { x = 42 }

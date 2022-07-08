@@ -31,7 +31,7 @@ class Complex[A]: { real: A; imaginary: A }
 def Complex real imaginary = Complex { real; imaginary }
 //│ Defined class Complex[+A]
 //│ Defined Complex.Map: Complex['A] -> ('A -> 'imaginary) -> Complex['imaginary]
-//│ Complex: ('real & 'A) -> ('A & 'imaginary) -> (Complex['A] with {imaginary: 'imaginary, real: 'real})
+//│ Complex: ('real & 'A) -> ('A & 'imaginary) -> (Complex['A] & {imaginary: 'imaginary, real: 'real})
 //│        = [Function: Complex1]
 
 class ComplexMonoid[A]: Monoid[Complex[A]] & { base: Monoid[A] }
@@ -46,15 +46,15 @@ class ComplexMonoid[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ Defined ComplexMonoid.Add2: ComplexMonoid['A] -> Complex['A] -> Complex['A] -> Complex['A]
 
 cmi = ComplexMonoid { base = IntMonoid }
-//│ cmi: ComplexMonoid[int] with {base: IntMonoid}
+//│ cmi: ComplexMonoid[int] & {base: IntMonoid}
 //│    = ComplexMonoid { base: IntMonoid {} }
 
 def ComplexMonoid base = ComplexMonoid { base }
-//│ ComplexMonoid: (Monoid['A] & 'base) -> (ComplexMonoid['A] with {base: 'base})
+//│ ComplexMonoid: (Monoid['A] & 'base) -> (ComplexMonoid['A] & {base: 'base})
 //│              = [Function: ComplexMonoid1]
 
 cmi = ComplexMonoid IntMonoid
-//│ cmi: ComplexMonoid[int] with {base: IntMonoid}
+//│ cmi: ComplexMonoid[int] & {base: IntMonoid}
 //│    = ComplexMonoid { base: IntMonoid {} }
 
 cmi.Empty
@@ -103,7 +103,7 @@ cmi = ComplexMonoid { base = IntMonoid }
 //│ ╟── from reference:
 //│ ║  l.52: 	def ComplexMonoid base = ComplexMonoid { base }
 //│ ╙──      	                                         ^^^^
-//│ cmi: (ComplexMonoid['A] with {base: {base: IntMonoid}}) | error
+//│ cmi: ComplexMonoid['A] & {base: {base: IntMonoid}} | error
 
 
 
@@ -128,7 +128,7 @@ class ComplexMonoid_bad_0[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ╔══[ERROR] Type mismatch in method definition:
 //│ ║  l.+2: 	  method Empty = Complex { real = this.base }
 //│ ║        	         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── function of type `?a -> ?b` is not a record (expected a record with fields: real, imaginary)
+//│ ╟── function of type `?a -> ?b` is not a compatible record (expected a record with fields: real, imaginary)
 //│ ║  l.31: 	def Complex real imaginary = Complex { real; imaginary }
 //│ ║        	                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into application with expected type `{imaginary: A, real: A}`
@@ -187,7 +187,7 @@ class ComplexMonoid_bad_1[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ╔══[ERROR] Type mismatch in method definition:
 //│ ║  l.+2: 	  method Empty = Complex { real = this.base.Empty; imaginary = this.imaginary.Empty }
 //│ ║        	         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── function of type `?a -> ?b` is not a record (expected a record with fields: real, imaginary)
+//│ ╟── function of type `?a -> ?b` is not a compatible record (expected a record with fields: real, imaginary)
 //│ ║  l.31: 	def Complex real imaginary = Complex { real; imaginary }
 //│ ║        	                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into application with expected type `{imaginary: A, real: A}`
@@ -244,6 +244,6 @@ class ComplexMonoid_bad_2[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ╙──      	                                                 ^^^^^^^^^
 //│ Defined class ComplexMonoid_bad_2[=A]
 //│ Defined ComplexMonoid_bad_2.Add: ComplexMonoid_bad_2['A] -> {imaginary: 'A, real: 'A} -> {imaginary: 'A, real: 'A} -> Complex['A]
-//│ Defined ComplexMonoid_bad_2.Add2: ComplexMonoid_bad_2['A] -> Complex[{imaginary: 'A0, real: 'A0}] -> Complex[{imaginary: 'A0, real: 'A0}] -> (Complex[Complex['A0] | error] with {imaginary: Complex['A0] | error, real: Complex['A0] | error})
+//│ Defined ComplexMonoid_bad_2.Add2: ComplexMonoid_bad_2['A] -> Complex[{imaginary: 'A0, real: 'A0}] -> Complex[{imaginary: 'A0, real: 'A0}] -> (Complex[Complex['A0] | error] & {imaginary: Complex['A0] | error, real: Complex['A0] | error})
 
 

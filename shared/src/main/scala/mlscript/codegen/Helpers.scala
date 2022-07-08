@@ -29,8 +29,6 @@ object Helpers {
     case Asc(trm, ty)                => s"Asc(${inspect(trm)}, $ty)"
     case Bind(lhs, rhs)              => s"Bind(${inspect(lhs)}, ${inspect(rhs)})"
     case Test(trm, ty)               => s"Test(${inspect(trm)}, ${inspect(ty)})"
-    case With(trm, fields) =>
-      s"With(${inspect(trm)}, ${inspect(fields)})"
     case CaseOf(trm, cases) =>
       def inspectCaseBranches(br: CaseBranches): Str = br match {
         case Case(clsNme, body, rest) =>

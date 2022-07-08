@@ -648,8 +648,8 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
     print(buf.mkString)
     if (testFailed)
       if (unmergedChanges.nonEmpty)
-        fail(s"Unmerged non-output changes around: " + unmergedChanges.map("l."+_).mkString(", "))
-      else fail(s"Unexpected diagnostics (or lack thereof) at: " + failures.map("l."+_).mkString(", "))
+        fail(s"Unmerged non-output changes around: " + unmergedChanges.map("\n\t"+file.segments.toList.last+":"+_).mkString(", "))
+      else fail(s"Unexpected diagnostics (or lack thereof) at: " + failures.distinct.map("\n\t"+file.segments.toList.last+":"+_).mkString(", "))
     
   }}
 }

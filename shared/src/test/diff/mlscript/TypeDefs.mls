@@ -3,7 +3,7 @@ class Test1: { x: int }
 //│ Defined class Test1
 
 Test1
-//│ res: {x: int & 'x} -> (Test1 with {x: 'x})
+//│ res: {x: int & 'x} -> (Test1 & {x: 'x})
 //│    = [Function: res]
 
 Test1 { x = 123 }
@@ -21,17 +21,17 @@ Test1 { x = "oops" }
 //│ ╟── Note: constraint arises from type reference:
 //│ ║  l.2: 	class Test1: { x: int }
 //│ ╙──     	                  ^^^
-//│ res: error | (Test1 with {x: "oops"})
+//│ res: error | Test1 & {x: "oops"}
 //│    = Test1 { x: 'oops' }
 
 def Test1 = fun x -> Test1 { x = x }
-//│ Test1: (int & 'x) -> (Test1 with {x: 'x})
+//│ Test1: (int & 'x) -> (Test1 & {x: 'x})
 //│      = [Function: Test11]
 
 class Test11: { x: int }
 def Test11 x = Test11 { x }
 //│ Defined class Test11
-//│ Test11: (int & 'x) -> (Test11 with {x: 'x})
+//│ Test11: (int & 'x) -> (Test11 & {x: 'x})
 //│       = [Function: Test112]
 
 

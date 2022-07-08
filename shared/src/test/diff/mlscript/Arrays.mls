@@ -9,7 +9,7 @@ dummy = MyArray {
     set = fun (i, a) -> ();
     get = fun i -> error
   }
-//│ dummy: MyArray['A] with {get: anything -> nothing, set: (anything, anything,) -> (), size: 0}
+//│ dummy: MyArray['A] & {get: anything -> nothing, set: (anything, anything,) -> (), size: 0}
 
 dummy: MyArray[int]
 //│ res: MyArray[int]
@@ -182,7 +182,7 @@ ty2A = ty2B
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	ty2A = ty2B
 //│ ║        	^^^^^^^^^^^
-//│ ╟── type `'a` is not a record (expected a record with fields: size, set, get)
+//│ ╟── type `'a` is not a compatible record (expected a record with fields: size, set, get)
 //│ ║  l.23: 	def ty2A: MyArray['a]
 //│ ║        	                  ^^
 //│ ╟── Note: constraint arises from record type:
@@ -202,6 +202,6 @@ ty2A = ty2B
 //│ ╙──      	                  ^^^^^^^^^^^
 //│ constrain calls  : 12
 //│ annoying  calls  : 4
-//│ subtyping calls  : 39
+//│ subtyping calls  : 24
 
 

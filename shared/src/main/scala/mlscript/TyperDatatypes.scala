@@ -167,12 +167,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     override def toString = s"~(${negated})"
   }
   
-  /** Represents a type `base` from which we have removed the fields in `names`. */
-  case class Without(base: SimpleType, names: SortedSet[Var])(val prov: TypeProvenance) extends MiscBaseType {
-    def level: Int = base.level
-    override def toString = s"${base}\\${names.mkString("-")}"
-  }
-  
   /** A proxy type is a derived type form storing some additional information,
    * but which can always be converted into an underlying simple type. */
   sealed abstract class ProxyType extends SimpleType {
@@ -196,13 +190,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     // TOOD override equals/hashCode? — could affect hash consing...
     // override def equals(that: Any): Bool = super.equals(that) || underlying.equals(that)
     // override def equals(that: Any): Bool = unwrapProxies.equals(that)
-  }
-  
-  /** A proxy type, `S with {x: T; ...}` is equivalent to `S\x\... & {x: T; ...}`. */
-  case class WithType(base: SimpleType, rcd: RecordType)(val prov: TypeProvenance) extends ProxyType {
-    lazy val underlying: ST =
-      base.without(rcd.fields.iterator.map(_._1).toSortedSet) & rcd
-    override def toString = s"${base} w/ ${rcd}"
   }
   
   type TR = TypeRef

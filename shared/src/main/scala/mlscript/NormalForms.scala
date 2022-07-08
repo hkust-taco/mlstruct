@@ -84,16 +84,6 @@ class NormalForms extends TyperDatatypes { self: Typer =>
             // Array[p] & Array[q] => Array[p & q]
             S(ArrayType(i1 && i2)(noProv))
             
-          case (S(w1 @ Without(b1, ns1)), w2 @ Without(b2, ns2)) if ns1 === ns2 =>
-            S(Without(b1 & b2, ns1)(w1.prov & w2.prov))
-          // The following cases are quite hacky... if we find two incompatible Without types,
-          //  just make a new dummy Without type to merge them.
-          // The workaround is due to the fact that unlike other types, we can't fully
-          //  reduce Without types away, so they are "unduly" treated as `BaseType`s.
-          // This will be fixed whe we support proper TV bounds for homomorphic type computations
-          case (S(b), w: Without) => S(Without(b & w, ssEmp)(noProv))
-          case (S(w: Without), b) => S(Without(w & b, ssEmp)(noProv))
-            
           case (S(_), _) => N
           case (N, tup: TupleType) =>
             if (expandTupleFields)
@@ -220,7 +210,6 @@ class NormalForms extends TyperDatatypes { self: Typer =>
       case (RhsBases(ps, S(L(t@TupleType(_))), trs), ar@ArrayType(_)) => RhsBases(ps, S(L(t.toArray)), trs) | ar
       case (RhsBases(ps, S(L(ArrayType(ar1))), trs), ArrayType(ar2)) => 
         S(RhsBases(ps, S(L(ArrayType(ar1 || ar2)(noProv))), trs))
-      case (RhsBases(_, S(L(_: Without)), _), _) | (_, _: Without) => die // Without should be handled elsewhere
       case (RhsBases(ps, S(L(bt)), trs), _) if (that === bt) => S(this)
       case (RhsBases(ps, S(L(FunctionType(l0, r0))), trs), FunctionType(l1, r1)) =>
         S(RhsBases(ps, S(L(FunctionType(l0 & l1, r0 | r1)(noProv))), trs))
@@ -465,7 +454,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     
     def mk(ty: SimpleType, pol: Bool)(implicit ctx: Ctx, ptr: PreserveTypeRefs = false, etf: ExpandTupleFields = true): DNF =
         // trace(s"DNF[$pol,$ptr,$etf](${ty})") {
-        (if (pol) ty.pushPosWithout else ty) match {
+        ty match {
       case bt: BaseType => of(bt)
       case bt: TraitTag => of(bt)
       case rt @ RecordType(fs) => of(rt)

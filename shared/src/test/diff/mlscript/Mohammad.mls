@@ -28,16 +28,16 @@ def useCls c = case c of { Class -> c.x | int -> "oops" }
 //│ };
 //│ res = useCls;
 //│ // End of generated code
-//│ useCls: ((Class with {x: 'x}) | int) -> ("oops" | 'x)
+//│ useCls: (Class & {x: 'x} | int) -> ("oops" | 'x)
 //│       = [Function: useCls]
 
 useCls c
 //│ res: "oops" | 1
 //│    = 1
 
-useCls (c with { x = 2 })
-//│ res: "oops" | 2
-//│    = 2
+useCls c
+//│ res: "oops" | 1
+//│    = 1
 
 :js
 trait T
@@ -95,7 +95,7 @@ class D: T & {z: int}
 //│ // End of generated code
 
 def useTrt t = case t of { T -> t.y | Class -> t.x }
-//│ useTrt: ((Class with {x: 'y}) & ~t | {y: 'y} & t) -> 'y
+//│ useTrt: (Class & {x: 'y} & ~t | {y: 'y} & t) -> 'y
 //│       = [Function: useTrt]
 
 :e
@@ -113,8 +113,19 @@ useTrt c
 //│ res: 1 | error
 //│    = 1
 
-useTrt (c with { y = 1 })
-//│ res: 1
+:e
+useTrt c
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.117: 	useTrt c
+//│ ║         	^^^^^^^^
+//│ ╟── expression of type `Class & {x: ?x} & t | Class & {x: ?x} & ~?a` does not have field 'y'
+//│ ╟── Note: constraint arises from field selection:
+//│ ║  l.97: 	def useTrt t = case t of { T -> t.y | Class -> t.x }
+//│ ║        	                                ^^^
+//│ ╟── from refined scrutinee:
+//│ ║  l.97: 	def useTrt t = case t of { T -> t.y | Class -> t.x }
+//│ ╙──      	                    ^
+//│ res: 1 | error
 //│    = 1
 
 d = D{z = 1213}

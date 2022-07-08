@@ -46,13 +46,13 @@ Cons 1 Nil
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.45: 	Cons 1 Nil
 //│ ║        	^^^^^^
-//│ ╟── integer literal of type `1` is not a record (expected a record with fields: size, tail, head)
+//│ ╟── integer literal of type `1` is not a compatible record (expected a record with fields: size, tail, head)
 //│ ║  l.45: 	Cons 1 Nil
 //│ ╙──      	     ^
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.45: 	Cons 1 Nil
 //│ ║        	^^^^^^^^^^
-//│ ╟── application of type `Cons[?A] with {Cons#A = ?A, head: ?head, size: ?size, tail: ?tail}` is not a function
+//│ ╟── application of type `Cons[?A] & {Cons#A = ?A, head: ?head, size: ?size, tail: ?tail}` is not a function
 //│ ║  l.45: 	Cons 1 Nil
 //│ ╙──      	^^^^^^
 //│ res: error
@@ -60,18 +60,24 @@ Cons 1 Nil
 //│   TypeError: (intermediate value) is not a function
 
 Cons
-//│ res: {head: 'A & 'head, size: int & 'size, tail: List['A] & 'tail} -> (Cons['A] with {head: 'head, size: 'size, tail: 'tail})
+//│ res: {head: 'A & 'head, size: int & 'size, tail: List['A] & 'tail} -> (Cons['A] & {head: 'head, size: 'size, tail: 'tail})
 //│    = [Function: res]
 
-// In the old inheritance semantics, this used to be required:
+:e
 def Cons_old head tail =
-  Cons (ListBase (Seq { size = succ tail.size }) with { head; tail })
-//│ Cons_old: ('head & 'A) -> (List['A] & {size: int} & 'tail) -> (Cons['A] with {head: 'head, tail: 'tail})
+  Cons (ListBase (Seq { size = succ tail.size }))
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.68: 	  Cons (ListBase (Seq { size = succ tail.size }))
+//│ ║        	  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── application of type `ListBase[?] & {ListBase#A = ?A}` is not a compatible record (expected a record with fields: size, tail, head)
+//│ ║  l.68: 	  Cons (ListBase (Seq { size = succ tail.size }))
+//│ ╙──      	        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ Cons_old: anything -> {size: int} -> (Cons[nothing] & {tail: nothing} | error)
 //│         = [Function: Cons_old]
 
 def Cons head tail =
   Cons { size = succ tail.size; head; tail }
-//│ Cons: ('head & 'A) -> (List['A] & {size: int} & 'tail) -> (Cons['A] with {head: 'head, tail: 'tail})
+//│ Cons: ('head & 'A) -> (List['A] & {size: int} & 'tail) -> (Cons['A] & {head: 'head, tail: 'tail})
 //│     = [Function: Cons1]
 
 // * Works thanks to variance analysis
@@ -80,7 +86,7 @@ Nil: ListBase[anything]
 //│    = Nil { size: 0 }
 
 def c = Cons 1 Nil
-//│ c: Cons[1] with {tail: Nil & {size: 0}}
+//│ c: Cons[1] & {tail: Nil & {size: 0}}
 //│  = Cons { size: 1, head: 1, tail: Nil { size: 0 } }
 
 c: ListBase[int]
@@ -100,7 +106,7 @@ c.size
 //│    = 1
 
 def d = Cons 2 c
-//│ d: Cons[1 | 2] with {head: 2, tail: Cons[1] with {tail: Nil & {size: 0}}}
+//│ d: Cons[1 | 2] & {head: 2, tail: Cons[1] & {tail: Nil & {size: 0}}}
 //│  = Cons {
 //│      size: 2,
 //│      head: 2,
@@ -116,7 +122,7 @@ d.size
 //│    = 2
 
 d.tail
-//│ res: Cons[1] with {tail: Nil & {size: 0}}
+//│ res: Cons[1] & {tail: Nil & {size: 0}}
 //│    = Cons { size: 1, head: 1, tail: Nil { size: 0 } }
 
 d.tail.size

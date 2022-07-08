@@ -1,8 +1,8 @@
 
 // To generate the prelude without printing it in the next test case
-() with { x = add 1 }
-//│ res: () & {x: int -> int}
-//│    = [ x: [Function (anonymous)] ]
+add 1
+//│ res: int -> int
+//│    = [Function (anonymous)]
 
 :js
 class Box[T]: { inner: T }
@@ -63,11 +63,11 @@ box2.inner + box2.Get
 
 :js
 class MyBox: Box[int] & { info: string }
-  method Map f = Box (f this.inner) with { info = this.info }
+  method Map f = Box (f this.inner)
   method Inc = MyBox { inner = this.inner + 1; info = this.info }
 def MyBox inner info = MyBox { inner; info }
 //│ Defined class MyBox
-//│ Defined MyBox.Map: MyBox -> (int -> 'inner) -> (Box['inner] & {info: string})
+//│ Defined MyBox.Map: MyBox -> (int -> 'inner) -> Box['inner]
 //│ Defined MyBox.Inc: MyBox -> MyBox
 //│ // Prelude
 //│ class MyBox extends Box {
@@ -76,7 +76,7 @@ def MyBox inner info = MyBox { inner; info }
 //│     this.info = fields.info;
 //│   }
 //│   Map(f) {
-//│     return withConstruct(Box1(f(this.inner)), { info: this.info });
+//│     return Box1(f(this.inner));
 //│   }
 //│   get Inc() {
 //│     return (new MyBox({
@@ -94,7 +94,7 @@ def MyBox inner info = MyBox { inner; info }
 //│ };
 //│ res = MyBox1;
 //│ // End of generated code
-//│ MyBox: (int & 'inner) -> (string & 'info) -> (MyBox with {info: 'info, inner: 'inner})
+//│ MyBox: (int & 'inner) -> (string & 'info) -> (MyBox & {info: 'info, inner: 'inner})
 //│      = [Function: MyBox1]
 
 :js
@@ -124,7 +124,7 @@ mb2.Get
 //│ res: int
 //│    = 2
 //│ mb2: Box[int]
-//│    = Box { inner: 6, info: 'hello' }
+//│    = Box { inner: 6 }
 //│ res: int
 //│    = 6
 
@@ -137,10 +137,10 @@ MyBox.Map mb (fun x -> x * 3)
 //│ // Query 2
 //│ res = MyBox1.Map(mb1)((x) => x * 3);
 //│ // End of generated code
-//│ res: Box[int] & {info: string}
+//│ res: Box[int]
 //│ Runtime error:
 //│   TypeError: mb1.MyBox.Map is not a function
-//│ res: Box[int] & {info: string}
+//│ res: Box[int]
 //│ Runtime error:
 //│   TypeError: MyBox1.Map is not a function
 

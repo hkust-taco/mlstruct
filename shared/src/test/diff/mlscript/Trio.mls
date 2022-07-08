@@ -11,7 +11,7 @@ def foo x = case x of {
   | B -> x.fB
   | C -> x.fC
   }
-//│ foo: ((A with {fA: 'fA}) | (B with {fB: 'fA}) | (C with {fC: 'fA})) -> 'fA
+//│ foo: (A & {fA: 'fA} | B & {fB: 'fA} | C & {fC: 'fA}) -> 'fA
 //│    = [Function: foo]
 
 
@@ -41,54 +41,36 @@ foo arg
 //│ annoying  calls  : 30
 //│ subtyping calls  : 87
 
-:stats
-foo (arg with { fC = true })
-//│ res: int | string | true
-//│    = <no result>
-//│      arg is not implemented
-//│ constrain calls  : 32
-//│ annoying  calls  : 28
-//│ subtyping calls  : 115
-
 def foo x = case x of {
   | A -> add x.fA x.payload
   | B -> x.fB
   | C -> { l = x.fC; r = x.payload }
   }
-//│ foo: (A & {payload: int} | (B with {fB: 'fB}) | (C with {fC: 'fC, payload: 'payload})) -> ('fB | int | {l: 'fC, r: 'payload})
+//│ foo: (A & {payload: int} | B & {fB: 'fB} | C & {fC: 'fC, payload: 'payload}) -> ('fB | int | {l: 'fC, r: 'payload})
 //│    = [Function: foo1]
 
 :e
 :stats
 foo arg
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.63: 	foo arg
+//│ ║  l.54: 	foo arg
 //│ ║        	^^^^^^^
 //│ ╟── type `A` does not have field 'payload'
 //│ ║  l.31: 	def arg: A | B | C
 //│ ║        	         ^
 //│ ╟── but it flows into reference with expected type `{payload: ?payload}`
-//│ ║  l.63: 	foo arg
+//│ ║  l.54: 	foo arg
 //│ ║        	    ^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.54: 	  | A -> add x.fA x.payload
+//│ ║  l.45: 	  | A -> add x.fA x.payload
 //│ ║        	                  ^^^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.53: 	def foo x = case x of {
+//│ ║  l.44: 	def foo x = case x of {
 //│ ╙──      	                 ^
 //│ res: error | int | string | {l: bool, r: nothing}
 //│    = <no result>
 //│      arg is not implemented
 //│ constrain calls  : 51
 //│ annoying  calls  : 40
-//│ subtyping calls  : 123
-
-:stats
-foo (arg with { payload = 1 })
-//│ res: int | string | {l: bool, r: 1}
-//│    = <no result>
-//│      arg is not implemented
-//│ constrain calls  : 47
-//│ annoying  calls  : 38
-//│ subtyping calls  : 128
+//│ subtyping calls  : 117
 

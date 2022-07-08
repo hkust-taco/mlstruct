@@ -81,50 +81,6 @@ object Polyfill {
         )
       }
     )
-    buffer += RuntimeHelper(
-      "withConstruct",
-      (name: Str) => {
-        val obj = id("Object")
-        val t = id("target")
-        val f = id("fields")
-        fn(name, param("target"), param("fields")) (
-          JSIfStmt(
-            (t.typeof() :=== JSExpr("string")) :|| (t.typeof() :=== JSExpr("number")) :||
-              (t.typeof() :=== JSExpr("boolean")) :|| (t.typeof() :=== JSExpr("bigint")) :||
-              (t.typeof() :=== JSExpr("symbol")),
-            obj("assign")(t, f).`return` :: Nil,
-          ),
-          JSIfStmt(
-            t.instanceOf(id("String")) :|| t.instanceOf(id("Number")) :||
-              t.instanceOf(id("Boolean")) :|| t.instanceOf(id("BigInt")),
-            obj("assign")(t("valueOf")(), t, f).`return` :: Nil,
-          ),
-          JSIfStmt(
-            id("Array")("isArray")(t),
-            Ls(
-              const("clone", id("Array")("from")(t)),
-              forIn(param("key"), t) {
-                id("clone").prop(id("key")) := t.prop(id("key"))
-              },
-              forIn(param("key"), f) {
-                id("clone").prop(id("key")) := f.prop(id("key"))
-              },
-              `return`(id("clone"))
-            )
-          ),
-          JSIfStmt(
-            // * "Strict equality checks (===) should be used in favor of ==.
-            // *  The only exception is when checking for undefined and null by way of null."
-            // *  (http://contribute.jquery.org/style-guide/js/)
-            JSBinary("==", t, JSLit("null")),
-            `return`(obj("assign")(JSRecord(Nil), JSRecord(Nil), f)) :: Nil,
-          ),
-          JSConstDecl("copy", obj("assign")(JSRecord(Nil), t, f)),
-          obj("setPrototypeOf")(id("copy"), obj("getPrototypeOf")(t)).stmt,
-          id("copy").`return`
-        )
-      }
-    )
     buffer += BuiltinFunc(
       "toString", fn(_, param("x")) { `return` { id("String")(id("x")) } }
     )

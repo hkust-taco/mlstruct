@@ -120,38 +120,85 @@ evalBad = eval
 //│        = [Function: evalImpl]
 
 :e
-eval {} (Lit{} with { val = 1 })
+eval {} (Lit{})
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.123: 	eval {} (Lit{} with { val = 1 })
+//│ ║  l.123: 	eval {} (Lit{})
 //│ ║         	^^^^^^^
 //│ ╟── record literal of type `anything` is not a function
-//│ ║  l.123: 	eval {} (Lit{} with { val = 1 })
+//│ ║  l.123: 	eval {} (Lit{})
 //│ ║         	     ^^
 //│ ╟── Note: constraint arises from function type:
 //│ ║  l.38: 	def eval: ('b -> int) -> Expr['b] -> int
 //│ ╙──      	          ^^^^^^^^^^^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.123: 	eval {} (Lit{})
+//│ ║         	^^^^^^^^^^^^^^^
+//│ ╟── application of type `Lit` does not match type `?b & ~Add & ~Lit | Add & {lhs: Expr[?b], rhs: Expr[?b]} | Lit & {val: int}`
+//│ ║  l.123: 	eval {} (Lit{})
+//│ ║         	         ^^^^^
+//│ ╟── Note: constraint arises from union type:
+//│ ║  l.31: 	type Expr[A] = Lit & {val: int} | Add & {lhs: Expr[A]; rhs: Expr[A]} | ~Lit & ~Add & A
+//│ ║        	               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── from applied type reference:
+//│ ║  l.38: 	def eval: ('b -> int) -> Expr['b] -> int
+//│ ║        	                         ^^^^^^^^
+//│ ╟── Note: class Lit is defined at:
+//│ ║  l.2: 	class Lit
+//│ ╙──     	      ^^^
 //│ res: error | int
-//│    = 1
+//│    = undefined
 
-eval (fun x -> x) (Lit{} with { val = 1 })
-//│ res: int
-//│    = 1
+:e
+eval (fun x -> x) (Lit{})
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.152: 	eval (fun x -> x) (Lit{})
+//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── application of type `Lit` does not match type `?b & ~Add & ~Lit | Add & {lhs: Expr[?b], rhs: Expr[?b]} | Lit & {val: int}`
+//│ ║  l.152: 	eval (fun x -> x) (Lit{})
+//│ ║         	                   ^^^^^
+//│ ╟── Note: constraint arises from union type:
+//│ ║  l.31: 	type Expr[A] = Lit & {val: int} | Add & {lhs: Expr[A]; rhs: Expr[A]} | ~Lit & ~Add & A
+//│ ║        	               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── from applied type reference:
+//│ ║  l.38: 	def eval: ('b -> int) -> Expr['b] -> int
+//│ ║        	                         ^^^^^^^^
+//│ ╟── Note: class Lit is defined at:
+//│ ║  l.2: 	class Lit
+//│ ╙──     	      ^^^
+//│ res: error | int
+//│    = undefined
 
 eval (fun x -> x) 1
 //│ res: int
 //│    = 1
 
-eval (fun x -> x.hello) (Const{} with {hello=1})
-//│ res: int
-//│    = 1
+:e
+eval (fun x -> x.hello) (Const{})
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.176: 	eval (fun x -> x.hello) (Const{})
+//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── application of type `Const` does not have field 'hello'
+//│ ║  l.176: 	eval (fun x -> x.hello) (Const{})
+//│ ║         	                         ^^^^^^^
+//│ ╟── Note: constraint arises from field selection:
+//│ ║  l.176: 	eval (fun x -> x.hello) (Const{})
+//│ ║         	               ^^^^^^^
+//│ ╟── from applied type reference:
+//│ ║  l.38: 	def eval: ('b -> int) -> Expr['b] -> int
+//│ ║        	                         ^^^^^^^^
+//│ ╟── Note: class Const is defined at:
+//│ ║  l.4: 	class Const
+//│ ╙──     	      ^^^^^
+//│ res: error | int
+//│    = undefined
 
 :e
 eval (fun x -> x.hello) {hello=1}
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.149: 	eval (fun x -> x.hello) {hello=1}
+//│ ║  l.196: 	eval (fun x -> x.hello) {hello=1}
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{hello: 1}` does not match type `?b & ~Add & ~Lit | Add & {lhs: Expr[?b], rhs: Expr[?b]} | Lit & {val: int}`
-//│ ║  l.149: 	eval (fun x -> x.hello) {hello=1}
+//│ ║  l.196: 	eval (fun x -> x.hello) {hello=1}
 //│ ║         	                        ^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
 //│ ║  l.31: 	type Expr[A] = Lit & {val: int} | Add & {lhs: Expr[A]; rhs: Expr[A]} | ~Lit & ~Add & A
@@ -162,11 +209,28 @@ eval (fun x -> x.hello) {hello=1}
 //│ res: error | int
 //│    = 1
 
-l = Lit{} with {hello=1}
-//│ l: Lit & {hello: 1}
-//│  = Lit { hello: 1 }
+l = Lit{}
+//│ l: Lit
+//│  = Lit {}
+
+:e
 l: {hello:1}
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.217: 	l: {hello:1}
+//│ ║         	^
+//│ ╟── application of type `Lit` does not have field 'hello'
+//│ ║  l.212: 	l = Lit{}
+//│ ║         	    ^^^^^
+//│ ╟── but it flows into reference with expected type `{hello: 1}`
+//│ ║  l.217: 	l: {hello:1}
+//│ ║         	^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.217: 	l: {hello:1}
+//│ ║         	   ^^^^^^^^^
+//│ ╟── Note: class Lit is defined at:
+//│ ║  l.2: 	class Lit
+//│ ╙──     	      ^^^
 //│ res: {hello: 1}
-//│    = Lit { hello: 1 }
+//│    = Lit {}
 
 

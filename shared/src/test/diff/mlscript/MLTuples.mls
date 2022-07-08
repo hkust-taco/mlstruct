@@ -3,50 +3,25 @@ t = (1, 2, 3)
 //│ t: (1, 2, 3,)
 //│  = [ 1, 2, 3 ]
 
-{} with {}
-//│ res: anything
-//│    = {}
-
-:js
-tx = t with { x = 1 }
-//│ // Query 1
-//│ globalThis.tx = withConstruct(t, { x: 1 });
-//│ res = tx;
-//│ // End of generated code
-//│ tx: (1, 2, 3,) & {x: 1}
-//│   = [ 1, 2, 3, x: 1 ]
-
-tx.x
-//│ res: 1
-//│    = 1
-
 trait Hey: { x: int }
 //│ Defined trait Hey
 
 :e
 Hey t
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.27: 	Hey t
+//│ ║  l.10: 	Hey t
 //│ ║        	^^^^^
 //│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `{x: int}`
-//│ ║  l.27: 	Hey t
+//│ ║  l.10: 	Hey t
 //│ ║        	    ^
 //│ ╟── Note: constraint arises from record type:
-//│ ║  l.23: 	trait Hey: { x: int }
-//│ ╙──      	           ^^^^^^^^^^
+//│ ║  l.6: 	trait Hey: { x: int }
+//│ ╙──     	           ^^^^^^^^^^
 //│ res: (1, 2, 3,) & hey | error
 //│    = [ 1, 2, 3 ]
-
-htx = Hey tx
-//│ htx: (1, 2, 3,) & {x: 1} & hey
-//│    = [ 1, 2, 3, x: 1 ]
-
-htx.x
-//│ res: 1
-//│    = 1
 
 f ((a, b, c)) = { a; b; c }
 //│ f: ('a, 'b, 'c,) -> {a: 'a, b: 'b, c: 'c}
@@ -56,61 +31,23 @@ f t
 //│ res: {a: 1, b: 2, c: 3}
 //│    = { a: 1, b: 2, c: 3 }
 
-f tx
-//│ res: {a: 1, b: 2, c: 3}
-//│    = { a: 1, b: 2, c: 3 }
-
-f htx
-//│ res: {a: 1, b: 2, c: 3}
-//│    = { a: 1, b: 2, c: 3 }
-
 f ((a, b)) = add a b
 //│ f: (int, int,) -> int
 //│  = [Function: f1]
 
 :e
 f t
-f tx
-f htx
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.72: 	f t
+//│ ║  l.39: 	f t
 //│ ║        	^^^
 //│ ╟── tuple literal of type `(1, 2, 3,)` does not match type `(?a, ?b,)`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `(?c, ?d,)`
-//│ ║  l.72: 	f t
+//│ ║  l.39: 	f t
 //│ ║        	  ^
 //│ ╟── Note: constraint arises from tuple literal:
-//│ ║  l.67: 	f ((a, b)) = add a b
-//│ ╙──      	   ^^^^^^
-//│ res: error | int
-//│    = 3
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.73: 	f tx
-//│ ║        	^^^^
-//│ ╟── `with` extension of type `(1, 2, 3,) & {x: 1}` is not a 2-element tuple
-//│ ║  l.11: 	tx = t with { x = 1 }
-//│ ║        	     ^^^^^^^^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `(?a, ?b,)`
-//│ ║  l.73: 	f tx
-//│ ║        	  ^^
-//│ ╟── Note: constraint arises from tuple literal:
-//│ ║  l.67: 	f ((a, b)) = add a b
-//│ ╙──      	   ^^^^^^
-//│ res: error | int
-//│    = 3
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.74: 	f htx
-//│ ║        	^^^^^
-//│ ╟── `with` extension of type `(1, 2, 3,) & {x: 1}` does not match type `(?a, ?b,) | ~hey`
-//│ ║  l.11: 	tx = t with { x = 1 }
-//│ ║        	     ^^^^^^^^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `(?c, ?d,) | ~hey`
-//│ ║  l.74: 	f htx
-//│ ║        	  ^^^
-//│ ╟── Note: constraint arises from tuple literal:
-//│ ║  l.67: 	f ((a, b)) = add a b
+//│ ║  l.34: 	f ((a, b)) = add a b
 //│ ╙──      	   ^^^^^^
 //│ res: error | int
 //│    = 3
@@ -120,36 +57,10 @@ g arg = case arg of { Hey -> arg.x | _ -> () }
 //│ g: ({x: 'x} & hey | ~hey) -> (() | 'x)
 //│  = [Function: g]
 
-g htx
-g tx
-//│ res: () | 1
-//│    = 1
-//│ res: () | 1
-//│    = 1
-
 // TODO: pattern match for traits in JavaScript
 g arg = case arg of { Hey -> arg.x | _ -> arg.y }
 //│ g: ({x: 'x} & hey | {y: 'x} & ~hey) -> 'x
 //│  = [Function: g1]
-
-g htx
-g (tx with { y = 2 })
-//│ res: 1
-//│    = 1
-//│ res: 1 | 2
-//│    = 2
-
-:e
-g tx
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.143: 	g tx
-//│ ║         	^^^^
-//│ ╟── expression of type `(1, 2, 3,) & {x: 1} & ~hey` does not have field 'y'
-//│ ╟── Note: constraint arises from field selection:
-//│ ║  l.131: 	g arg = case arg of { Hey -> arg.x | _ -> arg.y }
-//│ ╙──       	                                          ^^^^^
-//│ res: 1 | error
-//│    = 1
 
 :ge
 if bool then (1,) else (2,)
@@ -160,12 +71,6 @@ if bool then (1,) else (2,)
 :ge
 if bool then (1,) else (2, 3)
 //│ res: Array[1 | 2 | 3] & {_1: 1 | 2}
-//│ Code generation encountered an error:
-//│   type alias bool is not a valid expression
-
-:ge
-if bool then (1,) with { a = 1; b = 2 } else (2, 3) with { b = 3; c = 4 }
-//│ res: Array[1 | 2 | 3] & {_1: 1 | 2, b: 2 | 3}
 //│ Code generation encountered an error:
 //│   type alias bool is not a valid expression
 
@@ -184,45 +89,33 @@ t._2
 //│ res: 2
 //│    = undefined
 
-
-t = (1, 2, 3) with {x = 1}
-// t = (1, 2, 3)
-//│ t: (1, 2, 3,) & {x: 1}
-//│  = [ 1, 2, 3, x: 1 ]
-
+:e
 t.x
-//│ res: 1
-//│    = 1
-
-t._1
-t._2
-//│ res: 1
+//│ ╔══[ERROR] Type mismatch in field selection:
+//│ ║  l.93: 	t.x
+//│ ║        	^^^
+//│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
+//│ ║  l.2: 	t = (1, 2, 3)
+//│ ║       	    ^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `{x: ?x}`
+//│ ║  l.93: 	t.x
+//│ ╙──      	^
+//│ res: error
 //│    = undefined
-//│ res: 2
-//│    = undefined
 
-
-t = (1, 2, 3) with {_1 = "oops"}
-//│ t: {_1: "oops", _2: 2, _3: 3}
-//│  = [ 1, 2, 3, _1: 'oops' ]
-
-// TODO (https://github.com/hkust-taco/mlscript/issues/69)
 :e
 (t: ("oops",int,int,))._1
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.211: 	(t: ("oops",int,int,))._1
+//│ ║  l.107: 	(t: ("oops",int,int,))._1
 //│ ║         	 ^
-//│ ╟── `with` extension of type `{_1: "oops", _2: 2, _3: 3}` is not a 3-element tuple
-//│ ║  l.205: 	t = (1, 2, 3) with {_1 = "oops"}
-//│ ║         	    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `("oops", int, int,)`
-//│ ║  l.211: 	(t: ("oops",int,int,))._1
-//│ ║         	 ^
-//│ ╟── Note: constraint arises from tuple type:
-//│ ║  l.211: 	(t: ("oops",int,int,))._1
-//│ ╙──       	    ^^^^^^^^^^^^^^^^^
+//│ ╟── integer literal of type `1` does not match type `"oops"`
+//│ ║  l.2: 	t = (1, 2, 3)
+//│ ║       	     ^
+//│ ╟── Note: constraint arises from literal type:
+//│ ║  l.107: 	(t: ("oops",int,int,))._1
+//│ ╙──       	     ^^^^^^
 //│ res: "oops"
-//│    = 'oops'
+//│    = undefined
 
 
 def f: (1, 2, 3) & (2, 2 | 3, 3 | 4)

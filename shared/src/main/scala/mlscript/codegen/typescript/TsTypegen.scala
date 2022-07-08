@@ -545,11 +545,6 @@ final class TsTypegenCodeBuilder {
 
         val baseType = toTsType(base)
         SourceCode(s"Neg<$baseType, $typeParam>")
-      case Rem(base, names) =>
-        SourceCode("Omit") ++
-          SourceCode.openAngleBracket ++ toTsType(base) ++ SourceCode.commaSpace ++
-          SourceCode.sepBy(names.map(name => SourceCode(s"\"${name.name}\"")), SourceCode.separator) ++
-          SourceCode.closeAngleBracket
       case Bounds(lb, ub) =>
         pol match {
           // positive polarity takes upper bound
@@ -560,8 +555,6 @@ final class TsTypegenCodeBuilder {
           case None =>
             throw CodeGenError(s"Cannot generate type for invariant type $mlType")
         }
-      case WithExtension(base, rcd) =>
-        toTsType(Inter(Rem(base, rcd.fields.map(tup => tup._1)), rcd))
       // get clash free name for type variable
       case t @ TypeVar(_, _) =>
         val tvarName = typegenCtx.typeVarMapping

@@ -2,7 +2,7 @@ class Undefined2: { x: undefined }
 //│ Defined class Undefined2
 
 Undefined2
-//│ res: {x: undefined & 'x} -> (Undefined2 with {x: 'x})
+//│ res: {x: undefined & 'x} -> (Undefined2 & {x: 'x})
 //│    = [Function: res]
 
 Undefined2 { x = undefined }
@@ -20,7 +20,7 @@ Undefined2 { x = "I am here to make a type mismatch." }
 //│ ╟── Note: constraint arises from literal type:
 //│ ║  l.1: 	class Undefined2: { x: undefined }
 //│ ╙──     	                       ^^^^^^^^^
-//│ res: error | (Undefined2 with {x: "I am here to make a type mismatch."})
+//│ res: error | Undefined2 & {x: "I am here to make a type mismatch."}
 //│    = Undefined2 { x: 'I am here to make a type mismatch.' }
 
 :e
@@ -148,36 +148,23 @@ case absent of { "" -> 0 | undefined -> 1 }
 //│    = 1
 
 
-uw = undefined with { x = 1 }
-nw = null with { x = 1 }
-uw.x
-nw.x
-//│ uw: undefined & {x: 1}
-//│   = { x: 1 }
-//│ nw: null & {x: 1}
-//│   = { x: 1 }
-//│ res: 1
-//│    = 1
-//│ res: 1
-//│    = 1
-
 :e
 undefined.x
 null.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.165: 	undefined.x
+//│ ║  l.152: 	undefined.x
 //│ ║         	^^^^^^^^^^^
 //│ ╟── undefined literal of type `undefined` does not have field 'x'
-//│ ║  l.165: 	undefined.x
+//│ ║  l.152: 	undefined.x
 //│ ╙──       	^^^^^^^^^
 //│ res: error
 //│ Runtime error:
 //│   TypeError: Cannot read properties of undefined (reading 'x')
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.166: 	null.x
+//│ ║  l.153: 	null.x
 //│ ║         	^^^^^^
 //│ ╟── null literal of type `null` does not have field 'x'
-//│ ║  l.166: 	null.x
+//│ ║  l.153: 	null.x
 //│ ╙──       	^^^^
 //│ res: error
 //│ Runtime error:
@@ -194,13 +181,13 @@ bypass = undefined
 //│   <:  bypass:
 //│ nothing
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.192: 	bypass = undefined
+//│ ║  l.179: 	bypass = undefined
 //│ ║         	^^^^^^^^^^^^^^^^^^
 //│ ╟── undefined literal of type `undefined` does not match type `nothing`
-//│ ║  l.192: 	bypass = undefined
+//│ ║  l.179: 	bypass = undefined
 //│ ║         	         ^^^^^^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.186: 	def bypass: nothing
+//│ ║  l.173: 	def bypass: nothing
 //│ ╙──       	            ^^^^^^^
 //│       = undefined
 

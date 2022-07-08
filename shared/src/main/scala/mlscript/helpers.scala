@@ -47,7 +47,6 @@ abstract class TypeImpl extends Located { self: Type =>
     // case uv: TypeVar => ctx.vs.getOrElse(uv, s"[??? $uv ???]")
     case uv: TypeVar => ctx.vs(uv)
     case Recursive(n, b) => parensIf(s"${b.showIn(ctx, 2)} as ${ctx.vs(n)}", outerPrec > 1)
-    case WithExtension(b, r) => parensIf(s"${b.showIn(ctx, 2)} with ${r.showIn(ctx, 0)}", outerPrec > 1)
     case Function(Tuple((N,Field(N,l)) :: Nil), r) => Function(l, r).showIn(ctx, outerPrec)
     case Function(l, r) => parensIf(l.showIn(ctx, 31) + " -> " + r.showIn(ctx, 30), outerPrec > 30)
     case Neg(t) => s"~${t.showIn(ctx, 100)}"
@@ -87,7 +86,6 @@ abstract class TypeImpl extends Located { self: Type =>
     case Bounds(lb, ub) => s"in ${lb.showIn(ctx, 0)} out ${ub.showIn(ctx, 0)}"
     // 
     case AppliedType(n, args) => s"${n.name}[${args.map(_.showIn(ctx, 0)).mkString(", ")}]"
-    case Rem(b, ns) => s"${b.showIn(ctx, 90)}${ns.map("\\"+_).mkString}"
     case Literal(IntLit(n)) => n.toString
     case Literal(DecLit(n)) => n.toString
     case Literal(StrLit(s)) => "\"" + s + "\""
@@ -117,8 +115,6 @@ abstract class TypeImpl extends Located { self: Type =>
     case Inter(l, r) => l :: r :: Nil
     case Recursive(n, b) => b :: Nil
     case AppliedType(n, ts) => ts
-    case Rem(b, _) => b :: Nil
-    case WithExtension(b, r) => b :: r :: Nil
     case Constrained(b, ws) => b :: ws.flatMap(c => c._1 :: c._2 :: Nil)
   }
 
@@ -130,7 +126,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Record(fields) => fields.map(_._1.name)
     case Inter(ty1, ty2) => ty1.collectFields ++ ty2.collectFields
     case _: Union | _: Function | _: Tuple | _: Recursive
-        | _: Neg | _: Rem | _: Bounds | _: WithExtension | Top | Bot
+        | _: Neg | _: Bounds | Top | Bot
         | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: Constrained =>
       Nil
   }
@@ -144,7 +140,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case AppliedType(TypeName(name), _) => name :: Nil
     case Inter(lhs, rhs) => lhs.collectTypeNames ++ rhs.collectTypeNames
     case _: Union | _: Function | _: Record | _: Tuple | _: Recursive
-        | _: Neg | _: Rem | _: Bounds | _: WithExtension | Top | Bot
+        | _: Neg | _: Bounds | Top | Bot
         | _: Literal | _: TypeVar | _: Constrained =>
       Nil
   }
@@ -157,7 +153,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Record(fields) => fields.map(field => (field._1, field._2.out))
     case Inter(ty1, ty2) => ty1.collectBodyFieldsAndTypes ++ ty2.collectBodyFieldsAndTypes
     case _: Union | _: Function | _: Tuple | _: Recursive
-        | _: Neg | _: Rem | _: Bounds | _: WithExtension | Top | Bot
+        | _: Neg | _: Bounds | Top | Bot
         | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: Constrained =>
       Nil
   }
@@ -313,7 +309,6 @@ trait TermImpl extends StatementImpl { self: Term =>
     case Tup(xs) => "tuple"
     case Bind(l, r) => "'as' binding"
     case Test(l, r) => "'is' test"
-    case With(t, fs) =>  "`with` extension"
     case CaseOf(scrut, cases) =>  "`case` expression" 
     case Subs(arr, idx) => "array access"
     case Assign(lhs, rhs) => "assignment"
@@ -343,7 +338,6 @@ trait TermImpl extends StatementImpl { self: Term =>
         (if (t._2) "mut " else "") + n.fold("")(_.name + ": ") + t._1 + "," }.mkString("(", " ", ")")
     case Bind(l, r) => s"($l as $r)"
     case Test(l, r) => s"($l is $r)"
-    case With(t, fs) =>  s"$t with $fs"
     case CaseOf(s, c) => s"case $s of $c"
     case Subs(a, i) => s"$a[$i]"
     case Assign(lhs, rhs) => s" $lhs <- $rhs"
@@ -590,7 +584,6 @@ trait StatementImpl extends Located { self: Statement =>
     case _: Lit => Nil
     case Bind(l, r) => l :: r :: Nil
     case Test(l, r) => l :: r :: Nil
-    case With(t, fs) => t :: fs :: Nil
     case CaseOf(s, c) => s :: c :: Nil
     case d @ Def(_, n, b) => n :: d.body :: Nil
     case TypeDef(kind, nme, tparams, body, _, _) => nme :: tparams ::: body :: Nil

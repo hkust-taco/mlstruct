@@ -51,7 +51,7 @@ class JSBackend {
     case Bra(_, trm) => translatePattern(trm)
     case Tup(fields) => JSArrayPattern(fields map { case (_, (t, _)) => translatePattern(t) })
     // Others are not supported yet.
-    case _: Lam | _: App | _: Sel | _: Let | _: Blk | _: Bind | _: Test | _: With | _: CaseOf | _: Subs | _: Assign =>
+    case _: Lam | _: App | _: Sel | _: Let | _: Blk | _: Bind | _: Test | _: CaseOf | _: Subs | _: Assign =>
       throw CodeGenError(s"term ${inspect(t)} is not a valid pattern")
   }
 
@@ -188,17 +188,6 @@ class JSBackend {
     case UnitLit(value) => JSLit(if (value) "undefined" else "null")
     // `Asc(x, ty)` <== `x: Type`
     case Asc(trm, _) => translateTerm(trm)
-    // `c with { x = "hi"; y = 2 }`
-    case With(trm, Rcd(fields)) =>
-      JSInvoke(
-        JSIdent(polyfill get "withConstruct" match {
-          case S(fnName) => fnName
-          case N         => polyfill.use("withConstruct", topLevelScope.declareRuntimeSymbol("withConstruct"))
-        }),
-        translateTerm(trm) :: JSRecord(fields map { case (Var(name), (value, _)) =>
-          name -> translateTerm(value)
-        }) :: Nil
-      )
     case Bra(_, trm) => translateTerm(trm)
     case Tup(terms) =>
       JSArray(terms map { case (_, (term, _)) => translateTerm(term) })

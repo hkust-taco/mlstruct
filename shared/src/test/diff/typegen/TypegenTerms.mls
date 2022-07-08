@@ -29,21 +29,12 @@ def z = x + y
 :ts
 def rcd = { x = 1 }
 rcd.x
-def funky f r = let t = r with { y = "nah" } in f t
-def cool g r = let t = r with { a = "apple"; b = "ball" } in g t
-def g = rcd with { y = "yeah" }
 // records
 //│ rcd: {x: 1}
 //│ res: 1
-//│ funky: (('a\y & {y: "nah"}) -> 'b) -> 'a -> 'b
-//│ cool: (('a\a\b & {a: "apple", b: "ball"}) -> 'b) -> 'a -> 'b
-//│ g: {x: 1, y: "yeah"}
 //│ // start ts
 //│ export declare const rcd: {readonly x: 1}
 //│ export declare const res: 1
-//│ export declare const funky<a, b>: (arg: (arg1: Omit<a, "y"> & {readonly y: "nah"}) => b) => (arg2: a) => b
-//│ export declare const cool<a, b>: (arg: (arg1: Omit<a, "a" | "b"> & {readonly a: "apple", readonly b: "ball"}) => b) => (arg2: a) => b
-//│ export declare const g: {readonly x: 1, readonly y: "yeah"}
 //│ // end ts
 
 :ts
@@ -69,26 +60,26 @@ def f: ('c -> 'a as 'a) -> 'c -> int
 //│ l: 'l
 //│   where
 //│     'l :> int -> 'l
-//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α111,Bounds(Function(Tuple(List((None,Field(None,TypeName(int))))),α111),Top)))
+//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α91,Bounds(Function(Tuple(List((None,Field(None,TypeName(int))))),α91),Top)))
 
 :ts
 :e
 1: ?
 { a = "hello" }: { a: string } & { b: int }
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.76: 	1: ?
+//│ ║  l.67: 	1: ?
 //│ ║        	^
 //│ ╟── integer literal of type `1` does not match type `nothing`
 //│ ╟── Note: constraint arises from type wildcard:
-//│ ║  l.76: 	1: ?
+//│ ║  l.67: 	1: ?
 //│ ╙──      	   ^
 //│ res: anything
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.77: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.68: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ║        	^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{a: "hello"}` does not have field 'b'
 //│ ╟── Note: constraint arises from intersection type:
-//│ ║  l.77: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.68: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ╙──      	                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: {a: string, b: int}
 //│ // start ts
@@ -158,6 +149,6 @@ def weird: ((int, bool) | 'a) -> 'a
 //│ weird: 'a
 //│   where
 //│     'a :> (int, int,) -> 'a
-//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α233,Bounds(Function(Tuple(List((None,Field(None,TypeName(int))), (None,Field(None,TypeName(int))))),α233),Top)))
+//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α213,Bounds(Function(Tuple(List((None,Field(None,TypeName(int))), (None,Field(None,TypeName(int))))),α213),Top)))
 
 

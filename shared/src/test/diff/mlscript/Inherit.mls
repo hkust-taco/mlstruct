@@ -18,41 +18,37 @@ def c = Child(Parent { name = "Bob" })
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.17: 	def c = Child(Parent { name = "Bob" })
 //│ ║        	        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── application of type `Parent & {name: ?name}` is not a record (expected a record with fields: name, age)
+//│ ╟── application of type `Parent & {name: ?name}` is not a compatible record (expected a record with fields: name, age)
 //│ ║  l.17: 	def c = Child(Parent { name = "Bob" })
 //│ ╙──      	              ^^^^^^^^^^^^^^^^^^^^^^^
 //│ c: Child & {age: nothing, name: "Bob"} | error
 //│  = Child { name: 'Bob', age: undefined }
 
-def c = Child(Parent { name = "Bob" } with { age = 123 })
-//│ c: Child & {age: 123, name: "Bob"}
-//│  = Child { name: 'Bob', age: 123 }
-
 c: Parent
 //│ res: Parent
-//│    = Child { name: 'Bob', age: 123 }
+//│    = Child { name: 'Bob', age: undefined }
 
 c.name
-//│ res: "Bob"
+//│ res: "Bob" | error
 //│    = 'Bob'
 
 c: { name: 'a }
-//│ res: {name: "Bob"}
-//│    = Child { name: 'Bob', age: 123 }
+//│ res: {name: "Bob" | error}
+//│    = Child { name: 'Bob', age: undefined }
 
 c: { name: string }
 //│ res: {name: string}
-//│    = Child { name: 'Bob', age: 123 }
+//│    = Child { name: 'Bob', age: undefined }
 
 
 def f x = case x of {
   | Parent -> x.name
   }
-//│ f: (Parent with {name: 'name}) -> 'name
+//│ f: (Parent & {name: 'name}) -> 'name
 //│  = [Function: f]
 
 f c
-//│ res: "Bob"
+//│ res: "Bob" | error
 //│    = 'Bob'
 
 f (c: Parent)
@@ -63,26 +59,26 @@ f (c: Parent)
 def f x = case x of {
   | Child -> x.name
   }
-//│ f: (Child\age with {name: 'name}) -> 'name
+//│ f: (Child & {name: 'name}) -> 'name
 //│  = [Function: f1]
 
 f c
-//│ res: "Bob"
+//│ res: "Bob" | error
 //│    = 'Bob'
 
 :e
 f (c: Parent)
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.74: 	f (c: Parent)
+//│ ║  l.70: 	f (c: Parent)
 //│ ║        	^^^^^^^^^^^^^
 //│ ╟── type `Parent` is not an instance of type `Child`
-//│ ║  l.74: 	f (c: Parent)
+//│ ║  l.70: 	f (c: Parent)
 //│ ║        	      ^^^^^^
 //│ ╟── Note: constraint arises from class pattern:
-//│ ║  l.64: 	  | Child -> x.name
+//│ ║  l.60: 	  | Child -> x.name
 //│ ║        	    ^^^^^
 //│ ╟── from reference:
-//│ ║  l.63: 	def f x = case x of {
+//│ ║  l.59: 	def f x = case x of {
 //│ ╙──      	               ^
 //│ res: error | string
 //│    = 'Bob'
@@ -92,7 +88,7 @@ def f x = case x of {
   | Parent -> x.name
   | _ -> ""
   }
-//│ f: ((Parent with {name: 'name}) | ~Parent) -> ("" | 'name)
+//│ f: (Parent & {name: 'name} | ~Parent) -> ("" | 'name)
 //│  = [Function: f2]
 
 f c
@@ -108,7 +104,7 @@ def f x = case x of {
   | Parent -> x.name
   | Child -> x.name
   }
-//│ f: (Parent with {name: 'name}) -> 'name
+//│ f: (Parent & {name: 'name}) -> 'name
 //│  = [Function: f3]
 
 f c

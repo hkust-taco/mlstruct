@@ -47,19 +47,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
               .foldLeft(rhs | DNF.mkDeep(rnf.toType(), false))(_ | _)
             println(s"Consider ${lnf} <: ${fullRhs}")
             
-            // The following crutch is necessary because the pesky Without types may get stuck
-            //  on type variables and type variable negations:
-            lnf match {
-              case LhsRefined(S(Without(NegType(tv: TV), ns)), tts, rcd, trs) =>
-                return rec((
-                  fullRhs.toType() | LhsRefined(N, tts, rcd, trs).toType().neg()).without(ns).neg(), tv, true)
-              case LhsRefined(S(Without(b, ns)), tts, rcd, trs) =>
-                assert(b.isInstanceOf[TV])
-                return rec(b, (
-                  fullRhs.toType() | LhsRefined(N, tts, rcd, trs).toType().neg()).without(ns), true)
-              case _ => ()
-            }
-            
             // First, we filter out those RHS alternatives that obviously don't match our LHS:
             val possible = fullRhs.cs.filter { r =>
               
@@ -188,7 +175,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
           //    Most of the `rec` calls below will yield ugly errors because we don't maintain
           //    the original constraining context!
           (done_ls, done_rs) match {
-            case (LhsRefined(S(Without(b, _)), _, _, _), RhsBot) => rec(b, BotType, true)
             case (LhsTop, _) | (LhsRefined(N, empty(), RecordType(Nil), empty()), _) =>
               // TODO ^ actually get rid of LhsTop and RhsBot...? (might make constraint solving slower)
               reportError()
@@ -225,13 +211,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
                 case S(nt1) =>
                   recLb(t2, nt1._2)
                   rec(nt1._2.ub, t2.ub, false)
-                case N =>
-                  bo match {
-                    case S(Without(b, ns)) =>
-                      if (ns(n)) rec(b, RhsBases(ots, N, trs).toType(), true)
-                      else rec(b, done_rs.toType(), true)
-                    case _ => reportError()
-                  }
+                case N => reportError()
               }
             case (LhsRefined(N, ts, r, _), RhsBases(pts, N | S(L(_: FunctionType | _: ArrayBase)), _)) =>
               reportError()
@@ -245,13 +225,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
               recLb(ar.inner, b.inner)
               rec(b.inner.ub, ar.inner.ub, false)
             case (LhsRefined(S(b: ArrayBase), ts, r, _), _) => reportError()
-            case (LhsRefined(S(Without(b, ns)), ts, r, _), RhsBases(pts, N | S(L(_)), _)) =>
-              rec(b, done_rs.toType(), true)
-            case (_, RhsBases(pts, S(L(Without(base, ns))), _)) =>
-              // rec((pts.map(_.neg()).foldLeft(done_ls.toType())(_ & _)).without(ns), base)
-              // ^ This less efficient version creates a slightly different error message
-              //    (see test in Annoying.mls)
-              annoying(pts.map(_.neg()), done_ls, base :: Nil, RhsBot)
           }
           
       }
@@ -413,14 +386,11 @@ class ConstraintSolver extends NormalForms { self: Typer =>
           
           case (ClassTag(ErrTypeId, _), _) => ()
           case (_, ClassTag(ErrTypeId, _)) => ()
-          case (_, w @ Without(b, ns)) => rec(lhs.without(ns), b, true)
-          case (_, n @ NegType(w @ Without(b, ns))) =>
-            rec(Without(lhs, ns)(w.prov), NegType(b)(n.prov), true) // this is weird... TODO check sound
           case (_, ComposedType(true, l, r)) =>
             goToWork(lhs, rhs)
           case (ComposedType(false, l, r), _) =>
             goToWork(lhs, rhs)
-          case (_: NegType | _: Without, _) | (_, _: NegType | _: Without) =>
+          case (_: NegType, _) | (_, _: NegType) =>
             goToWork(lhs, rhs)
           case _ => reportError()
       }
@@ -456,7 +426,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
           if !lunw.isInstanceOf[RecordType] => doesntHaveField(n.name)
         case (lunw, RecordType(fs @ (_ :: _)))
           if !lunw.isInstanceOf[RecordType] =>
-            msg"is not a record (expected a record with field${
+            msg"is not a compatible record (expected a record with field${
               if (fs.sizeCompare(1) > 0) "s" else ""}: ${fs.map(_._1.name).mkString(", ")})"
         case _ => doesntMatch(rhs)
       })
@@ -581,7 +551,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
         TupleType(fs.mapValues(_.update(extrude(_, lvl, !pol), extrude(_, lvl, pol))))(t.prov)
       case t @ ArrayType(ar) =>
         ArrayType(ar.update(extrude(_, lvl, !pol), extrude(_, lvl, pol)))(t.prov)
-      case w @ Without(b, ns) => Without(extrude(b, lvl, pol), ns)(w.prov)
       case tv: TypeVariable => cache.getOrElse(tv -> pol, {
         val nv = freshVar(tv.prov, tv.nameHint)(lvl)
         cache += tv -> pol -> nv
@@ -681,7 +650,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
       case p @ ProvType(und) => ProvType(freshen(und))(p.prov)
       case p @ ProxyType(und) => freshen(und)
       case _: ClassTag | _: TraitTag => ty
-      case w @ Without(b, ns) => Without(freshen(b), ns)(w.prov)
       case tr @ TypeRef(d, ts) => TypeRef(d, ts.map(freshen(_)))(tr.prov)
     }
     freshen(ty)

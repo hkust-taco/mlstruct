@@ -258,11 +258,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
               (if (nt._2.in.isDefined) "mutable " else "") + "record field"))
         })(prov)
       case Function(lhs, rhs) => FunctionType(rec(lhs), rec(rhs))(tyTp(ty.toLoc, "function type"))
-      case WithExtension(b, r) => WithType(rec(b),
-        RecordType(
-            r.fields.map { case (n, f) => n -> FieldType(f.in.map(rec), rec(f.out))(
-              tyTp(App(n, Var("").withLocOf(f)).toCoveringLoc, "extension field")) }
-          )(tyTp(r.toLoc, "extension record")))(tyTp(ty.toLoc, "extension type"))
       case Literal(lit) => ClassTag(lit, lit.baseClasses)(tyTp(ty.toLoc, "literal type"))
       case TypeName("this") =>
         ctx.env.getOrElse("this", err(msg"undeclared this" -> ty.toLoc :: Nil)) match {
@@ -314,7 +309,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         tv.upperBounds ::= bod
         tv.lowerBounds ::= bod
         tv
-      case Rem(base, fs) => Without(rec(base), fs.toSortedSet)(tyTp(ty.toLoc, "field removal type"))
       case Constrained(base, where) =>
         val res = rec(base)
         where.foreach { case (tv, Bounds(lb, ub)) =>
@@ -665,10 +659,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         val r_ty = typePattern(r)(newCtx, raise) // TODO make these bindings flow
         con(l_ty, r_ty, TopType)
         BoolType
-      case With(t, rcd) =>
-        val t_ty = typeTerm(t)
-        val rcd_ty = typeTerm(rcd)
-        (t_ty without rcd.fields.iterator.map(_._1).toSortedSet) & (rcd_ty, prov)
       case CaseOf(s, cs) =>
         val s_ty = typeTerm(s)
         val (tys, cs_ty) = typeArms(s |>? {
@@ -851,8 +841,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         case NegType(t) => Neg(go(t))
         case ExtrType(true) => Bot
         case ExtrType(false) => Top
-        case WithType(base, rcd) =>
-          WithExtension(go(base), Record(rcd.fields.mapValues(field)))
         case ProxyType(und) => go(und)
         case tag: ObjectTag => tag.id match {
           case Var(n) => TypeName(n)
@@ -864,7 +852,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           case (_, ty) => go(ty)
         })
         case TypeBounds(lb, ub) => Bounds(go(lb), go(ub))
-        case Without(base, names) => Rem(go(base), names.toList)
     }
     // }(r => s"~> $r")
     

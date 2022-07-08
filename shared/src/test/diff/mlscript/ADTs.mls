@@ -8,9 +8,9 @@ def nega arg = Nega { arg }
 //│ Defined class Lit
 //│ Defined class Add[+E]
 //│ Defined class Nega[+E]
-//│ lit: (int & 'val) -> (Lit with {val: 'val})
+//│ lit: (int & 'val) -> (Lit & {val: 'val})
 //│    = [Function: lit]
-//│ add: ('lhs & 'E) -> ('E & 'rhs) -> (Add['E] with {lhs: 'lhs, rhs: 'rhs})
+//│ add: ('lhs & 'E) -> ('E & 'rhs) -> (Add['E] & {lhs: 'lhs, rhs: 'rhs})
 //│    = [Function: add]
 //│ nega: 'arg -> Nega['arg]
 //│     = [Function: nega]
@@ -18,7 +18,7 @@ def nega arg = Nega { arg }
 rec def evalStub1 e = case e of {
   Lit -> e.val
   }
-//│ evalStub1: (Lit with {val: 'val}) -> 'val
+//│ evalStub1: (Lit & {val: 'val}) -> 'val
 //│          = [Function: evalStub1]
 
 rec def evalStub2 e = case e of {

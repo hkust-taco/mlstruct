@@ -93,12 +93,8 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   def ite[p: P]: P[Term] = P( kw("if") ~/ term ~ kw("then") ~ term ~ kw("else") ~ term ).map(ite =>
     App(App(App(Var("if"), ite._1), ite._2), ite._3))
   
-  def withsAsc[p: P]: P[Term] = P( withs ~ (":" ~/ ty).rep ).map {
+  def withsAsc[p: P]: P[Term] = P( binops ~ (":" ~/ ty).rep ).map {
     case (withs, ascs) => ascs.foldLeft(withs)(Asc)
-  }
-  
-  def withs[p: P]: P[Term] = P( binops ~ (kw("with") ~ record).rep ).map {
-    case (as, ws) => ws.foldLeft(as)((acc, w) => With(acc, w))
   }
   
   def mkApp(lhs: Term, rhs: Term): Term = App(lhs, toParams(rhs))
@@ -215,10 +211,7 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   // Note: field removal types are not supposed to be explicitly used by programmers,
   //    and they won't work in negative positions,
   //    but parsing them is useful in tests (such as shared/src/test/diff/mlscript/Annoying.mls)
-  def tyNoFun[p: P]: P[Type] = P( (rcd | ctor | parTy) ~ ("\\" ~ variable).rep(0) ) map {
-    case (ty, Nil) => ty
-    case (ty, ids) => Rem(ty, ids.toList)
-  }
+  def tyNoFun[p: P]: P[Type] = P( (rcd | ctor | parTy) )
   def ctor[p: P]: P[Type] = locate(P( tyName ~ "[" ~ ty.rep(0, ",") ~ "]" ) map {
     case (tname, targs) => AppliedType(tname, targs.toList)
   }) | tyNeg | tyName | tyVar | tyWild | litTy

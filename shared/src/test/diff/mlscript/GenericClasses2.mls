@@ -9,7 +9,7 @@ Foo1
 //│    = [Function: res]
 
 Bar1
-//│ res: {x: int & 'x} -> (Bar1 with {x: 'x})
+//│ res: {x: int & 'x} -> (Bar1 & {x: 'x})
 //│    = [Function: res]
 
 b = Bar1{x = 1}
@@ -66,7 +66,7 @@ Bar3
 :e
 Bar2
 Bar3
-//│ res: {x: int & 'x} -> (Bar2 with {x: 'x})
+//│ res: {x: int & 'x} -> (Bar2 & {x: 'x})
 //│    = [Function: res]
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
 //│ ║  l.68: 	Bar3

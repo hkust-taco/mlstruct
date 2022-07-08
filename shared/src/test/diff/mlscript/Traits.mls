@@ -29,7 +29,7 @@ class D: C & A & B
 //│ Defined class D
 
 D
-//│ res: {x: 'x & (0 | 1), y: string & 'y} -> (D with {x: 'x, y: 'y})
+//│ res: {x: 'x & (0 | 1), y: string & 'y} -> (D & {x: 'x, y: 'y})
 //│    = [Function: res]
 
 :re
@@ -43,7 +43,7 @@ def dv = D{}
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.42: 	def dv = D{}
 //│ ║        	         ^^^
-//│ ╟── record literal of type `anything` is not a record (expected a record with fields: y, x)
+//│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
 //│ ║  l.42: 	def dv = D{}
 //│ ╙──      	          ^^
 //│ dv: D & {x: nothing, y: nothing} | error
@@ -58,7 +58,7 @@ dv: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
 //│ ║  l.57: 	dv: nothing
 //│ ║        	^^
-//│ ╟── application of type `D with {x: ?x, y: ?y}` does not match type `nothing`
+//│ ╟── application of type `D & {x: ?x, y: ?y}` does not match type `nothing`
 //│ ║  l.52: 	def dv = D { x = 0; y = "hello" }
 //│ ║        	         ^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `nothing`
@@ -157,7 +157,7 @@ def c1 = C1 { }
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.156: 	def c1 = C1 { }
 //│ ║         	         ^^^^^^
-//│ ╟── record literal of type `anything` is not a record (expected a record with fields: y, x)
+//│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
 //│ ║  l.156: 	def c1 = C1 { }
 //│ ╙──       	            ^^^
 //│ c1: C1 & {x: nothing, y: nothing} | error

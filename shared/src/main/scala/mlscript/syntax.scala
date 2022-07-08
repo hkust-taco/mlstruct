@@ -62,7 +62,6 @@ final case class Bra(rcd: Bool, trm: Term)                           extends Ter
 final case class Asc(trm: Term, ty: Type)                            extends Term
 final case class Bind(lhs: Term, rhs: Term)                          extends Term
 final case class Test(trm: Term, ty: Term)                           extends Term
-final case class With(trm: Term, fields: Rcd)                        extends Term
 final case class CaseOf(trm: Term, cases: CaseBranches)              extends Term
 final case class Subs(arr: Term, idx: Term)                          extends Term
 final case class Assign(lhs: Term, rhs: Term)                        extends Term
@@ -103,9 +102,7 @@ final case class Tuple(fields: Ls[Opt[Var] -> Field])    extends Type
 final case class Recursive(uv: TypeVar, body: Type)      extends Type
 final case class AppliedType(base: TypeName, targs: List[Type]) extends Type
 final case class Neg(base: Type)                         extends Type
-final case class Rem(base: Type, names: Ls[Var])         extends Type
 final case class Bounds(lb: Type, ub: Type)              extends Type
-final case class WithExtension(base: Type, rcd: Record)  extends Type
 final case class Constrained(base: Type, where: Ls[TypeVar -> Bounds]) extends Type
 
 final case class Field(in: Opt[Type], out: Type)         extends FieldImpl
