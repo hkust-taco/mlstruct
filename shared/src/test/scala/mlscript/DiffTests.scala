@@ -12,7 +12,6 @@ import mlscript.JSTestBackend.IllFormedCode
 import mlscript.JSTestBackend.Unimplemented
 import mlscript.JSTestBackend.UnexpectedCrash
 import mlscript.JSTestBackend.TestCode
-import mlscript.codegen.typescript.TsTypegenCodeBuilder
 
 class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.ParallelTestExecution {
 // class DiffTests extends org.scalatest.funsuite.AnyFunSuite {
@@ -72,7 +71,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
       noExecution: Bool = false,
       noGeneration: Bool = false,
       showGeneratedJS: Bool = false,
-      generateTsDeclarations: Bool = false,
       debugVariance: Bool = false,
       expectRuntimeErrors: Bool = false,
       expectCodeGenErrors: Bool = false,
@@ -118,7 +116,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
           case "ne" => mode.copy(noExecution = true)
           case "ng" => mode.copy(noGeneration = true)
           case "js" => mode.copy(showGeneratedJS = true)
-          case "ts" => mode.copy(generateTsDeclarations = true)
           case "dv" => mode.copy(debugVariance = true)
           case "ge" => mode.copy(expectCodeGenErrors = true)
           case "re" => mode.copy(expectRuntimeErrors = true)
@@ -292,15 +289,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                 exp
               }
             }
-            // initialize ts typegen code builder and
-            // declare all type definitions for current block
-            val tsTypegenCodeBuilder = new TsTypegenCodeBuilder()
-            if (mode.generateTsDeclarations) {
-              typeDefs.iterator.filter(td =>
-                ctx.tyDefs.contains(td.nme.name) && !oldCtx.tyDefs.contains(td.nme.name)
-              ).foreach(td => tsTypegenCodeBuilder.declareTypeDef(td))
-            }
-
+            
             val curBlockTypeDefs = typeDefs
               // add check from process type def block below
               .flatMap(td => if (!oldCtx.tyDefs.contains(td.nme.name)) ctx.tyDefs.get(td.nme.name) else None)
@@ -312,7 +301,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
             typer.computeVariances(curBlockTypeDefs, ctx)
             typer.dbg = temp
             val varianceWarnings: MutMap[TypeName, Ls[TypeName]] = MutMap()
-
+            
             // show the result of type inference for each processed type def
             typeDefs.foreach(td =>
               // check if type def is not previously defined
@@ -341,7 +330,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                   else
                     SourceCode("")
                 output(s"Defined " + td.kind.str + " " + tn + params)
-
+                
                 // calculate types for all method definitions and declarations
                 // only once and reuse for pretty printing and type generation
                 val methodsAndTypes = (ttd.mthDecls ++ ttd.mthDefs).flatMap {
@@ -351,7 +340,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                       _ => ctx.getMth(S(tn), mn).map(mthTy => (m, getType(mthTy.toPT)))
                     )
                 }
-
+                
                 // pretty print method definitions
                 methodsAndTypes.foreach {
                   case (MethodDef(_, _, Var(mn), _, rhs), res) =>
@@ -360,20 +349,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                       _ => "Declared"  // the method type has just been declared
                     )} ${tn}.${mn}: ${res.show}")
                 }
-
-                // start typegen, declare methods if any and complete typegen block
-                if (mode.generateTsDeclarations) {
-                  val mthDeclSet = ttd.mthDecls.iterator.map(_.nme.name).toSet
-                  val methods = methodsAndTypes
-                    // filter method declarations and definitions
-                    // without declarations
-                    .withFilter { case (mthd, _) =>
-                      mthd.rhs.isRight || !mthDeclSet.contains(mthd.nme.name)
-                    }
-                    .map { case (mthd, mthdTy) => (mthd.nme.name, mthdTy) }
-
-                  tsTypegenCodeBuilder.addTypeDef(td, methods)
-                }
+                
               }
             )
             
@@ -511,7 +487,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                 val exp = getType(ty_sch)
                 output(s"$nme: ${exp.show}")
                 showFirstResult(nme.name.length())
-                if (mode.generateTsDeclarations) tsTypegenCodeBuilder.addTypeGenTermDefinition(exp, Some(nme.name))
 
               // statement is defined and has a body/definition
               case d @ Def(isrec, nme, L(rhs)) =>
@@ -526,7 +501,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                   case N =>
                     ctx += nme.name -> ty_sch
                     output(s"$nme: ${exp.show}")
-                    if (mode.generateTsDeclarations) tsTypegenCodeBuilder.addTypeGenTermDefinition(exp, Some(nme.name))
                     
                   // statement has a body and a declared type
                   // both are used to compute a subsumption (What is this??)
@@ -539,7 +513,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                     output(sign_exp.show)
                     typer.dbg = mode.dbg
                     typer.subsume(ty_sch, sign)(ctx, raise, typer.TypeProvenance(d.toLoc, "def definition"))
-                    if (mode.generateTsDeclarations) tsTypegenCodeBuilder.addTypeGenTermDefinition(exp, Some(nme.name))
                 }
                 showFirstResult(nme.name.length())
               case desug: DesugaredStatement =>
@@ -554,7 +527,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                         ctx += nme -> pty
                         output(s"$nme: ${ptType.show}")
                         prefixLength = nme.length()
-                        if (mode.generateTsDeclarations) tsTypegenCodeBuilder.addTypeGenTermDefinition(ptType, Some(nme))
                     }
 
                   // statements for terms that compute to a value
@@ -564,7 +536,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                     if (exp =/= TypeName("unit")) {
                       ctx += "res" -> pty
                       output(s"res: ${exp.show}")
-                      if (mode.generateTsDeclarations) tsTypegenCodeBuilder.addTypeGenTermDefinition(exp, None)
                       prefixLength = 3
                     }
                 }
@@ -589,8 +560,6 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                 output(s"  $name: $message")
               case _ => ()
             }
-            // generate typescript typegen block
-            if (mode.generateTsDeclarations) outputSourceCode(tsTypegenCodeBuilder.toSourceCode())
             
             if (mode.stats) {
               val (co, an, su, ty) = typer.stats

@@ -1,6 +1,5 @@
 :NoJS
 
-:ts
 { a = "hello"; b = "world" }
 1 + 2 - 5
 let t = { a = 5; b = "world"} in if t.a == 1 then 1 else (fun f -> f.b )
@@ -16,28 +15,15 @@ def z = x + y
 //│ y: 2
 //│ z: int
 //│ res: (1, 3, {a: {b: {c: "d"}}}, "hello hello",)
-//│ // start ts
-//│ export declare const res: {a: "hello", b: "world"}
-//│ export declare const res: int
-//│ export declare const res<b>: ((arg: {b: b}) => b) | 1
-//│ export declare const x: 1
-//│ export declare const y: 2
-//│ export declare const z: int
-//│ export declare const res: readonly [1, 3, {a: {b: {c: "d"}}}, "hello hello"]
-//│ // end ts
 
-:ts
+// :ts
 def rcd = { x = 1 }
 rcd.x
 // records
 //│ rcd: {x: 1}
 //│ res: 1
-//│ // start ts
-//│ export declare const rcd: {x: 1}
-//│ export declare const res: 1
-//│ // end ts
 
-:ts
+// :ts
 def f (a: int) (b: string) (c: bool) = if c then a else b
 rec def fact x = if x == 1 then 1 else x * fact (x - 1)
 def g x y = if x.b == 1 then x else x.a
@@ -45,14 +31,9 @@ def g x y = if x.b == 1 then x else x.a
 //│ f: int -> string -> bool -> (int | string)
 //│ fact: int -> int
 //│ g: ({a: 'a, b: int} & 'a) -> anything -> 'a
-//│ // start ts
-//│ export declare const f: (arg: int) => (arg1: string) => (arg2: bool) => int | string
-//│ export declare const fact: (arg: int) => int
-//│ export declare const g<a>: (arg: {a: a, b: int} & a) => (arg1: unknown) => a
-//│ // end ts
 
 // FIXME
-:ts
+// :ts
 rec def l (a: int) = l
 rec def m (a: int) (b: int) = m
 def f: ('c -> 'a as 'a) -> 'c -> int
@@ -60,70 +41,57 @@ def f: ('c -> 'a as 'a) -> 'c -> int
 //│ l: 'l
 //│   where
 //│     'l :> int -> 'l
-//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α89,Bounds(Function(Tuple(List((None,TypeName(int)))),α89),Top)))
+//│ m: 'm
+//│   where
+//│     'm :> int -> int -> 'm
+//│ f: 'a -> 'c -> int
+//│   where
+//│     'a <: 'c -> 'a
 
-:ts
+// :ts
 :e
 1: ?
 { a = "hello" }: { a: string } & { b: int }
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.67: 	1: ?
+//│ ║  l.53: 	1: ?
 //│ ║        	^
 //│ ╟── integer literal of type `1` does not match type `nothing`
 //│ ╟── Note: constraint arises from type wildcard:
-//│ ║  l.67: 	1: ?
+//│ ║  l.53: 	1: ?
 //│ ╙──      	   ^
 //│ res: anything
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.68: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.54: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ║        	^^^^^^^^^^^^^^^
 //│ ╟── record literal of type `{a: "hello"}` does not have field 'b'
 //│ ╟── Note: constraint arises from intersection type:
-//│ ║  l.68: 	{ a = "hello" }: { a: string } & { b: int }
+//│ ║  l.54: 	{ a = "hello" }: { a: string } & { b: int }
 //│ ╙──      	                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: {a: string, b: int}
-//│ // start ts
-//│ export declare const res: unknown
-//│ export declare const res: {a: string, b: int}
-//│ // end ts
 
-:ts
+// :ts
 def nonsense x y = if x.a == y.b then x y else fun y -> x
 def g = fun x -> fun y -> if x == y then x y else y x
 // complex types
 //│ nonsense: ('a -> 'b & {a: int} & 'c) -> ({b: int} & 'a) -> (anything -> 'c | 'b)
 //│ g: nothing -> nothing -> nothing
-//│ // start ts
-//│ export declare const nonsense<a, b, c>: (arg: ((arg1: a) => b) & {a: int} & c) => (arg2: {b: int} & a) => ((arg3: unknown) => c) | b
-//│ export declare const g: (arg: never) => (arg1: never) => never
-//│ // end ts
 
-:ts
+// :ts
 def x: int | ~string
 def y: "a" | "b" | ~string
 // negative types
 //│ x: int | ~string
 //│ y: "a" | "b" | ~string
-//│ // start ts
-//│ type Neg<NegatedType, FromType> = FromType extends NegatedType ? never: FromType
-//│ export declare const x: int | Neg<string, a>
-//│ export declare const y: "a" | "b" | Neg<string, a>
-//│ // end ts
 
-:ts
+// :ts
 def cont x = x + 1
 def app y k = k (y - 1)
 app 2 cont
 //│ cont: int -> int
 //│ app: int -> (int -> 'a) -> 'a
 //│ res: int
-//│ // start ts
-//│ export declare const cont: (arg: int) => int
-//│ export declare const app<a>: (arg: int) => (arg1: (arg2: int) => a) => a
-//│ export declare const res: int
-//│ // end ts
 
-:ts
+// :ts
 def g (x, y) = x + y
 def h (x, (y, z)) = y z + x
 def k (x, (y, z)) (l, (m), (n)) = (m (n + l)) (y (z + x))
@@ -132,16 +100,10 @@ def l: ((1, 2), (3, 4)) -> 5
 //│ h: (int, ('a -> int, 'a,),) -> int
 //│ k: (int, (int -> 'a, int,),) -> (int, int -> 'a -> 'b, int,) -> 'b
 //│ l: ((1, 2,), (3, 4,),) -> 5
-//│ // start ts
-//│ export declare const g: (arg: int, arg1: int) => int
-//│ export declare const h<a>: (arg: int, arg1: readonly [(arg2: a) => int, a]) => int
-//│ export declare const k<a, b>: (arg: int, arg1: readonly [(arg2: int) => a, int]) => (arg3: int, arg4: (arg5: int) => (arg6: a) => b, arg7: int) => b
-//│ export declare const l: (arg: readonly [1, 2], arg1: readonly [3, 4]) => 5
-//│ // end ts
 
 
 // FIXME
-:ts
+// :ts
 def weird: ((int, int) -> 'a) as 'a
 def weird: ('a -> (int, int)) as 'a
 def weird: ((int, 'a) as 'a) -> int
@@ -149,6 +111,12 @@ def weird: ((int, bool) | 'a) -> 'a
 //│ weird: 'a
 //│   where
 //│     'a :> (int, int,) -> 'a
-//│ /!!!\ Uncaught error: mlscript.codegen.CodeGenError: Cannot generate type for `where` clause List((α211,Bounds(Function(Tuple(List((None,TypeName(int)), (None,TypeName(int)))),α211),Top)))
+//│ weird: 'a
+//│   where
+//│     'a := 'a -> (int, int,)
+//│ weird: 'a -> int
+//│   where
+//│     'a <: (int, 'a,)
+//│ weird: ('a | (int, bool,)) -> 'a
 
 
