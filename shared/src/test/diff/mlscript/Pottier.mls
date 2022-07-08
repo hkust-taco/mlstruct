@@ -12,27 +12,35 @@ rec def f = fun x -> fun y -> add (f x.tail y) (f y.tail x)
 //│ f: 'a -> anything -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f1]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f2]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f3]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f4]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f5]
 //│ f: 'a -> 'a -> int
 //│   where
 //│     'a <: {tail: 'a}
+//│  = [Function: f6]
 
 def f = fun x -> fun y -> if true then { l = x; r = y } else { l = y; r = x } // 2-crown
 //│ f: 'a -> 'a -> {l: 'a, r: 'a}
+//│  = [Function: f7]
 
 
 // Inspired by [Pottier 98, chap 13.5]
@@ -42,5 +50,6 @@ rec def f = fun x -> fun y -> if true then x else { t = f x.t y.t }
 //│   where
 //│     'b <: {t: 'b}
 //│     'a := {t: 'a}
+//│  = [Function: f8]
 
 

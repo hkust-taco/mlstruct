@@ -163,7 +163,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
           // || l.startsWith(oldOutputMarker)
         ))).toIndexedSeq
         block.foreach(out.println)
-        val processedBlock = if (file.ext =:= "fun") block.map(_ + "\n") else MLParser.addTopLevelSeparators(block)
+        val processedBlock = MLParser.addTopLevelSeparators(block)
         val processedBlockStr = processedBlock.mkString
         val fph = new FastParseHelpers(block)
         val globalStartLineNum = allLines.size - lines.size + 1
@@ -626,7 +626,7 @@ object DiffTests {
   
   private val allFiles = os.walk(dir).filter(_.toIO.isFile)
   
-  private val validExt = Set("fun", "mls")
+  private val validExt = Set("mls")
   
   // Aggregate unstaged modified files to only run the tests on them, if there are any
   private val modified: Set[Str] =
