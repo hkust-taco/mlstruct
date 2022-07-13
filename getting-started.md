@@ -1,6 +1,6 @@
 # Getting Started Guide
 
-This is the MLscript artifact of the paper *MLscript: Principal Type Inference in a Boolean Algebra of Structural Types*. It consists in an SBT (Scala Build Tool) project with an implementation of MLscript and a comprehensive test suite.
+This is the MLscript artifact of the paper *MLscript: Principal Type Inference in a Boolean Algebra of Structural Types*. It consists of an SBT (Scala Build Tool) project with an implementation of MLscript and a comprehensive test suite.
 The implementation can be compiled both to the JVM and to JavaScript (using ScalaJS), allowing it to be tried in the browser.
 
 - The `shared/src/main/scala/mlscript/` directory contains the sources of the compiler MLscript.

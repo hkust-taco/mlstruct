@@ -27,7 +27,7 @@ and see how the inferred types change and what errors are reported.
 The simplest way of experimenting with MLscript is to use the existing testing infrastructure of the project.
 (The web demo could also be used, but it is hosted externally (at https://hkust-taco.github.io/mlscript/);
 alternatively, this demo can be run locally by following the instructions in `README.md`,
-though that's not the way we recommend for easiest experimentation.)
+though that's not the way we recommend for the easiest experimentation.)
 
 The way testing works in MLscript is as follows:
  - the MLscript compiler reads a given test file one code block at a time (code blocks are separated by empty lines);
