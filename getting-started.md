@@ -15,7 +15,7 @@ The implementation can be compiled both to the JVM and to JavaScript (using Scal
 To compile the project and run the tests, all you need is a recent Java Virtual Machine (JVM), the Scala Build Tool (SBT), and NodeJS.
 
 The simplest way to set up the JVM and SBT is through the `coursier` tool.
-We explicitly support NodeJS versions `v16.14.x`, `v16.15.x`, and `v17.x.x`.
+We explicitly support NodeJS versions `v16.14.x`, `v16.15.x`, `v16.16.x`, and `v17.x.x`.
 
 We also provide a Docker image that already contains the required toolchain,
 ready to be used.
@@ -33,16 +33,17 @@ ready to be used.
 
 ### Using the Docker image
 
-We have built a Docker image containing all necessary prerequisites and pushed it to [Docker Hub]() [TODO].
+We have built a Docker image containing all necessary prerequisites and pushed it to [Docker Hub](https://hub.docker.com/r/mlscript/mlscript-docker).
 
 To use this image, you should first install Docker if it is not installed yet. Then, you can launch a container using this image with the following command:
 
 ```
-docker run -it --rm TODO
+docker pull mlscript/mlscript-docker:v0
+docker run -it --rm mlscript/mlscript-docker:v0
 ```
 
 You will be attached to the shell of the container after the image gets pulled and the container is launched.
-Launch the SBT shell by typing `sbt`.
+Please `cd` to `mlscript-core-language/` and launch the SBT shell by typing `sbt`.
 
 
 ## Compiling the project and running the tests
