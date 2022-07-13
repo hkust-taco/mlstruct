@@ -1,4 +1,4 @@
-_This repository contains an implementation of the core language of [MLscript](https://github.com/hkust-taco/mlscript), in a way that is faithful to the paper and that does not contain all the bells and whistles and extra features of the full MLscript._
+_This repository contains an implementation of the Boolean-algebraic core of [MLscript](https://github.com/hkust-taco/mlscript), in a way that is faithful to the corresponding OOPSLA 2022 paper. In particular, we have removed all the bells and whistles and extra features of the full MLscript language._
 
 # MLscript Core Language
 
@@ -12,15 +12,15 @@ MLscript supports union, intersection, and complement (or negation) connectives,
 
 ## Running the tests
 
-Running the tests only requires the Scala Build Tool installed.
+Running the tests only requires the Scala Build Tool and NodeJS installed.
 In the terminal, run `sbt mlscriptJVM/test`.
 
 To run the regression tests continuously as you develop,
 launch the SBT shell first with `sbt` and then type `~mlscriptJVM/testOnly mlscript.DiffTests`.
 
-## Running the demo locally
+## Running the web demo locally
 
-To run the demo on your computer, compile the project with `sbt fastOptJS`, then open the `local_testing.html` file in your browser.
+To run the web demo on your computer, compile the project with `sbt fastOptJS`, then open the `local_testing.html` file in your browser.
 
 You can make changes to the type inference code
 in `shared/src/main/scala/mlscript`,

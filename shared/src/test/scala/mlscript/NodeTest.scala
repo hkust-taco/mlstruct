@@ -11,6 +11,7 @@ class NodeTests extends org.scalatest.funsuite.AnyFunSuite {
     assert(
           v.startsWith("v16.14")
       ||  v.startsWith("v16.15")
+      ||  v.startsWith("v16.16")
       ||  v.startsWith("v17")
     )
     
