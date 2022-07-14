@@ -27,29 +27,29 @@ def flatMap2 f opt = case opt of { Some -> f opt.value | _ -> opt }
 //│ flatMap2: ('value -> 'a) -> (Some[?] & {value: 'value} | 'a & ~some) -> 'a
 //│         = [Function: flatMap2]
 
-flatMap2 (fun x -> Some{value = x}) (Some{value = 12})
-//│ res: Some[12]
+ex1 = flatMap2 (fun x -> x) 42
+//│ ex1: 42
+//│    = 42
+
+ex2 = flatMap2 (fun x -> Some{value = x}) (Some{value = 12})
+//│ ex2: Some[12]
 //│    = Some { value: 12 }
 
-flatMap2 (fun x -> Some{value = x}) 42
-//│ res: 42 | Some[nothing]
-//│    = 42
-
-flatMap2 (fun x -> x) 42
-//│ res: 42
+ex3 = flatMap2 (fun x -> Some{value = x}) 42
+//│ ex3: 42 | Some[nothing]
 //│    = 42
 
 
-def flatMap3 f opt = case opt of { Some -> f opt | _ -> opt }
-//│ flatMap3: ('a -> 'b) -> (Some[?] & 'a | 'b & ~some) -> 'b
-//│         = [Function: flatMap3]
+def mapSome f opt = case opt of { Some -> f opt | _ -> opt }
+//│ mapSome: ('a -> 'b) -> (Some[?] & 'a | 'b & ~some) -> 'b
+//│        = [Function: mapSome]
 
 
 class SomeAnd[A, P]: Some[A] & { payload: P }
 //│ Defined class SomeAnd[+A, +P]
 
 let arg = if true then SomeAnd{value = 42; payload = 23} else None{}
-  in flatMap3 (fun x -> x.value + x.payload) arg
+  in mapSome (fun x -> x.value + x.payload) arg
 //│ res: int | None
 //│    = 65
 

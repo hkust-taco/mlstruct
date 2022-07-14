@@ -9,25 +9,65 @@
   <h1>ML<sub>script</sub> online demonstration</h1>
   <div id="content">
     <textarea id="mlscript-input" class="panel" spellcheck="false">
-class Left[A]: { value: A }
-def Left value = Left{ value }
+class None: {}
+class Some[A]: { value: A }
+type Option[A] = Some[A] | None
 
-class Right[A]: { value: A }
-def Right value = Right{ value }
 
-def test x = case x of
-  { Left -> x.value
-  | Right -> "nope"
+def flatMap f opt = case opt of {
+  | Some -> f opt.value
+  | None -> None{}
   }
 
-tmp = test (if true then Left 1 else Right 2)
+res = flatMap (fun x -> x) (Some{value = 42})
 
-case tmp of { int -> tmp | string -> 0 }
+case res of { int -> res | None -> 0 }
 
-def f: (int & 'a) -> (int & 'a) -> 'a
-def f a b = if gt a b then a else b
 
-f 1 2
+def flatMap2 f opt =
+  case opt of { Some -> f opt.value | _ -> opt }
+
+ex1 = flatMap2 (fun x -> x) 42
+
+ex2 = flatMap2 (fun x -> Some{value = x}) (Some{value = 12})
+
+ex3 = flatMap2 (fun x -> Some{value = x}) 42
+
+
+def mapSome f opt =
+  case opt of { Some -> f opt | _ -> opt }
+
+
+class SomeAnd[A, P]: Some[A] & { payload: P }
+
+let arg =
+  if true then SomeAnd{value = 42; payload = 23} else None{}
+  in mapSome (fun x -> x.value + x.payload) arg
+
+
+class Cons[A]: Some[A] & { tail: List[A] }
+type List[A] = Cons[A] | None
+
+rec def mapList f ls = case ls of {
+  | Cons -> Cons{value = f ls.value; tail = mapList f ls.tail}
+  | None -> None{}
+  }
+
+
+def Cons_ty:
+  'a -> ('b & List['a]) -> (Cons['a] & { value: 'a; tail: 'b })
+def unzip_ty:
+  List[{ fst: 'a; snd: 'b }] -> { fst: List['a]; snd: List['b] }
+
+def Cons head tail = Cons { value = head; tail = tail }
+
+def None = None{}
+
+rec def unzip xs = case xs of {
+  | None -> { fst = None; snd = None }
+  | Some -> let tmp = unzip xs.tail
+            in { fst = Cons xs.value.fst tmp.fst ;
+                 snd = Cons xs.value.snd tmp.snd } }
 </textarea>
 <!-- let rec recursive_monster = fun x ->
   { thing = x;
