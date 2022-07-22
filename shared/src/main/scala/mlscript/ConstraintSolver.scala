@@ -37,17 +37,20 @@ class ConstraintSolver extends NormalForms { self: Typer =>
       annoyingCalls += 1
       
       lhs.cs.foreach { case Conjunct(lnf, vars, rnf, nvars) =>
-        vars.headOption match {
-          case S(v) =>
-            rec(v, rhs.toType() | Conjunct(lnf, vars - v, rnf, nvars).toType().neg(), true)
-          case N =>
-            implicit val etf: ExpandTupleFields = true
-            val fullRhs = nvars.iterator.map(DNF.mkDeep(_, true))
-              .foldLeft(rhs | DNF.mkDeep(rnf.toType(), false))(_ | _)
-            println(s"Consider ${lnf} <: ${fullRhs}")
-            
-            // First, we filter out those RHS alternatives that obviously don't match our LHS:
-            val possible = fullRhs.cs.filter { r =>
+        
+        def local(): Unit = { // * Used to return early in simple cases
+          
+          vars.headOption match {
+            case S(v) =>
+              rec(v, rhs.toType() | Conjunct(lnf, vars - v, rnf, nvars).toType().neg(), true)
+            case N =>
+              implicit val etf: ExpandTupleFields = true
+              val fullRhs = nvars.iterator.map(DNF.mkDeep(_, true))
+                .foldLeft(rhs | DNF.mkDeep(rnf.toType(), false))(_ | _)
+              println(s"Consider ${lnf} <: ${fullRhs}")
+              
+              // First, we filter out those RHS alternatives that obviously don't match our LHS:
+              val possible = fullRhs.cs.filter { r =>
               
               // Note that without this subtyping check,
               //  the number of constraints in the `eval1_ty_ugly = eval1_ty`
@@ -57,22 +60,27 @@ class ConstraintSolver extends NormalForms { self: Typer =>
                 return ()
               }
               
-              // println(s"Possible? $r ${lnf & r.lnf}")
-              !vars.exists(r.nvars) && ((lnf & r.lnf)(ctx, etf = false)).isDefined && ((lnf, r.rnf) match {
-                case (LhsRefined(_, _, ttags, _, _), RhsBases(objTags, rest, trs))
-                  if objTags.exists { case t: TraitTag => ttags(t); case _ => false }
-                  => false
-                case (LhsRefined(S(ot: ClassTag), _, _, _, _), RhsBases(objTags, rest, trs))
-                  => !objTags.contains(ot)
-                case _ => true
-              })
-            }
-            
-            println(s"Possible: " + possible)
-            
-            annoying(Nil, lnf, possible.map(_.toType()), RhsBot)
-            
+                // println(s"Possible? $r ${lnf & r.lnf}")
+                !vars.exists(r.nvars) && ((lnf & r.lnf)(ctx, etf = false)).isDefined && ((lnf, r.rnf) match {
+                  case (LhsRefined(_, _, ttags, _, _), RhsBases(objTags, rest, trs))
+                    if objTags.exists { case t: TraitTag => ttags(t); case _ => false }
+                    => false
+                  case (LhsRefined(S(ot: ClassTag), _, _, _, _), RhsBases(objTags, rest, trs))
+                    => !objTags.contains(ot)
+                  case _ => true
+                })
+              }
+              
+              println(s"Possible: " + possible)
+              
+              annoying(Nil, lnf, possible.map(_.toType()), RhsBot)
+              
+          }
+          
         }
+        
+        local()
+        
       }
     }()
     
