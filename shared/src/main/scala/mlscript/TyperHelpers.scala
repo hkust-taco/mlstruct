@@ -108,57 +108,6 @@ abstract class TyperHelpers { Typer: Typer =>
     }
   }
   
-  def factorize(cs: Ls[Conjunct], sort: Bool): Ls[ST] = {
-    val factors = MutMap.empty[Factorizable, Int]
-    cs.foreach { c =>
-      c.vars.foreach { v =>
-        factors(v) = factors.getOrElse(v, 0) + 1
-      }
-      c.nvars.foreach { v =>
-        val nv = NegVar(v)
-        factors(nv) = factors.getOrElse(nv, 0) + 1
-      }
-      c.lnf match {
-        case LhsTop => ()
-        case LhsRefined(_, ttags, _, _) =>
-          ttags.foreach { ttg =>
-            factors(ttg) = factors.getOrElse(ttg, 0) + 1
-          }
-      }
-      c.rnf match {
-        case RhsBot | _: RhsField => ()
-        case RhsBases(ps, _, _) =>
-          ps.foreach {
-            case ttg: TraitTag =>
-              val nt = NegTrait(ttg)
-              factors(nt) = factors.getOrElse(nt, 0) + 1
-            case _ => ()
-          }
-      }
-    }
-    factors.maxByOption(_._2) match {
-      // case S((fact, n)) =>  // Very strangely, this seems to improve some StressTrait tests slightly...
-      case S((fact, n)) if n > 1 =>
-        val (factored, rest) = fact match {
-          case v: TV =>
-            cs.partitionMap(c => if (c.vars(v)) L(c) else R(c))
-          case NegVar(v) =>
-            cs.partitionMap(c => if (c.nvars(v)) L(c) else R(c))
-          case ttg: TraitTag =>
-            cs.partitionMap(c => if (c.lnf.hasTag(ttg)) L(c) else R(c))
-          case NegTrait(ttg) =>
-            cs.partitionMap(c => if (c.rnf.hasTag(ttg)) L(c) else R(c))
-        }
-        (fact & factorize(factored.map(_ - fact), sort).reduce(_ | _)) :: (
-          if (factors.sizeCompare(1) > 0 && factors.exists(f => (f._1 isnt fact) && f._2 > 1))
-            factorize(rest, sort)
-          else rest.map(_.toType(sort))
-        )
-      case _ =>
-        cs.map(_.toType(sort))
-    }
-  }
-  
   private def cleanupUnion(tys: Ls[ST])(implicit ctx: Ctx): Ls[ST] = {
     var res: Ls[ST] = Nil
     tys.reverseIterator.foreach { ty =>

@@ -9,7 +9,6 @@ import mlscript.utils._, shorthands._
 import mlscript.Message._
 
 class ConstraintSolver extends NormalForms { self: Typer =>
-  def verboseConstraintProvenanceHints: Bool = verbose
   
   /** Constrains the types to enforce a subtyping relationship `lhs` <: `rhs`. */
   def constrain(lhs: SimpleType, rhs: SimpleType)(implicit raise: Raise, prov: TypeProvenance, ctx: Ctx): Unit = {
@@ -71,29 +70,14 @@ class ConstraintSolver extends NormalForms { self: Typer =>
             
             println(s"Possible: " + possible)
             
-            if (doFactorize) {
-              // We try to factorize the RHS to help make subsequent solving take shortcuts:
-              
-              val fact = factorize(possible, sort = false)
-              
-              println(s"Factorized: " + fact)
-              
-              // Finally, we enter the "annoying constraint" resolution routine:
-              annoying(Nil, lnf, fact, RhsBot)
-              
-            } else {
-              // Alternatively, without factorization (does not actually make a difference most of the time):
-              
-              annoying(Nil, lnf, possible.map(_.toType()), RhsBot)
-              
-            }
+            annoying(Nil, lnf, possible.map(_.toType()), RhsBot)
             
         }
       }
     }()
     
     /* Solve annoying constraints,
-        which are those that involve either unions and intersections at the wrong polarities, or negations.
+        which are those that involve either unions and intersections at the wrong polarities or negations.
         This works by constructing all pairs of "conjunct <: disjunct" implied by the conceptual
         "DNF <: CNF" form of the constraint. */
     def annoying(ls: Ls[SimpleType], done_ls: LhsNf, rs: Ls[SimpleType], done_rs: RhsNf)

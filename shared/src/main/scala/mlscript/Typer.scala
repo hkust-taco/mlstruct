@@ -16,8 +16,6 @@ import mlscript.Message._
 class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     extends TypeDefs with TypeSimplifier {
   
-  def doFactorize: Bool = false
-  
   var recordProvenances: Boolean = true
   
   type Raise = Diagnostic => Unit
@@ -434,10 +432,9 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           con(ty_ty, trm_ty, ty_ty) // In patterns, we actually _unify_ the pattern and ascribed type 
         else ty_ty
       case (v @ ValidPatVar(nme)) =>
-        val prov = tp(if (verboseConstraintProvenanceHints) v.toLoc else N, "variable")
         // Note: only look at ctx.env, and not the outer ones!
         ctx.env.get(nme).collect { case ts: TypeScheme => ts.instantiate }
-          .getOrElse(new TypeVariable(lvl, Nil, Nil)(prov).tap(ctx += nme -> _))
+          .getOrElse(new TypeVariable(lvl, Nil, Nil)(noProv).tap(ctx += nme -> _))
       case v @ ValidVar(name) =>
         val ty = ctx.get(name).fold(err("identifier not found: " + name, term.toLoc): TypeScheme) {
           case AbstractConstructor(absMths, isTrait) =>
