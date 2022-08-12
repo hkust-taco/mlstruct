@@ -21,6 +21,7 @@ class RepThmTest
     
     val top = ExtrType(false)(noProv)
     val bot = ExtrType(true)(noProv)
+    
     val init = Ls(
       top,
       bot,
@@ -33,26 +34,36 @@ class RepThmTest
       FunctionType(bot, top)(noProv),
       FunctionType(bot, bot)(noProv),
     ) // ::: typeDefs.map(td => clsNameToNomTag(ctx.tyDefs(td.nme.name))(noProv, ctx))
-    val binops = Ls(
-      // (_: DNF) & (_: DNF),
-      // (_: DNF) | (_: DNF),
-      (dnf1: DNF, dnf2: DNF) => DNF.mk(ComposedType(true, dnf1.toType(), dnf2.toType())(noProv), true),
-      (dnf1: DNF, dnf2: DNF) => DNF.mk(ComposedType(false, dnf1.toType(), dnf2.toType())(noProv), true),
+    
+    val binops = Ls[(ST, ST) => ST](
+      _ & _,
+      _ | _
     )
-    val unops = Ls(
-      (dnf: DNF) => DNF.mk(NegType(dnf.toType())(noProv), true),
+    val unops = Ls[ST => ST](
+      _.neg()
     )
-
-    val dnfs = MutSet.from(init.map(DNF.mk(_, true)))
+    
+    val dnfs = MutSet.from[ST](init)
+    
     var count = 0
     var its = 0
+    
+    def subtypes(d: ST, e: ST): Bool = {
+      constrain(d, e)(_ => return false, NoProv, ctx)
+      true
+    }
+    
+    def addDNF(d: ST): Unit = {
+      if (!dnfs.exists { e =>
+        subtypes(d, e) && subtypes(e, d)
+      }) dnfs += d
+    }
+    
     while (count =/= dnfs.size) {
       count = dnfs.size
       val tmp = dnfs.toSet
-      // binops.foreach(f => dnfs ++= (for { x <- tmp; y <- tmp } yield f(x, y)))
-      // unops.foreach(f => dnfs ++= tmp.map(f))
-      for { f <- binops; x <- tmp; y <- tmp } dnfs += f(x, y)
-      for { f <- unops; x <- tmp } dnfs += f(x)
+      for { f <- binops; x <- tmp; y <- tmp } addDNF(f(x, y))
+      for { f <- unops; x <- tmp } addDNF(f(x))
       println(dnfs.size)
     }
     dnfs.foreach(println)
