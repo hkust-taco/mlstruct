@@ -1,7 +1,7 @@
 package mlscript
 
 import scala.collection.immutable.Set
-import scala.collection.mutable.{Set => MutSet}
+import scala.collection.mutable.{Set => MutSet, Map => MutMap}
 import mlscript.utils._, shorthands._
 
 class RepThmTest
@@ -43,7 +43,9 @@ class RepThmTest
       _.neg()
     )
     
-    val dnfs = MutSet.from[ST](init)
+    val eqSets: MutMap[ST, MutSet[ST]] =
+      MutMap.from(init.iterator.map(ty =>
+        ty -> (MutSet.empty += ty)))
     
     var count = 0
     var its = 0
@@ -53,20 +55,30 @@ class RepThmTest
       true
     }
     
-    def addDNF(d: ST): Unit = {
-      if (!dnfs.exists { e =>
-        subtypes(d, e) && subtypes(e, d)
-      }) dnfs += d
+    def addType(_d: ST): Unit = {
+      val d = DNF.mk(_d, true).toType(sort = true)
+      if (!eqSets.valuesIterator.exists(_.contains(d)))
+        if (!eqSets.exists { case (representative, set) =>
+          subtypes(d, representative) && subtypes(representative, d) && {
+            set += d
+            true
+          }
+        }) { eqSets += (d -> (MutSet.empty[ST] += d)) }
     }
     
-    while (count =/= dnfs.size) {
-      count = dnfs.size
-      val tmp = dnfs.toSet
-      for { f <- binops; x <- tmp; y <- tmp } addDNF(f(x, y))
-      for { f <- unops; x <- tmp } addDNF(f(x))
-      println(dnfs.size)
+    while (count =/= eqSets.size) {
+      // count = eqSets.size
+      val tmp = eqSets.keySet
+      count = tmp.size
+      println(count)
+      for { f <- binops; xs <- tmp; ys <- tmp } {
+        // println(x,y,f(x,y))
+        addType(f(xs, ys))
+      }
+      for { f <- unops; xs <- tmp } addType(f(xs))
     }
-    dnfs.foreach(println)
-    println(s"No. of unique DNFs: ${dnfs.size}")
+    val results = eqSets.keySet
+    results.foreach(r => println(expandType(r).show))
+    println(s"No. of unique types: ${results.size}")
   }
 }
