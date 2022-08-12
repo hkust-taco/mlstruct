@@ -1,0 +1,78 @@
+
+def nf: ~(anything -> anything)
+//│ nf: ~(anything -> anything)
+//│   = <missing implementation>
+
+def nx: ~{x: anything}
+//│ nx: ~{x: anything}
+//│   = <missing implementation>
+
+def ny: ~{y: anything}
+//│ ny: ~{y: anything}
+//│   = <missing implementation>
+
+:e
+nx = ny
+//│ ~{y: anything}
+//│   <:  nx:
+//│ ~{x: anything}
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.15: 	nx = ny
+//│ ║        	^^^^^^^
+//│ ╟── type `{x: anything}` does not have field 'y'
+//│ ║  l.6: 	def nx: ~{x: anything}
+//│ ║       	         ^^^^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `{y: anything}`
+//│ ║  l.15: 	nx = ny
+//│ ║        	     ^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.10: 	def ny: ~{y: anything}
+//│ ║        	         ^^^^^^^^^^^^^
+//│ ╟── from type negation:
+//│ ║  l.6: 	def nx: ~{x: anything}
+//│ ╙──     	        ^^^^^^^^^^^^^^
+//│   = <no result>
+//│     ny is not implemented
+
+:e
+ny = nx
+//│ ~{x: anything}
+//│   <:  ny:
+//│ ~{y: anything}
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.38: 	ny = nx
+//│ ║        	^^^^^^^
+//│ ╟── type `{y: anything}` does not have field 'x'
+//│ ║  l.10: 	def ny: ~{y: anything}
+//│ ║        	         ^^^^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `{x: anything}`
+//│ ║  l.38: 	ny = nx
+//│ ║        	     ^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.6: 	def nx: ~{x: anything}
+//│ ║       	         ^^^^^^^^^^^^^
+//│ ╟── from type negation:
+//│ ║  l.10: 	def ny: ~{y: anything}
+//│ ╙──      	        ^^^^^^^^^^^^^^
+//│   = <no result>
+//│     nx and ny are not implemented
+
+def weird: anything -> anything & {y: anything} & ~{x: anything}
+//│ weird: anything -> anything & {y: anything} & ~{x: anything}
+//│      = <missing implementation>
+
+nx = weird
+//│ anything -> anything & {y: anything} & ~{x: anything}
+//│   <:  nx:
+//│ ~{x: anything}
+//│   = <no result>
+//│     weird is not implemented
+
+weird = nx
+//│ ~{x: anything}
+//│   <:  weird:
+//│ anything -> anything & {y: anything} & ~{x: anything}
+//│      = <no result>
+//│        nx and weird are not implemented
+
+
