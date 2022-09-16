@@ -103,7 +103,14 @@ trait TypeSimplifier { self: Typer =>
       
       val cs = dnf.cs
       val (csNegs, otherCs) = cs.partitionMap {
-        case c @ Conjunct(l, vs, r, nvs) if l.isTop && vs.isEmpty && !(r.isBot && nvs.isEmpty) =>
+        case c @ Conjunct(l, vs, r, nvs)
+            if l.isTop && vs.isEmpty && !(r.isBot && nvs.isEmpty)
+            && false
+            // * ^ Disable this for now for consistency; later on, we should make sure to only reconstruct
+            // * type refs from intersections where all the required class fields are present,
+            // * so that ~#Some is not reconstructed as ~#Some[⊤] (later printed as ~#Some[?])
+            // * as these two are not truly equivalent...
+            =>
           // L(r, nvs)
           L(c)
         case c => R(c)
