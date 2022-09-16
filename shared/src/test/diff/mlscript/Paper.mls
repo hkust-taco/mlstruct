@@ -23,7 +23,7 @@ case res of int -> res, None -> 0
 
 
 def flatMap2 f opt = case opt of Some -> f opt.value, _ -> opt
-//│ flatMap2: ('value -> 'a) -> (Some[?] & {value: 'value} | 'a & ~some) -> 'a
+//│ flatMap2: ('value -> 'a) -> (Some[?] & {value: 'value} | 'a & ~#Some) -> 'a
 //│         = [Function: flatMap2]
 
 ex1 = flatMap2 (fun x -> x) 42
@@ -40,7 +40,7 @@ ex3 = flatMap2 (fun x -> Some{value = x}) 42
 
 
 def mapSome f opt = case opt of Some -> f opt, _ -> opt
-//│ mapSome: ('a -> 'b) -> (Some[?] & 'a | 'b & ~some) -> 'b
+//│ mapSome: ('a -> 'b) -> (Some[?] & 'a | 'b & ~#Some) -> 'b
 //│        = [Function: mapSome]
 
 

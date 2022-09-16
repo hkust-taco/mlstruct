@@ -39,6 +39,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Top => "anything"
     case Bot => "nothing"
     case TypeName(name) => name
+    case TypeTag(name) => "#"+name
     case uv: TypeVar => ctx.vs(uv)
     case Recursive(n, b) => parensIf(s"${b.showIn(ctx, 2)} as ${ctx.vs(n)}", outerPrec > 1)
     case Function(Tuple((N, l) :: Nil), r) => Function(l, r).showIn(ctx, outerPrec)
@@ -121,7 +122,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Inter(ty1, ty2) => ty1.collectFields ++ ty2.collectFields
     case _: Union | _: Function | _: Tuple | _: Recursive
         | _: Neg | _: Bounds | Top | Bot
-        | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: Constrained =>
+        | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: TypeName | _: TypeTag | _: Constrained =>
       Nil
   }
 
@@ -134,7 +135,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case AppliedType(TypeName(name), _) => name :: Nil
     case Inter(lhs, rhs) => lhs.collectTypeNames ++ rhs.collectTypeNames
     case _: Union | _: Function | _: Record | _: Tuple | _: Recursive
-        | _: Neg | _: Bounds | Top | Bot
+        | _: Neg | _: Bounds | Top | Bot | _: TypeTag
         | _: Literal | _: TypeVar | _: Constrained =>
       Nil
   }
@@ -148,7 +149,7 @@ abstract class TypeImpl extends Located { self: Type =>
     case Inter(ty1, ty2) => ty1.collectBodyFieldsAndTypes ++ ty2.collectBodyFieldsAndTypes
     case _: Union | _: Function | _: Tuple | _: Recursive
         | _: Neg | _: Bounds | Top | Bot
-        | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: Constrained =>
+        | _: Literal | _: TypeVar | _: AppliedType | _: TypeName | _: TypeTag | _: Constrained =>
       Nil
   }
 }

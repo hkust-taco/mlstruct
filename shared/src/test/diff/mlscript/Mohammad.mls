@@ -95,7 +95,7 @@ class D: T & {z: int}
 //│ // End of generated code
 
 def useTrt t = case t of { T -> t.y | Class -> t.x }
-//│ useTrt: (Class & {x: 'y} & ~t | {y: 'y} & t) -> 'y
+//│ useTrt: (Class & {x: 'y} & ~#T | {y: 'y} & #T) -> 'y
 //│       = [Function: useTrt]
 
 :e
@@ -103,7 +103,7 @@ useTrt c
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.102: 	useTrt c
 //│ ║         	^^^^^^^^
-//│ ╟── expression of type `Class & {x: ?x} & t | Class & {x: ?x} & ~?a` does not have field 'y'
+//│ ╟── expression of type `Class & {x: ?x} & #T | Class & {x: ?x} & ~?a` does not have field 'y'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.97: 	def useTrt t = case t of { T -> t.y | Class -> t.x }
 //│ ║        	                                ^^^
@@ -118,7 +118,7 @@ useTrt c
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.117: 	useTrt c
 //│ ║         	^^^^^^^^
-//│ ╟── expression of type `Class & {x: ?x} & t | Class & {x: ?x} & ~?a` does not have field 'y'
+//│ ╟── expression of type `Class & {x: ?x} & #T | Class & {x: ?x} & ~?a` does not have field 'y'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.97: 	def useTrt t = case t of { T -> t.y | Class -> t.x }
 //│ ║        	                                ^^^
