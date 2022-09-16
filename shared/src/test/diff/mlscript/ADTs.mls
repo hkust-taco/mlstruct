@@ -111,7 +111,7 @@ eval exp
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.32: 	rec def eval e = case e of {
 //│ ╙──      	                      ^
-//│ res: error | int
+//│ res: error
 
 :e
 eval (e : Lit | Add['e] | Nega[int] as 'e)

@@ -238,7 +238,7 @@ f 1
 
 :e
 def f a b = if gt a b then a else b b // mistake!
-//│ (int & 'a) -> nothing -> 'a
+//│ (int & 'a) -> (int & 'b -> 'a & 'b) -> 'a
 //│   <:  f:
 //│ (int & 'a) -> (int & 'a) -> 'a
 //│ ╔══[ERROR] Type mismatch in def definition:

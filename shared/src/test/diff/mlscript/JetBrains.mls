@@ -113,7 +113,7 @@ def evalN3 evalN3 x = case x of {
   Neg -> 0 - (evalN3 x.underlying)
   | _ -> eval evalN3 x
   }
-//│ evalN3: ('underlying -> nothing & 'underlying) -> (Add & {lhs: anything, rhs: anything} | Lit & {val: 'val} | Neg & {underlying: 'underlying}) -> (int | 'val)
+//│ evalN3: ('underlying -> (int & 'rhs -> int) & 'underlying) -> (Add & {lhs: 'rhs, rhs: 'rhs} | Lit & {val: 'val} | Neg & {underlying: 'underlying}) -> (int | 'val)
 
 evalN3 evalN3 e
 //│ ╔══[ERROR] Type mismatch in application:

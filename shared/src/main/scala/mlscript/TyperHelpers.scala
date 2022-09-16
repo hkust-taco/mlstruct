@@ -276,9 +276,8 @@ abstract class TyperHelpers { Typer: Typer =>
         (this, that) match {
       case (TopType | RecordType(Nil), _) => that
       case (BotType, _) => BotType
-      // Unnecessary and can complicate constraint solving quite a lot:
-      // case (ComposedType(true, l, r), _) => l & that | r & that
-      case (_: ClassTag, _: FunctionType) => BotType
+      // case (ComposedType(true, l, r), _) => l & that | r & that // * Unnecessary and can complicate constraint solving quite a lot
+      // case (_: ClassTag, _: FunctionType) => BotType // * No longer true!
       case (FunctionType(l1, r1), FunctionType(l2, r2)) =>
         FunctionType(l1 | l2, r1 & r2)(prov)
       case (RecordType(fs1), RecordType(fs2)) =>

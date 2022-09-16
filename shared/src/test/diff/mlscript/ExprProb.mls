@@ -667,7 +667,7 @@ prettier2 done eval2
 //│    = [Function (anonymous)]
 //│ constrain calls  : 65
 //│ annoying  calls  : 0
-//│ subtyping calls  : 173
+//│ subtyping calls  : 169
 
 :e
 :stats
@@ -704,8 +704,8 @@ prettier2 done eval2 e1
 //│ res: error
 //│    = '123'
 //│ constrain calls  : 335
-//│ annoying  calls  : 108
-//│ subtyping calls  : 809
+//│ annoying  calls  : 116
+//│ subtyping calls  : 805
 
 :e
 :stats
@@ -742,8 +742,8 @@ prettier2 done eval2 e2
 //│ res: error
 //│    = '1-123'
 //│ constrain calls  : 378
-//│ annoying  calls  : 131
-//│ subtyping calls  : 1021
+//│ annoying  calls  : 139
+//│ subtyping calls  : 1017
 
 :e
 :stats
@@ -780,8 +780,8 @@ prettier2 done eval2 d2
 //│ res: error | string
 //│    = '-1-1'
 //│ constrain calls  : 267
-//│ annoying  calls  : 95
-//│ subtyping calls  : 631
+//│ annoying  calls  : 99
+//│ subtyping calls  : 629
 
 :e
 :stats
@@ -818,6 +818,6 @@ prettier2 done eval1 e2
 //│ res: error
 //│    = '1-123'
 //│ constrain calls  : 372
-//│ annoying  calls  : 131
-//│ subtyping calls  : 1006
+//│ annoying  calls  : 139
+//│ subtyping calls  : 1002
 

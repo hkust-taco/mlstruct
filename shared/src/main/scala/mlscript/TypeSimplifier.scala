@@ -121,7 +121,7 @@ trait TypeSimplifier { self: Typer =>
         
         c.toTypeWith(_ match {
           
-          case LhsRefined(bo, tts, rcd, trs) =>
+          case LhsRefined(bo, ft, tts, rcd, trs) =>
             // * The handling of type parameter fields is currently a little wrong here,
             // *  because we remove:
             // *    - type parameter fields of parent classes,
@@ -136,6 +136,8 @@ trait TypeSimplifier { self: Typer =>
               case (d, tr @ TypeRef(defn, targs)) =>
                 d -> TypeRef(defn, tr.mapTargs(pol)((pol, ta) => go(ta, pol)))(tr.prov)
             }
+            
+            val ft2 = ft.map(ft => FunctionType(go(ft.lhs, pol.map(!_)), go(ft.rhs, pol))(ft.prov))
             
             val traitPrefixes =
               tts.iterator.collect{ case TraitTag(Var(tagNme)) => tagNme.capitalize }.toSet
@@ -194,7 +196,8 @@ trait TypeSimplifier { self: Typer =>
                 
                 val rcd2Fields  = rcd2.fields.unzip._1.toSet
                 
-                val withType = typeRef & cleanedRcd.sorted
+                // val withType = typeRef & cleanedRcd.sorted
+                val withType = ft2.fold(typeRef: ST)(typeRef & _) & cleanedRcd.sorted
                 
                 tts.toArray.sorted.foldLeft(withType: ST)(_ & _)
                 
@@ -230,7 +233,7 @@ trait TypeSimplifier { self: Typer =>
                     S(ArrayType(go(inner, pol))(at.prov)) -> nFields
                   case N => N -> nFields
                 }
-                LhsRefined(res, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2).toType(sort = true)
+                LhsRefined(res, ft2, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2).toType(sort = true)
             }
           case LhsTop => TopType
         }, {

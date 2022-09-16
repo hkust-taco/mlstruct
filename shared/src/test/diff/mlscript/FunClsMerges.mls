@@ -1,0 +1,21 @@
+
+class C
+//│ Defined class C
+
+def bar: C & (int -> int)
+//│ bar: C & int -> int
+//│    = <missing implementation>
+
+def bar: (int -> int) & C
+//│ bar: C & int -> int
+//│    = <missing implementation>
+
+def bar: {x: int} & (int -> int)
+//│ bar: int -> int & {x: int}
+//│    = <missing implementation>
+
+def bar: {x: int} & C & (int -> int)
+//│ bar: C & int -> int & {x: int}
+//│    = <missing implementation>
+
+

@@ -78,7 +78,7 @@ class Add
 //│ Defined class Add
 
 def f: ~lit & {x:int} -> int // Note the precedence!
-//│ f: {x: int} -> int
+//│ f: {x: int} -> int & ~lit
 //│  = <missing implementation>
 
 def f: (~lit & {x:int}) -> int
