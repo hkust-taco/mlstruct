@@ -165,6 +165,12 @@ class NewDerivedDerivedDerived: NewDerivedDerived
 //│ Defined class NewDerivedDerivedDerived
 //│ Defined NewDerivedDerivedDerived.NewQux: (NewDerivedDerivedDerived & 'this) -> (NewDerivedDerivedDerived & 'this)
 
+def t: #NewDerivedDerived & #NewBase
+//│ t: NewDerivedDerived
+
+def t: #NewDerivedDerivedDerived & #NewBase
+//│ t: NewDerivedDerivedDerived
+
 // Test methods of NewDerivedDerivedDerived
 NewDerivedDerivedDerived.NewBar
 NewDerivedDerivedDerived.NewFoo

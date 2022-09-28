@@ -85,14 +85,13 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   type ST = SimpleType
   
-  sealed abstract class BaseTypeOrTag extends SimpleType
-  sealed abstract class BaseType extends BaseTypeOrTag {
-    def toRecord: RecordType = RecordType.empty
-  }
-  sealed abstract class MiscBaseType extends BaseType
+  sealed abstract class BasicType extends SimpleType
+  
+  sealed abstract class FunOrArrType extends BasicType
+  
   sealed trait Factorizable extends SimpleType
   
-  case class FunctionType(lhs: SimpleType, rhs: SimpleType)(val prov: TypeProvenance) extends MiscBaseType {
+  case class FunctionType(lhs: SimpleType, rhs: SimpleType)(val prov: TypeProvenance) extends FunOrArrType {
     lazy val level: Int = lhs.level max rhs.level
     override def toString = s"(${lhs match {
       case TupleType((N, f) :: Nil) => ""+f
@@ -125,12 +124,14 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       if (fields.isEmpty) ExtrType(false)(prov) else RecordType(fields)(prov)
   }
   
-  sealed abstract class ArrayBase extends MiscBaseType {
+  sealed abstract class ArrayBase extends FunOrArrType {
     def inner: SimpleType
+    def toRecord: RecordType
   }
 
   case class ArrayType(val inner: SimpleType)(val prov: TypeProvenance) extends ArrayBase {
     def level: Int = inner.level
+    def toRecord: RecordType = RecordType.empty
     override def toString = s"Array‹$inner›"
   }
 
@@ -138,7 +139,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     lazy val inner: SimpleType = fields.map(_._2).reduceLeftOption(_ | _).getOrElse(BotType)
     lazy val level: Int = fields.iterator.map(_._2.level).maxOption.getOrElse(0)
     lazy val toArray: ArrayType = ArrayType(inner)(prov)  // upcast to array
-    override lazy val toRecord: RecordType =
+    lazy val toRecord: RecordType =
       RecordType(
         fields.zipWithIndex.map { case ((_, t), i) => (Var("_"+(i+1)), t.toUpper(t.prov)) }
         // Note: In line with TypeScript, tuple field names are pure type system fictions,
@@ -148,7 +149,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       )(prov)
     override def toString =
       s"(${fields.map(f => s"${f._1.fold("")(_.name+": ")}${f._2},").mkString(" ")})"
-    // override def toString = s"(${fields.map(f => s"${f._1.fold("")(_+": ")}${f._2},").mkString(" ")})"
   }
   
   /** Polarity `pol` being `true` means Bot; `false` means Top. These are extrema of the subtyping lattice. */
@@ -241,12 +241,12 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     }
   }
   
-  sealed trait ObjectTag extends BaseTypeOrTag with Ordered[ObjectTag] {
+  sealed abstract class ObjectTag extends BasicType with Ordered[ObjectTag] {
     val id: SimpleTerm
     def compare(that: ObjectTag): Int = this.id compare that.id
   }
   
-  case class ClassTag(id: SimpleTerm, parents: Set[TypeName])(val prov: TypeProvenance) extends BaseType with ObjectTag {
+  case class ClassTag(id: SimpleTerm, parents: Set[TypeName])(val prov: TypeProvenance) extends ObjectTag {
     lazy val parentsST = parents.iterator.map(tn => Var(tn.name)).toSet[SimpleTerm]
     def glb(that: ClassTag): Opt[ClassTag] =
       if (that.id === this.id) S(this)
@@ -254,10 +254,10 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       else if (this.parentsST.contains(that.id)) S(this)
       else N
     def level: Int = 0
-    override def toString = showProvOver(false)(id.idStr+s"<${parents.mkString(",")}>")
+    override def toString = showProvOver(false)(id.idStr+s"<${parents.map(_.show).mkString(",")}>")
   }
   
-  case class TraitTag(id: SimpleTerm)(val prov: TypeProvenance) extends BaseTypeOrTag with ObjectTag with Factorizable {
+  case class TraitTag(id: SimpleTerm)(val prov: TypeProvenance) extends ObjectTag with Factorizable {
     def level: Int = 0
     override def toString = id.idStr
   }

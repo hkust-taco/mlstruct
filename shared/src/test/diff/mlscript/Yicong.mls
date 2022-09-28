@@ -803,25 +803,25 @@ defined (()[0])
 //│   Error: unexpected runtime error
 
 
-ta1 = (2,3,4,5)
+ta1 = defined((2,3,4,5))
 ta1[1]
-ta2 = ((1,2,4), (true, false))
+ta2 = (defined((1,2,4)), defined((true, false)))
 (ornull ((defined ta2[0])[1+4]), defined ta[1])[0]
-ta3 = ((1,2,3), "hello", false)
+ta3 = (defined((1,2,3)), "hello", false)
 ta3[1-2]
 (1,2,3)[4]
-//│ ta1: (2, 3, 4, 5,)
+//│ ta1: (2, 3, 4, 5,) & ~undefined
 //│    = [ 2, 3, 4, 5 ]
 //│ res: 2 | 3 | 4 | 5 | undefined
 //│    = 3
-//│ ta2: ((1, 2, 4,), (true, false,),)
+//│ ta2: ((1, 2, 4,) & ~undefined, (true, false,) & ~undefined,)
 //│    = [ [ 1, 2, 4 ], [ true, false ] ]
 //│ res: false | int | null | true | undefined
 //│    = <no result>
 //│      ta is not implemented
-//│ ta3: ((1, 2, 3,), "hello", false,)
+//│ ta3: ((1, 2, 3,) & ~undefined, "hello", false,)
 //│    = [ [ 1, 2, 3 ], 'hello', false ]
-//│ res: "hello" | (1, 2, 3,) | false | undefined
+//│ res: "hello" | (1, 2, 3,) & ~undefined | false | undefined
 //│    = undefined
 //│ res: 1 | 2 | 3 | undefined
 //│    = undefined
@@ -850,8 +850,8 @@ ge[2]
 //│ ║  l.843: 	ta3[ge 3][ge (1+2)]
 //│ ║         	^^^^^^^^^^^^^^^^^^^
 //│ ╟── string literal of type `"hello"` does not match type `Array[?a]`
-//│ ║  l.810: 	ta3 = ((1,2,3), "hello", false)
-//│ ║         	                ^^^^^^^
+//│ ║  l.810: 	ta3 = (defined((1,2,3)), "hello", false)
+//│ ║         	                         ^^^^^^^
 //│ ╟── but it flows into array access with expected type `Array[?b]`
 //│ ║  l.843: 	ta3[ge 3][ge (1+2)]
 //│ ╙──       	^^^^^^^^^
@@ -942,24 +942,24 @@ mk1[2  ]
 def s1 a = (defined (a[1]) + defined (a[2]), a[(1,2)._2])
 def s2 a = (defined ((defined a[1])[0]))._2 + (defined a[2])._1
 def s3 a = defined (a._1.t[0]) + defined ((defined (a.x[1]))[2])
-(defined (((1, "hello"),(2, true, false),(3,3,4))[0]))._1
+(defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))._1
 //│ s1: Array[int & 'a] -> (int, undefined | 'a,)
 //│   = [Function: s1]
-//│ s2: Array[Array[{_2: int} & ~undefined] & {_1: int}] -> int
+//│ s2: Array[Array[{_2: int} & ~undefined] & {_1: int} & ~undefined] -> int
 //│   = [Function: s2]
-//│ s3: {_1: {t: Array[int]}, x: Array[Array[int]]} -> int
+//│ s3: {_1: {t: Array[int]}, x: Array[Array[int] & ~undefined]} -> int
 //│   = [Function: s3]
 //│ res: 1 | 2 | 3
 //│    = undefined
 
-def ara: Array[(int, bool)]
-def arb: Array[Array[(int, int)]]
+def ara: Array[(int, bool) & ~undefined] & ~undefined
+def arb: Array[Array[(int, int) & ~undefined] & ~undefined] & ~undefined
 (defined (ara[1]))._1
 (defined ((defined arb[0])[1]))._2
 def s4 arr = (defined ((defined ((defined (arr.x[0]))._3[6]))[7]))._h.hello
-//│ ara: Array[(int, bool,)]
+//│ ara: Array[(int, bool,) & ~undefined] & ~undefined
 //│    = <missing implementation>
-//│ arb: Array[Array[(int, int,)]]
+//│ arb: Array[Array[(int, int,) & ~undefined] & ~undefined] & ~undefined
 //│    = <missing implementation>
 //│ res: int
 //│    = <no result>
@@ -967,7 +967,7 @@ def s4 arr = (defined ((defined ((defined (arr.x[0]))._3[6]))[7]))._h.hello
 //│ res: int
 //│    = <no result>
 //│      arb is not implemented
-//│ s4: {x: Array[{_3: Array[Array[{_h: {hello: 'hello}} & ~undefined]]} & ~undefined]} -> 'hello
+//│ s4: {x: Array[{_3: Array[Array[{_h: {hello: 'hello}} & ~undefined] & ~undefined]} & ~undefined]} -> 'hello
 //│   = [Function: s4]
 
 def at1 xs = (defined (xs[0]))._1
@@ -995,3 +995,4 @@ dup ((defined (ara[1]))._1) ((defined ((defined (arb[10]))[8]))._2) + 1
 //│ res: error | undefined
 //│ Runtime error:
 //│   TypeError: Cannot read properties of undefined (reading '1')
+

@@ -1,0 +1,74 @@
+:NoJS
+
+
+class A
+class B: A
+class C: S
+trait S: T
+trait T
+trait U
+//│ Defined class A
+//│ Defined class B
+//│ Defined class C
+//│ Defined trait S
+//│ Defined trait T
+//│ Defined trait U
+
+def test: A & T
+//│ test: A & T
+
+test: T
+//│ res: T
+
+def test: A & B
+//│ test: B
+
+def test: A & B & C
+//│ test: nothing
+
+def test: A & S
+//│ test: A & S
+
+def test: A & S & T
+//│ test: A & S & T
+
+def test: A & S & U
+//│ test: A & S & U
+
+def test: B & S & U
+//│ test: B & S & U
+
+def test: C & S & U
+//│ test: C & U
+
+def test: C & S & T & U
+//│ test: C & U
+
+
+class AA[X]
+  method Inv: X -> X
+class BB[X, Y]: AA[(X, Y)]
+//│ Defined class AA[=X]
+//│ Declared AA.Inv: AA['X] -> 'X -> 'X
+//│ Defined class BB[=X, =Y]
+
+// * We could simplify this to `BB[int, int]` but currently don't
+// *  because we don't yet have the required reasoning infrastructure.
+def test: AA[(int, int)] & BB[int, int]
+//│ test: AA[(int, int,)] & BB[int, int]
+
+// * Note that this one denotes a type whose type arguments do not make sense,
+// *  so removing the bad AA refinement would yield a non-equivalent type!
+def test: AA[int] & BB[int, int]
+//│ test: AA[int] & BB[int, int]
+
+def test: #AA
+//│ test: AA[?]
+
+def test: #AA & BB[int, int]
+//│ test: BB[int, int]
+
+def test: AA[(int, int)] & #BB
+//│ test: AA[(int, int,)] & BB[?, ?]
+
+

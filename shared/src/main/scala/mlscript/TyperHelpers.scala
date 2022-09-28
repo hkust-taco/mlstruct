@@ -67,10 +67,10 @@ abstract class TyperHelpers { Typer: Typer =>
     val fs2m = fs2.toMap
     fs1.flatMap { case (k, v) => fs2m.get(k).map(v2 => k -> (v || v2)) }
   }
-
+  
   def subst(ts: PolymorphicType, map: Map[SimpleType, SimpleType]): PolymorphicType = 
     PolymorphicType(ts.level, subst(ts.body, map))
-
+  
   def subst(st: SimpleType, map: Map[SimpleType, SimpleType], substInMap: Bool = false)
         (implicit cache: MutMap[TypeVariable, SimpleType] = MutMap.empty): SimpleType =
             // trace(s"subst($st)") {
@@ -162,11 +162,11 @@ abstract class TyperHelpers { Typer: Typer =>
   def mapPol(rt: RecordType, pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType): RecordType =
     RecordType(rt.fields.mapValues(_.update(f(pol.map(!_), _), f(pol, _))))(rt.prov)
   
-  def mapPol(bt: BaseType, pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType): BaseType = bt match {
+  def mapPol(bt: BasicType, pol: Opt[Bool], smart: Bool)(f: (Opt[Bool], SimpleType) => SimpleType): BasicType = bt match {
     case FunctionType(lhs, rhs) => FunctionType(f(pol.map(!_), lhs), f(pol, rhs))(bt.prov)
     case TupleType(fields) => TupleType(fields.mapValues(f(pol, _)))(bt.prov)
     case ArrayType(inner) => ArrayType(f(pol, inner))(bt.prov)
-    case _: ClassTag => bt
+    case _: ObjectTag => bt
   }
   
   
@@ -235,7 +235,7 @@ abstract class TyperHelpers { Typer: Typer =>
         if (pol.getOrElse(die)) f(S(true), ub) else f(S(false), lb)
       case TypeBounds(lb, ub) => TypeBounds(f(S(false), lb), f(S(true), ub))(prov)
       case rt: RecordType => Typer.mapPol(rt, pol, smart)(f)
-      case bt: BaseType => Typer.mapPol(bt, pol, smart)(f)
+      case bt: BasicType => Typer.mapPol(bt, pol, smart)(f)
       case ComposedType(kind, lhs, rhs) if smart =>
         if (kind) f(pol, lhs) | f(pol, rhs)
         else f(pol, lhs) & f(pol, rhs)
@@ -245,7 +245,7 @@ abstract class TyperHelpers { Typer: Typer =>
       case ProvType(underlying) => ProvType(f(pol, underlying))(prov)
       case ProxyType(underlying) => f(pol, underlying)
       case tr @ TypeRef(defn, targs) => TypeRef(defn, tr.mapTargs(pol)(f))(prov)
-      case _: TypeVariable | _: ObjectTag | _: ExtrType => this
+      case _: TypeVariable | _: ExtrType => this
     }
     
     def toUpper(prov: TypeProvenance): FieldType = FieldType(BotType, this)(prov)

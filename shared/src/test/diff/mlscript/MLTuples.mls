@@ -64,8 +64,20 @@ if true then (1,) else (2, 3)
 //│    = [ 1 ]
 
 if true then (1,) else fun x -> x
-//│ res: (1,) | 'a -> 'a
+//│ res: anything
 //│    = [ 1 ]
+
+if true then (1,) else { x = 1 }
+//│ res: anything
+//│    = [ 1 ]
+
+r = if true then (1,) else { _1 = 1 }
+//│ r: {_1: 1}
+//│  = [ 1 ]
+
+r._1
+//│ res: 1
+//│    = undefined
 
 
 
@@ -79,13 +91,13 @@ t._2
 :e
 t.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.80: 	t.x
+//│ ║  l.92: 	t.x
 //│ ║        	^^^
 //│ ╟── tuple literal of type `{_1: 1, _2: 2, _3: 3}` does not have field 'x'
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	    ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.80: 	t.x
+//│ ║  l.92: 	t.x
 //│ ╙──      	^
 //│ res: error
 //│    = undefined
@@ -93,14 +105,14 @@ t.x
 :e
 (t: ("oops",int,int,))._1
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.94: 	(t: ("oops",int,int,))._1
-//│ ║        	^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.106: 	(t: ("oops",int,int,))._1
+//│ ║         	^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── integer literal of type `1` does not match type `"oops"`
 //│ ║  l.2: 	t = (1, 2, 3)
 //│ ║       	     ^
 //│ ╟── Note: constraint arises from literal type:
-//│ ║  l.94: 	(t: ("oops",int,int,))._1
-//│ ╙──      	     ^^^^^^
+//│ ║  l.106: 	(t: ("oops",int,int,))._1
+//│ ╙──       	     ^^^^^^
 //│ res: "oops"
 //│    = undefined
 
