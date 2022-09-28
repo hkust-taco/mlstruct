@@ -81,22 +81,50 @@ foo = Foo
 
 
 def test: Foo[int] & ~#Foo
-//│ test: Foo[int] & ~#Foo
+//│ test: nothing
+test: nothing
+//│ res: nothing
 
 def test: Foo[int] & ~Foo[int]
 //│ test: nothing
+test: nothing
+//│ res: nothing
 
+type Id[A] = A
+def test: Foo[int] & ~Foo[Id[int]]
+//│ Defined type alias Id[+A]
+//│ test: Foo[int] & ~Foo[Id[int]]
+test: nothing
+//│ res: nothing
+
+// * Note: this one would only reduce to nothing if `int <: string`
 def test: Foo[int] & ~Foo[string]
 //│ test: Foo[int] & ~Foo[string]
+:e
+test: nothing
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.104: 	test: nothing
+//│ ║         	^^^^
+//│ ╟── type `int` is not an instance of type `string`
+//│ ║  l.101: 	def test: Foo[int] & ~Foo[string]
+//│ ║         	              ^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.101: 	def test: Foo[int] & ~Foo[string]
+//│ ╙──       	                          ^^^^^^
+//│ res: nothing
 
 
 class Bar[A]: Foo[(A, A)]
 //│ Defined class Bar[+A]
 
 def test: Bar[int] & ~#Foo
-//│ test: Bar[int] & ~#Foo
+//│ test: nothing
+test: nothing
+//│ res: nothing
 
 def test: Bar[int] & ~#Bar
-//│ test: Bar[int] & ~#Bar
+//│ test: nothing
+test: nothing
+//│ res: nothing
 
 

@@ -187,7 +187,7 @@ def eval1_ty_ugly = eval1
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.159: 	def eval1_ty_ugly = eval1
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── expression of type `'a & 'b & (Add[?] & ~{val: int} & ~#Add | Lit & ~{val: int} | ~{val: int} & ~#Add & ~?a)` does not have field 'val'
+//│ ╟── expression of type `'a & 'b & (Lit & ~{val: int} | ~{val: int} & ~#Add & ~?a)` does not have field 'val'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.74: 	  | Lit -> e.val
 //│ ║        	           ^^^^^
@@ -197,7 +197,7 @@ def eval1_ty_ugly = eval1
 //│              = [Function: eval1]
 //│ constrain calls  : 151
 //│ annoying  calls  : 131
-//│ subtyping calls  : 7490
+//│ subtyping calls  : 7169
 
 :ns
 def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int

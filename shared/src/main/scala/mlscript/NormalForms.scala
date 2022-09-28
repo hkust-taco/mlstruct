@@ -292,9 +292,9 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     def & (that: Conjunct)(implicit ctx: Ctx, etf: ExpandTupleFields): Opt[Conjunct] =
       // trace(s"?? $this & $that ${lnf & that.lnf} ${rnf | that.rnf}") {
       if ((lnf.toType() <:< that.rnf.toType())(Ctx.empty)) N // TODO less inefficient! (uncached calls to toType)
-      else S(Conjunct.mk(lnf & that.lnf getOrElse (return N), vars | that.vars
+      else Conjunct.mk(lnf & that.lnf getOrElse (return N), vars | that.vars
         , rnf | that.rnf getOrElse (return N)
-        , nvars | that.nvars))
+        , nvars | that.nvars)
       // }(r => s"!! $r")
     def neg: Disjunct = Disjunct(rnf, nvars, lnf, vars)
     /** `tryMergeUnion` tries to compute the union of two conjuncts as a conjunct,
@@ -353,8 +353,18 @@ class NormalForms extends TyperDatatypes { self: Typer =>
   
   object Conjunct {
     def of(tvs: SortedSet[TypeVariable]): Conjunct = Conjunct(LhsTop, tvs, RhsBot, ssEmp)
-    def mk(lnf: LhsNf, vars: SortedSet[TypeVariable], rnf: RhsNf, nvars: SortedSet[TypeVariable])(implicit etf: ExpandTupleFields): Conjunct = {
-      Conjunct(lnf, vars, rnf match {
+    def mk(lnf: LhsNf, vars: SortedSet[TypeVariable], rnf: RhsNf, nvars: SortedSet[TypeVariable])
+          (implicit ctx: Ctx, etf: ExpandTupleFields): Opt[Conjunct] = {
+      if ((lnf, rnf) match {
+        case (LhsRefined(cls, _, _, _, _, trs1), RhsBases(ts, _, trs2)) =>
+          val allClasses: Ite[Str] =
+            (trs1.keysIterator ++ trs1.keysIterator.flatMap(tn => ctx.allBaseClassesOf(tn.name))).map(_.name) ++
+              cls.iterator.flatMap(c =>
+                c.parents.iterator.map(_.name) ++ (c.id match { case Var(nme) => S(nme); case _ => N }))
+          allClasses.exists(clsNme => ts.exists(_.id.idStr === clsNme))
+        case _ => false
+      }) N
+      else S(Conjunct(lnf, vars, rnf match {
         case RhsField(name, ty) => RhsField(name, ty)
         case RhsBases(prims, bf, trs) =>
           RhsBases(prims.filter(lnf & _ pipe (_.isDefined)), bf.filter {
@@ -362,7 +372,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
             case R(r) => true
           }, trs)
         case RhsBot => RhsBot
-      }, nvars)
+      }, nvars))
     }
   }
   
