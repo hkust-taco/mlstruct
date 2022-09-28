@@ -37,10 +37,10 @@ type Hello = int
 //│    = 42
 
 :e
-42: hello
+42: #Hello
 //│ ╔══[ERROR] Type alias Hello cannot be used as a type tag
-//│ ║  l.+1: 	42: hello
-//│ ╙──      	    ^^^^^
+//│ ║  l.+1: 	42: #Hello
+//│ ╙──      	    ^^^^^^
 //│ res: error
 //│    = 42
 

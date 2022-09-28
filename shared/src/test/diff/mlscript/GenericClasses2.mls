@@ -165,11 +165,17 @@ class F[a]
 //│ ╟── Note: class type parameter a is defined at:
 //│ ║  l.153: 	class F[a]
 //│ ╙──       	        ^
+//│ ╔══[ERROR] type identifier not found: a
+//│ ║  l.156: 	  method H = this.M : #a
+//│ ╙──       	                      ^^
+//│ ╔══[ERROR] type identifier not found: A
+//│ ║  l.157: 	  method I = this.M : #A
+//│ ╙──       	                      ^^
 //│ Defined class F[+a]
 //│ Declared F.M: F['a] -> 'a
 //│ Defined F.G: F[?] -> int
-//│ Defined F.H: F['a] -> 'a
-//│ Defined F.I: F['a] -> 'a
+//│ Defined F.H: F[?] -> error
+//│ Defined F.I: F[?] -> error
 
 class A
 //│ Defined class A
@@ -181,33 +187,25 @@ class G[A]
   method H = this.M : a
   method I = this.M : #a
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.180: 	  method G = this.M : #A
-//│ ║         	             ^^^^^^
-//│ ╟── field selection of type `#A` is not an instance of type `A`
-//│ ╟── Note: class type parameter A is defined at:
-//│ ║  l.178: 	class G[A]
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.181: 	  method H = this.M : a
+//│ ║  l.186: 	  method G = this.M : #A
 //│ ║         	             ^^^^^^
 //│ ╟── field selection of type `#A` is not an instance of type `A`
 //│ ╟── Note: constraint arises from class tag:
-//│ ║  l.181: 	  method H = this.M : a
-//│ ║         	                      ^
+//│ ║  l.186: 	  method G = this.M : #A
+//│ ║         	                      ^^
 //│ ╟── Note: class type parameter A is defined at:
-//│ ║  l.178: 	class G[A]
+//│ ║  l.184: 	class G[A]
 //│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.182: 	  method I = this.M : #a
-//│ ║         	             ^^^^^^
-//│ ╟── field selection of type `#A` is not an instance of type `A`
-//│ ╟── Note: class type parameter A is defined at:
-//│ ║  l.178: 	class G[A]
-//│ ╙──       	        ^
+//│ ╔══[ERROR] type identifier not found: a
+//│ ║  l.187: 	  method H = this.M : a
+//│ ╙──       	                      ^
+//│ ╔══[ERROR] type identifier not found: a
+//│ ║  l.188: 	  method I = this.M : #a
+//│ ╙──       	                      ^^
 //│ Defined class G[+A]
 //│ Declared G.M: G['A] -> 'A
 //│ Defined G.G: G[?] -> A
-//│ Defined G.H: G[?] -> A
-//│ Defined G.I: G[?] -> A
+//│ Defined G.H: G[?] -> error
+//│ Defined G.I: G[?] -> error
 
 

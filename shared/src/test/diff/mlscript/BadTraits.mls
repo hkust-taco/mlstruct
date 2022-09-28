@@ -114,20 +114,28 @@ s = S{ x = 1 }
 //│ s: error
 //│  = { x: 1 }
 
+:e
 t = s: s
+//│ ╔══[ERROR] type identifier not found: s
+//│ ║  l.118: 	t = s: s
+//│ ╙──       	       ^
+//│ t: error
+//│  = { x: 1 }
+
+t = s: #S
 //│ t: #S
 //│  = { x: 1 }
 
 :e
 t.x
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.122: 	t.x
+//│ ║  l.130: 	t.x
 //│ ║         	^^^
 //│ ╟── type `#S` does not have field 'x'
-//│ ║  l.117: 	t = s: s
-//│ ║         	       ^
+//│ ║  l.125: 	t = s: #S
+//│ ║         	       ^^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.122: 	t.x
+//│ ║  l.130: 	t.x
 //│ ╙──       	^
 //│ res: error
 //│    = 1
@@ -153,14 +161,14 @@ class Hey
 :e
 class H: Lol & Hey
 //│ ╔══[ERROR] An overriding method definition must be given when inheriting from multiple method definitions
-//│ ║  l.154: 	class H: Lol & Hey
+//│ ║  l.162: 	class H: Lol & Hey
 //│ ║         	      ^
 //│ ╟── Definitions of method Foo inherited from:
 //│ ╟── • Lol
-//│ ║  l.145: 	  method Foo = 1
+//│ ║  l.153: 	  method Foo = 1
 //│ ║         	         ^^^^^^^
 //│ ╟── • Hey
-//│ ║  l.147: 	  method Foo = "oops"
+//│ ║  l.155: 	  method Foo = "oops"
 //│ ╙──       	         ^^^^^^^^^^^^
 //│ Defined class H
 
@@ -174,10 +182,10 @@ h = Hey{}
 :e
 l = Lol h
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.175: 	l = Lol h
+//│ ║  l.183: 	l = Lol h
 //│ ║         	    ^^^
 //│ ╟── Note that traits are always considered abstract
-//│ ║  l.144: 	trait Lol
+//│ ║  l.152: 	trait Lol
 //│ ╙──       	      ^^^
 //│ l: error
 //│  = Hey {}
@@ -186,10 +194,10 @@ l = Lol h
 e = Lol
 e
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.186: 	e = Lol
+//│ ║  l.194: 	e = Lol
 //│ ║         	    ^^^
 //│ ╟── Note that traits are always considered abstract
-//│ ║  l.144: 	trait Lol
+//│ ║  l.152: 	trait Lol
 //│ ╙──       	      ^^^
 //│ e: error
 //│  = [Function: build]
@@ -211,10 +219,10 @@ trait Lol2: Lol
 :e
 Lol2
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.212: 	Lol2
+//│ ║  l.220: 	Lol2
 //│ ║         	^^^^
 //│ ╟── Note that traits are always considered abstract
-//│ ║  l.208: 	trait Lol2: Lol
+//│ ║  l.216: 	trait Lol2: Lol
 //│ ╙──       	      ^^^^^^^^^
 //│ res: error
 //│    = [Function: build]

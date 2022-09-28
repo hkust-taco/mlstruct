@@ -30,8 +30,8 @@ nt = nc
 //│ ║  l.25: 	nt = nc
 //│ ║        	^^^^^^^
 //│ ╟── type `Lit` does not have field 'n'
-//│ ║  l.6: 	def nc: ~Lit
-//│ ║       	        ^^^^
+//│ ║  l.7: 	def nt: ~#Lit
+//│ ║       	         ^^^^
 //│ ╟── but it flows into reference with expected type `{n: int}`
 //│ ║  l.25: 	nt = nc
 //│ ║        	     ^^

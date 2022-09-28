@@ -129,6 +129,9 @@ test2 c2
 // Note: if we allowed this, we'd have to be careful in the semantics of trait ctors!
 :e
 class C3: { default: string } & ~myTrait
+//│ ╔══[ERROR] type identifier not found: myTrait
+//│ ║  l.131: 	class C3: { default: string } & ~myTrait
+//│ ╙──       	                                 ^^^^^^^
 //│ ╔══[ERROR] cannot inherit from a type negation
 //│ ║  l.131: 	class C3: { default: string } & ~myTrait
 //│ ╙──       	      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -136,7 +139,7 @@ class C3: { default: string } & ~myTrait
 :e
 class C3: { default: string } & ~MyTrait[anything]
 //│ ╔══[ERROR] cannot inherit from a type negation
-//│ ║  l.137: 	class C3: { default: string } & ~MyTrait[anything]
+//│ ║  l.140: 	class C3: { default: string } & ~MyTrait[anything]
 //│ ╙──       	      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 def strawman: C2 & ~MyTrait[anything]
@@ -146,7 +149,7 @@ def strawman: C2 & ~MyTrait[anything]
 :e
 test2 strawman
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.147: 	test2 strawman
+//│ ║  l.150: 	test2 strawman
 //│ ║         	^^^^^^^^^^^^^^
 //│ ╟── expression of type `C2 & #MyTrait & ~{value: anything} | C2 & ~{value: anything} & ~?a` does not have field 'value'
 //│ ╟── Note: constraint arises from field selection:
@@ -167,16 +170,16 @@ strawman: C2
 :e
 strawman: ~{ value: anything }
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.168: 	strawman: ~{ value: anything }
+//│ ║  l.171: 	strawman: ~{ value: anything }
 //│ ║         	^^^^^^^^
 //│ ╟── type `C2 & ~MyTrait[?]` does not match type `~{value: anything}`
-//│ ║  l.142: 	def strawman: C2 & ~MyTrait[anything]
+//│ ║  l.145: 	def strawman: C2 & ~MyTrait[anything]
 //│ ║         	              ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `~{value: anything}`
-//│ ║  l.168: 	strawman: ~{ value: anything }
+//│ ║  l.171: 	strawman: ~{ value: anything }
 //│ ║         	^^^^^^^^
 //│ ╟── Note: constraint arises from type negation:
-//│ ║  l.168: 	strawman: ~{ value: anything }
+//│ ║  l.171: 	strawman: ~{ value: anything }
 //│ ╙──       	          ^^^^^^^^^^^^^^^^^^^^
 //│ res: ~{value: anything}
 //│    = <no result>

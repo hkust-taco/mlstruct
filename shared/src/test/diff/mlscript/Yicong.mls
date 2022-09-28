@@ -118,7 +118,7 @@ fun (x, y) -> f ((x,y))
 //│    = <no result>
 //│      f is not implemented
 
-def f: ((1,2)&t1 | (3,4)&t2) -> anything
+def f: ((1,2) & #T1 | (3,4) & #T2) -> anything
 //│ f: ((1, 2,) & #T1 | (3, 4,) & #T2) -> anything
 //│  = <missing implementation>
 
@@ -143,8 +143,8 @@ fun (x, y) -> f ((x,y))
 //│ ║  l.138: 	fun (x, y) -> f ((x,y))
 //│ ║         	                 ^^^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.121: 	def f: ((1,2)&t1 | (3,4)&t2) -> anything
-//│ ╙──       	       ^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.121: 	def f: ((1,2) & #T1 | (3,4) & #T2) -> anything
+//│ ╙──       	       ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: (nothing, nothing,) -> anything
 //│    = <no result>
 //│      f is not implemented

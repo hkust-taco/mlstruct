@@ -133,7 +133,7 @@ error: ('a & ~Add[?]) -> 'a
 //│   Error: unexpected runtime error
 
 :re
-error: ('a & ~add) -> 'a
+error: ('a & ~#Add) -> 'a
 //│ res: ('a & ~#Add) -> 'a
 //│ Runtime error:
 //│   Error: unexpected runtime error
@@ -198,7 +198,7 @@ def eval1_ty_ugly = eval1
 //│ subtyping calls  : 7428
 
 :ns
-def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
+def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
 //│ eval1_ty: ('a -> int) -> 'b -> int
 //│   where
 //│     'b := Lit | Add['b] | 'a & ~#Lit & ~#Add
@@ -242,11 +242,11 @@ eval1_ty_ugly = eval1_ty
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── from local type binding:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
@@ -254,11 +254,11 @@ eval1_ty_ugly = eval1_ty
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── from local type binding:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
@@ -266,11 +266,11 @@ eval1_ty_ugly = eval1_ty
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── from local type binding:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
@@ -278,11 +278,11 @@ eval1_ty_ugly = eval1_ty
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ║         	                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── from local type binding:
-//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~lit & ~add as 'b) -> int
-//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.201: 	def eval1_ty: ('a -> int) -> (Lit | Add['b] | 'a & ~#Lit & ~#Add as 'b) -> int
+//│ ╙──       	                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│              = [Function: eval1]
 //│ constrain calls  : 71
 //│ annoying  calls  : 194
@@ -305,7 +305,7 @@ eval1_ty = eval1_ty_ugly
 
 // Workaround:
 :ns
-type E1[A] = Lit | Add[E1[A]] | A & ~lit & ~add
+type E1[A] = Lit | Add[E1[A]] | A & ~#Lit & ~#Add
 def eval1_ty: ('a -> int) -> E1['a] -> int
 //│ Defined type alias E1[+A]
 //│ eval1_ty: ('a -> int) -> E1['a] -> int

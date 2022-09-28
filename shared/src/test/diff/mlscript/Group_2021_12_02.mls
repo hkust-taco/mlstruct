@@ -10,7 +10,7 @@ Lit
 //│ res: anything -> Lit
 //│    = [Function: res]
 
-def eval0: ('b -> ('c & int)) -> (Lit & {val: int} | Add & {lhs: 'a; rhs: 'a} | ~lit & ~add & 'b as 'a) -> (int | 'c)
+def eval0: ('b -> ('c & int)) -> (Lit & {val: int} | Add & {lhs: 'a; rhs: 'a} | ~#Lit & ~#Add & 'b as 'a) -> (int | 'c)
 //│ eval0: ('b -> int) -> 'a -> int
 //│   where
 //│     'a <: Add & {lhs: 'a, rhs: 'a} | Lit & {val: int} | 'b & ~#Add & ~#Lit

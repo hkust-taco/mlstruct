@@ -246,7 +246,18 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           case AbstractConstructor(_, _) => die
           case t: TypeScheme => t.instantiate
         }
-      case tn @ TypeTag(name) => rec(TypeName(name.decapitalize))
+      case tn @ TypeTag(name) =>
+        val tyLoc = ty.toLoc
+        (typeNamed(tyLoc, name), ctx.tyDefs.get(name)) match {
+          case (R((kind, _)), S(td)) => kind match {
+            case Cls => clsNameToNomTag(td)(tyTp(tyLoc, "class tag"), ctx)
+            case Trt => trtNameToNomTag(td)(tyTp(tyLoc, "trait tag"), ctx)
+            case Als => err(
+              msg"Type alias ${name} cannot be used as a type tag", tyLoc)(raise)
+          }
+          case (L(e), _) => e()
+          case (_, N) => die
+        }
       case tn @ TypeName(name) =>
         val tyLoc = ty.toLoc
         val tpr = tyTp(tyLoc, "type reference")
@@ -256,17 +267,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
               if (tpnum =/= 0) {
                 err(msg"Type $name takes parameters", tyLoc)(raise)
               } else TypeRef(tn, Nil)(tpr)
-            case L(e) =>
-              if (name.isEmpty || !name.head.isLower) e()
-              else (typeNamed(tyLoc, name.capitalize), ctx.tyDefs.get(name.capitalize)) match {
-                case (R((kind, _)), S(td)) => kind match {
-                  case Cls => clsNameToNomTag(td)(tyTp(tyLoc, "class tag"), ctx)
-                  case Trt => trtNameToNomTag(td)(tyTp(tyLoc, "trait tag"), ctx)
-                  case Als => err(
-                    msg"Type alias ${name.capitalize} cannot be used as a type tag", tyLoc)(raise)
-                }
-                case _ => e()
-              }
+            case L(e) => e()
           }
         }
       case tv: TypeVar =>

@@ -77,11 +77,11 @@ class Add
 //│ Defined class Lit
 //│ Defined class Add
 
-def f: ~lit & {x:int} -> int // Note the precedence!
+def f: ~#Lit & {x:int} -> int // Note the precedence!
 //│ f: {x: int} -> int & ~#Lit
 //│  = <missing implementation>
 
-def f: (~lit & {x:int}) -> int
+def f: (~#Lit & {x:int}) -> int
 //│ f: ({x: int} & ~#Lit) -> int
 //│  = <missing implementation>
 
@@ -132,7 +132,7 @@ def f: (~{x: 1 | 2} & 'a | ~{x: 2 | 3} & 'a) -> 'a
 //│ f: ('a & ~{x: 2}) -> 'a
 //│  = <missing implementation>
 
-def f: (~{x: 1 | 2} & ~lit & 'a | ~{x: 2 | 3} & ~lit & 'a) -> 'a
+def f: (~{x: 1 | 2} & ~#Lit & 'a | ~{x: 2 | 3} & ~#Lit & 'a) -> 'a
 //│ f: ('a & ~{x: 2} & ~#Lit) -> 'a
 //│  = <missing implementation>
 

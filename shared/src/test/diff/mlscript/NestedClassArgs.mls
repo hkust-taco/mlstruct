@@ -185,13 +185,13 @@ c = c6
 
 // Reproduction of an issue found while trying out TypeRef ctor typing:
 
-def e: C5[C6['A]] | C5[C6['A]] & ~c5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}
+def e: C5[C6['A]] | C5[C6['A]] & ~#C5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}
 //│ e: C5[C6['A]]
 
-def e: C5[C6['A]] & {a: C2[C5[C6['A]] | C5[C6['A]] & ~c5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}] & {a: 'a}}
+def e: C5[C6['A]] & {a: C2[C5[C6['A]] | C5[C6['A]] & ~#C5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}] & {a: 'a}}
 //│ e: C5[C6['A]] & {a: C2[C5[C6['A]]] & {a: nothing}}
 
-type Inner = C5[C6['A]] & {a: C2[C5[C6['A]] | C5[C6['A]] & ~c5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}] & {a: 'a}} as 'a
+type Inner = C5[C6['A]] & {a: C2[C5[C6['A]] | C5[C6['A]] & ~#C5 | C5[C6['A]] | C5[C6['A]] & ~{a: C2[C5[C6['A]]]}] & {a: 'a}} as 'a
 //│ Defined type alias Inner
 
 def e: anything -> (C6['A] & {a: Inner})
