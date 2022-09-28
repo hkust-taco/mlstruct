@@ -34,7 +34,7 @@ test succ
 //│ ╟── string literal of type `"ok"` is not an instance of type `int`
 //│ ║  l.25: 	  in (local add 1, local concat "ok")
 //│ ╙──      	                                ^^^^
-//│ res: (int -> int, string -> string,) | error
+//│ res: error | (int -> int, string -> string,)
 //│    = [ [Function (anonymous)], [Function (anonymous)] ]
 
 
@@ -82,7 +82,7 @@ res add "1"
 //│ ╟── from reference:
 //│ ║  l.66: 	  let local = (fun y -> f y) x
 //│ ╙──      	                             ^
-//│ res: () | error
+//│ res: error | ()
 //│    = []
 
 
@@ -106,7 +106,7 @@ res add "1"
 //│ ╟── from reference:
 //│ ║  l.90: 	  let local = f ((fun y -> y) x)
 //│ ╙──      	                              ^
-//│ res: () | error
+//│ res: error | ()
 //│    = []
 
 def id: 'a -> 'a

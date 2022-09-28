@@ -10,7 +10,7 @@ def z = x + y
 // common values
 //│ res: {a: "hello", b: "world"}
 //│ res: int
-//│ res: {b: 'b} -> 'b | 1
+//│ res: 1 | {b: 'b} -> 'b
 //│ x: 1
 //│ y: 2
 //│ z: int

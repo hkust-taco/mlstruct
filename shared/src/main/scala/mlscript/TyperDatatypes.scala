@@ -254,12 +254,12 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       else if (this.parentsST.contains(that.id)) S(this)
       else N
     def level: Int = 0
-    override def toString = showProvOver(false)(id.idStr+s"<${parents.map(_.show).mkString(",")}>")
+    override def toString = showProvOver(false)("#" + id.idStr + s"<${parents.map(_.show).mkString(",")}>")
   }
   
   case class TraitTag(id: SimpleTerm)(val prov: TypeProvenance) extends ObjectTag with Factorizable {
     def level: Int = 0
-    override def toString = id.idStr
+    override def toString = "#" + id.idStr
   }
   
   /** `TypeBounds(lb, ub)` represents an unknown type between bounds `lb` and `ub`.

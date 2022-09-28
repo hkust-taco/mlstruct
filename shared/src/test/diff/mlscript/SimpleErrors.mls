@@ -80,7 +80,7 @@ class Bar
 //│ ╔══[ERROR] Type mismatch in method definition:
 //│ ║  l.79: 	    rec method Map f = f 1
 //│ ║        	               ^^^^^^^^^^^^
-//│ ╟── type `B` is not a function
+//│ ╟── type `#B` is not a function
 //│ ║  l.78: 	    method Map[B]: B -> B
 //│ ║        	               ^
 //│ ╟── Note: constraint arises from application:

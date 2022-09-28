@@ -304,7 +304,7 @@ def eval2_broken eval2 e = case e of {
   | Nega -> e.arg
   | _ -> eval1 eval2 e
   }
-//│ eval2_broken: ('a -> 'rhs -> int & 'a) -> (Add[?] & {lhs: 'rhs, rhs: 'rhs} | Lit & {val: 'arg} | Nega[?] & {arg: 'arg}) -> ('arg | int)
+//│ eval2_broken: ('a -> 'rhs -> int & 'a) -> (Add[?] & {lhs: 'rhs, rhs: 'rhs} | Lit & {val: 'arg} | Nega[?] & {arg: 'arg}) -> (int | 'arg)
 
 :e
 eval2_broken eval2_broken e2

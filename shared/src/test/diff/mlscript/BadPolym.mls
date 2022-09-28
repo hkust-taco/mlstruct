@@ -29,7 +29,7 @@ foo id
 //│ ╟── Note: constraint arises from type reference:
 //│ ║  l.7: 	def foo: (int -> int & string -> string) -> ()
 //│ ╙──     	                                 ^^^^^^
-//│ res: () | error
+//│ res: error | ()
 //│    = 1
 
 fooImpl id

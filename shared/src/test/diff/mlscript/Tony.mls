@@ -32,11 +32,11 @@ flatMap3 (fun x -> add x.value x.payload) arg
 //│ ╟── from reference:
 //│ ║  l.8: 	def flatMap3 = fun f -> fun opt -> case opt of { Some -> f opt | _ -> opt }
 //│ ╙──     	                                        ^^^
-//│ res: error | int | None
+//│ res: None | error | int
 //│    = NaN
 //│ constrain calls  : 88
 //│ annoying  calls  : 20
-//│ subtyping calls  : 50
+//│ subtyping calls  : 52
 
 
 def arg = if true then Some{value = 42} else None {}
@@ -65,19 +65,19 @@ def fn = foo None
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.64: 	def fn = foo None
 //│ ║        	         ^^^^^^^^
-//│ ╟── expression of type `anything -> None & ~?a | Some[?] & anything -> None` does not have field 'value'
+//│ ╟── expression of type `Some[?] & anything -> None | anything -> None & ~?a` does not have field 'value'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.51: 	def foo = flatMap3 (fun x -> x.value)
 //│ ║        	                             ^^^^^^^
 //│ ╟── from refined scrutinee:
 //│ ║  l.8: 	def flatMap3 = fun f -> fun opt -> case opt of { Some -> f opt | _ -> opt }
 //│ ╙──     	                                        ^^^
-//│ fn: anything -> None & ~#Some | anything -> None & ~{value: 'a} | error | 'a
+//│ fn: error | anything -> None & ~#Some | anything -> None & ~{value: 'a} | 'a
 //│   = [Function (anonymous)]
 
 // :d
 fn{} // foo None {}
-//│ res: error | None
+//│ res: None | error
 //│    = None {}
 
 // :d

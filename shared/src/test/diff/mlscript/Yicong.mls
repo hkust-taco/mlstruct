@@ -17,7 +17,7 @@ case r of { T1 -> r | _ -> 0 }
 //│    = C_1 {}
 
 case r of { T1 -> r | T2 -> r }
-//│ res: 'a | ~#T2 & (C_1 | C_2) | ~'a & (C_1 | C_2) | #T1 & (C_1 | C_2) | ~#T1 & (C_1 | C_2)
+//│ res: 'a | ~#T2 & (C_1 | C_2) | #T1 & (C_1 | C_2) | ~#T1 & (C_1 | C_2) | ~'a & (C_1 | C_2)
 //│    = C_1 {}
 
 r = if true then C_1 ((1,2,3)) else C_2 ((3,4,5,4))
@@ -29,7 +29,7 @@ case r of { T1 -> r | _ -> 0 }
 //│    = C_1 {}
 
 case r of { T1 -> r | T2 -> r }
-//│ res: 'a | ~#T2 & (C_1 | C_2) | ~'a & (C_1 | C_2) | #T1 & (C_1 | C_2) | ~#T1 & (C_1 | C_2)
+//│ res: 'a | ~'a & (C_1 | C_2) | ~#T2 & (C_1 | C_2) | #T1 & (C_1 | C_2) | ~#T1 & (C_1 | C_2)
 //│    = C_1 {}
 
 
@@ -227,7 +227,7 @@ h (fun x -> x[0])
 //│ ╟── tuple literal of type `(1, true,)` does not match type `(?a,)`
 //│ ║  l.218: 	def h f = (f (1,2,false), f (1,true))
 //│ ╙──       	                            ^^^^^^^^
-//│ res: (undefined, undefined,) | error
+//│ res: error | (undefined, undefined,)
 //│    = [ undefined, undefined ]
 
 :e
@@ -241,7 +241,7 @@ h (fun (x, y) -> x)
 //│ ╟── Note: constraint arises from tuple literal:
 //│ ║  l.234: 	h (fun (x, y) -> x)
 //│ ╙──       	       ^^^^^^
-//│ res: (1, 1,) | error
+//│ res: error | (1, 1,)
 //│    = [ 1, 1 ]
 
 def h f = (f ((1,2,false)), f ((1,true)))
@@ -442,7 +442,7 @@ def append: Array['a] -> Array['b] -> Array['a | 'b]
 append ((1,2,false)) (((), 'hi'))
 //│ append: Array['a] -> Array['a] -> Array['a]
 //│       = <missing implementation>
-//│ res: Array["hi" | () | 1 | 2 | false]
+//│ res: Array["hi" | 1 | 2 | false | ()]
 //│    = <no result>
 //│      append is not implemented
 
@@ -505,7 +505,7 @@ tg (T2 ((true,false,false)))
 //│ ╟── Note that traits are always considered abstract
 //│ ║  l.2: 	trait T1
 //│ ╙──     	      ^^
-//│ res: Array[int] & #T1 | error
+//│ res: error | Array[int] & #T1
 //│    = <no result>
 //│      ta is not implemented
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
@@ -720,7 +720,7 @@ ra: (Array['a], Array['a], Array['a]) as 'a
 //│ ╙──       	    ^^^^^^^^^^^^
 //│ res: 'a
 //│   where
-//│     'a :> 'a0 | ('a, 'a, 'a,) | error
+//│     'a :> error | 'a0 | ('a, 'a, 'a,)
 //│     'a0 :> ('a0, 'a0,)
 //│    = <no result>
 //│      ra is not implemented
@@ -738,7 +738,7 @@ ra: (Array['a], Array['a], Array['a]) as 'a
 //│ ╙──       	    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: 'a
 //│   where
-//│     'a :> 'a0 | (Array['a], Array['a], Array['a],) | error
+//│     'a :> error | 'a0 | (Array['a], Array['a], Array['a],)
 //│     'a0 :> ('a0, 'a0,)
 //│    = <no result>
 //│      ra is not implemented
@@ -767,7 +767,7 @@ tktup a123
 //│ ╟── from reference:
 //│ ║  l.746: 	def tktup t = (t._2, t._3)
 //│ ╙──       	                     ^
-//│ res: (nothing, nothing,) | error
+//│ res: error | (nothing, nothing,)
 //│    = [ undefined, undefined ]
 
 
@@ -821,7 +821,7 @@ ta3[1-2]
 //│      ta is not implemented
 //│ ta3: ((1, 2, 3,) & ~undefined, "hello", false,)
 //│    = [ [ 1, 2, 3 ], 'hello', false ]
-//│ res: "hello" | (1, 2, 3,) & ~undefined | false | undefined
+//│ res: "hello" | false | undefined | (1, 2, 3,) & ~undefined
 //│    = undefined
 //│ res: 1 | 2 | 3 | undefined
 //│    = undefined

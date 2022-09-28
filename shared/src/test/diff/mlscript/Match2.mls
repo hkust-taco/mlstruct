@@ -19,7 +19,7 @@ foo Test
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.18: 	foo Test
 //│ ║        	^^^^^^^^
-//│ ╟── expression of type `{value: ?value} -> (Test & {value: ?value}) & ~?a | Test & {value: ?value} -> (Test & {value: ?value})` does not have field 'value'
+//│ ╟── expression of type `Test & {value: ?value} -> (Test & {value: ?value}) | {value: ?value} -> (Test & {value: ?value}) & ~?a` does not have field 'value'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.6: 	  { Test -> x.value
 //│ ║       	            ^^^^^^^

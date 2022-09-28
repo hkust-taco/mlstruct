@@ -187,7 +187,7 @@ trait TypeSimplifier { self: Typer =>
                 val clsNme = tagNme.capitalize
                 val clsTyNme = TypeName(tagNme.capitalize)
                 val td = ctx.tyDefs(clsNme)
-                lazy val bcs = ctx.allBaseClassesOf(td.nme.name).map(_.name.capitalize)
+                lazy val bcs = ctx.allBaseClassesOf(td.nme.name).map(_.name)
                 
                 val rcdMap  = rcd.fields.toMap
                 

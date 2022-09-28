@@ -678,11 +678,12 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         case tag: ObjectTag => tag.id match {
           case Var(n) =>
             if (primitiveTypes.contains(n) // primitives like `int` are internally maintained as class tags
-              || n.isCapitalized // rigid type params like A in class Foo[A]
+              // || n.isCapitalized // rigid type params like A in class Foo[A]
+                                    // – but now normal class tags are capitalized so we can't do this anymore
               || n.startsWith("'") // rigid type varibales
               || n === "this" // `this` type
             ) TypeName(n)
-            else TypeTag(n.capitalize)
+            else TypeTag(n)
           case lit: Lit => Literal(lit)
         }
         case TypeRef(td, Nil) => td

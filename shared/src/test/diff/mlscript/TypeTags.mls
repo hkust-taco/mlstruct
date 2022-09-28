@@ -70,3 +70,27 @@ foo = Foo
 //│    = [Function: foo1]
 
 
+
+:NoJS
+
+
+def test: Foo[int] & ~#Foo
+//│ test: Foo[int] & ~#Foo
+
+def test: Foo[int] & ~Foo[int]
+//│ test: nothing
+
+def test: Foo[int] & ~Foo[string]
+//│ test: Foo[int] & ~Foo[string]
+
+
+class Bar[A]: Foo[(A, A)]
+//│ Defined class Bar[+A]
+
+def test: Bar[int] & ~#Foo
+//│ test: Bar[int] & ~#Foo
+
+def test: Bar[int] & ~#Bar
+//│ test: Bar[int] & ~#Bar
+
+

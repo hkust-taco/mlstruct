@@ -145,3 +145,69 @@ d: Foo2[string]
 //│ res: Foo2[string]
 //│    = Bar2 { x: 1 }
 
+
+
+// * Notice that type parameters are shown with a `#` because they're encoded as trait tags...
+
+:e
+class F[a]
+  method M: a
+  method G = this.M : int
+  method H = this.M : #a
+  method I = this.M : #A
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.155: 	  method G = this.M : int
+//│ ║         	             ^^^^^^
+//│ ╟── field selection of type `#a` is not an instance of type `int`
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.155: 	  method G = this.M : int
+//│ ║         	                      ^^^
+//│ ╟── Note: class type parameter a is defined at:
+//│ ║  l.153: 	class F[a]
+//│ ╙──       	        ^
+//│ Defined class F[+a]
+//│ Declared F.M: F['a] -> 'a
+//│ Defined F.G: F[?] -> int
+//│ Defined F.H: F['a] -> 'a
+//│ Defined F.I: F['a] -> 'a
+
+class A
+//│ Defined class A
+
+:e
+class G[A]
+  method M: A
+  method G = this.M : #A
+  method H = this.M : a
+  method I = this.M : #a
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.180: 	  method G = this.M : #A
+//│ ║         	             ^^^^^^
+//│ ╟── field selection of type `#A` is not an instance of type `A`
+//│ ╟── Note: class type parameter A is defined at:
+//│ ║  l.178: 	class G[A]
+//│ ╙──       	        ^
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.181: 	  method H = this.M : a
+//│ ║         	             ^^^^^^
+//│ ╟── field selection of type `#A` is not an instance of type `A`
+//│ ╟── Note: constraint arises from class tag:
+//│ ║  l.181: 	  method H = this.M : a
+//│ ║         	                      ^
+//│ ╟── Note: class type parameter A is defined at:
+//│ ║  l.178: 	class G[A]
+//│ ╙──       	        ^
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.182: 	  method I = this.M : #a
+//│ ║         	             ^^^^^^
+//│ ╟── field selection of type `#A` is not an instance of type `A`
+//│ ╟── Note: class type parameter A is defined at:
+//│ ║  l.178: 	class G[A]
+//│ ╙──       	        ^
+//│ Defined class G[+A]
+//│ Declared G.M: G['A] -> 'A
+//│ Defined G.G: G[?] -> A
+//│ Defined G.H: G[?] -> A
+//│ Defined G.I: G[?] -> A
+
+

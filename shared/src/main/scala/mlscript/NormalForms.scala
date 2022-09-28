@@ -36,7 +36,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
       case LhsRefined(bo, ft, at, ts, r, trs) =>
         val sr = if (sort) r.sorted else r
         val bo2 = bo.filter {
-          case ClassTag(id, parents) => !trs.contains(TypeName(id.idStr.capitalize))
+          case ClassTag(id, parents) => !trs.contains(TypeName(id.idStr))
           case _ => true
         } .fold(ft: Opt[ST])(bo => S(ft.fold(bo: ST)(bo & _)))
           .fold(at: Opt[ST])(bo => S(at.fold(bo: ST)(bo & _)))
@@ -157,7 +157,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     }
     lazy val underlying: SimpleType = mkType(false)
     def level: Int = underlying.level
-    def hasTag(ttg: TraitTag): Bool = this match {
+    def hasTag(ttg: ObjectTag): Bool = this match {
       case RhsBases(ts, _, trs) => ts.contains(ttg)
       case RhsBot | _: RhsField => false
     }
