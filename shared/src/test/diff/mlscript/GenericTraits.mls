@@ -1,0 +1,144 @@
+
+
+trait T0[A]
+  method Id: A -> A
+//│ Defined trait T0[=A]
+//│ Declared T0.Id: T0['A] -> 'A -> 'A
+
+class C0: T0[int]
+//│ Defined class C0
+
+class D0: C0
+  method Id = id
+//│ Defined class D0
+//│ Defined D0.Id: D0 -> 'a -> 'a
+
+d = D0{}
+//│ d: D0
+//│  = D0 {}
+
+d.Id
+//│ res: int -> int
+//│    = [Function: id]
+
+
+:NoJS
+
+
+def impossible: C0 & T0[string]
+//│ impossible: C0 & T0[string]
+
+impossible: T0[int]
+//│ res: T0[int]
+
+impossible: T0[string]
+//│ res: T0[string]
+
+impossible: T0['a]
+//│ res: T0['a]
+//│   where
+//│     'a <: int | string
+
+impossible: T0['a] | 'b
+//│ res: C0 & {T0#A :> int | string <: nothing} & #T0 & ~{T0#A = 'a} | T0['a]
+
+T0.Id
+//│ res: T0['A] -> 'A -> 'A
+
+impossible.Id
+//│ res: ('A & (int | string)) -> 'A
+
+
+
+
+// === === === ERROR CASES === === === //
+
+
+:ShowRelativeLineNums
+:AllowTypeErrors
+
+
+c = C0{}
+//│ ╔══[ERROR] Instantiation of an abstract type is forbidden
+//│ ║  l.+1: 	c = C0{}
+//│ ║        	    ^^
+//│ ╟── Note that class C0 is abstract:
+//│ ║  l.8: 	class C0: T0[int]
+//│ ║       	      ^^^^^^^^^^^
+//│ ╟── Hint: method Id is abstract
+//│ ║  l.4: 	  method Id: A -> A
+//│ ╙──     	         ^^^^^^^^^^
+//│ c: error
+
+impossible: T0[?]
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.+1: 	impossible: T0[?]
+//│ ║        	^^^^^^^^^^
+//│ ╟── type `anything` does not match type `int | string`
+//│ ║  l.+1: 	impossible: T0[?]
+//│ ╙──      	               ^
+//│ res: T0[?]
+
+impossible: ~T0[int]
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.+1: 	impossible: ~T0[int]
+//│ ║        	^^^^^^^^^^
+//│ ╟── type `C0 & T0[string]` does not match type `~T0[int]`
+//│ ║  l.28: 	def impossible: C0 & T0[string]
+//│ ║        	                ^^^^^^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `~T0[int]`
+//│ ║  l.+1: 	impossible: ~T0[int]
+//│ ║        	^^^^^^^^^^
+//│ ╟── Note: constraint arises from type negation:
+//│ ║  l.+1: 	impossible: ~T0[int]
+//│ ╙──      	            ^^^^^^^^
+//│ res: ~T0[int]
+
+impossible = d
+//│ D0
+//│   <:  impossible:
+//│ C0 & T0[string]
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.+1: 	impossible = d
+//│ ║        	^^^^^^^^^^^^^^
+//│ ╟── type `string` is not an instance of type `int`
+//│ ║  l.28: 	def impossible: C0 & T0[string]
+//│ ║        	                        ^^^^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.8: 	class C0: T0[int]
+//│ ╙──     	             ^^^
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.+1: 	impossible = d
+//│ ║        	^^^^^^^^^^^^^^
+//│ ╟── type `int` is not an instance of type `string`
+//│ ║  l.8: 	class C0: T0[int]
+//│ ║       	             ^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.28: 	def impossible: C0 & T0[string]
+//│ ╙──      	                        ^^^^^^
+
+class D1: C0 & T0[string]
+//│ ╔══[ERROR] Type mismatch in type definition:
+//│ ║  l.+1: 	class D1: C0 & T0[string]
+//│ ║        	      ^^^^^^^^^^^^^^^^^^^
+//│ ╟── type `int` is not an instance of `string`
+//│ ║  l.8: 	class C0: T0[int]
+//│ ║       	             ^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.+1: 	class D1: C0 & T0[string]
+//│ ╙──      	                  ^^^^^^
+//│ ╔══[ERROR] Type mismatch in type definition:
+//│ ║  l.+1: 	class D1: C0 & T0[string]
+//│ ║        	      ^^^^^^^^^^^^^^^^^^^
+//│ ╟── type `string` is not an instance of `int`
+//│ ║  l.+1: 	class D1: C0 & T0[string]
+//│ ║        	                  ^^^^^^
+//│ ╟── Note: constraint arises from type reference:
+//│ ║  l.8: 	class C0: T0[int]
+//│ ╙──     	             ^^^
+//│ Defined class D1
+
+D1.Id
+//│ res: D1 -> (int | string) -> nothing
+
+

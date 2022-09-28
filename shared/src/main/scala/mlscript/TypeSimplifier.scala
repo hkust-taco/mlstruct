@@ -129,15 +129,8 @@ trait TypeSimplifier { self: Typer =>
         c.toTypeWith(_ match {
           
           case LhsRefined(bo, ft, at, tts, rcd, trs) =>
-            // * The handling of type parameter fields is currently a little wrong here,
-            // *  because we remove:
-            // *    - type parameter fields of parent classes,
-            // *        whereas they could _in principle_ be refined and
-            // *        not correspond exactly to these of the currenly-reconstructed class;
-            // *        and
-            // *    - type parameter fields of the current trait tags
-            // *        whereas we don't actually reconstruct applied trait types...
-            // *        it would be better to just reconstruct them
+            // * The handling of type parameter fields is currently a little wrong
+            // *  because we reconstruct type references from class tags although we may be missing fields!
             
             val trs2 = trs.map {
               case (d, tr @ TypeRef(defn, targs)) =>
@@ -149,34 +142,31 @@ trait TypeSimplifier { self: Typer =>
             val traitPrefixes =
               tts.iterator.collect{ case TraitTag(Var(tagNme)) => tagNme.capitalize }.toSet
             
-            lazy val nFields = rcd.fields
-              .filterNot(traitPrefixes contains _._1.name.takeWhile(_ =/= '#'))
-              .mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
+            lazy val processedFields = rcd.fields.mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
             
             val (at2, nfs) = at match {
               case S(tt @ TupleType(fs)) =>
                 val arity = fs.size
-                val (componentFields, rcdFields) = rcd.fields
-                  .filterNot(traitPrefixes contains _._1.name.takeWhile(_ =/= '#'))
-                  .partitionMap(f =>
-                    if (f._1.name.length > 1 && f._1.name.startsWith("_")) {
-                      val namePostfix = f._1.name.tail
-                      if (namePostfix.forall(_.isDigit)) {
-                        val index = namePostfix.toInt
-                        if (index <= arity && index > 0) L(index -> f._2)
-                        else R(f)
-                      }
+                val (componentFields, rcdFields) = rcd.fields.partitionMap(f =>
+                  if (f._1.name.length > 1 && f._1.name.startsWith("_")) {
+                    val namePostfix = f._1.name.tail
+                    if (namePostfix.forall(_.isDigit)) {
+                      val index = namePostfix.toInt
+                      if (index <= arity && index > 0) L(index -> f._2)
                       else R(f)
-                    } else R(f)
-                  )
+                    }
+                    else R(f)
+                  } else R(f)
+                )
                 val componentFieldsMap = componentFields.toMap
                 val tupleComponents = fs.iterator.zipWithIndex.map { case ((nme, ty), i) =>
-                  nme -> (ty.toUpper(noProv) && componentFieldsMap.getOrElse(i + 1, TopType.toUpper(noProv))).update(go(_, pol.map(!_)), go(_, pol))
+                  nme -> (ty.toUpper(noProv) && componentFieldsMap.getOrElse(i + 1,
+                    TopType.toUpper(noProv))).update(go(_, pol.map(!_)), go(_, pol))
                 }.toList
-                S(TupleType(tupleComponents.mapValues(_.ub))(tt.prov)) -> rcdFields.mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
-              case S(at @ ArrayType(inner)) =>
-                S(ArrayType(go(inner, pol))(at.prov)) -> nFields
-              case N => N -> nFields
+                S(TupleType(tupleComponents.mapValues(_.ub))(tt.prov)) ->
+                  rcdFields.mapValues(_.update(go(_, pol.map(!_)), go(_, pol)))
+              case S(at @ ArrayType(inner)) => S(ArrayType(go(inner, pol))(at.prov)) -> processedFields
+              case N => N -> processedFields
             }
             
             bo match {
@@ -191,7 +181,7 @@ trait TypeSimplifier { self: Typer =>
                 
                 val rcdMap  = rcd.fields.toMap
                 
-                val rcd2  = RecordType(nfs.mapValues(_.update(go(_, pol.map(!_)), go(_, pol))))(rcd.prov)
+                val rcd2  = RecordType(nfs)(rcd.prov)
                 println(s"rcd2 ${rcd2}")
                 
                 val vs = td.getVariancesOrDefault
@@ -234,7 +224,6 @@ trait TypeSimplifier { self: Typer =>
                 )(rcd2.prov)
                 
                 val trsFiltered = trs2.filterNot { case (tn, tr) =>
-                  val td2 = ctx.tyDefs(tn.name)
                   // println(s">>> ${tn} ${tr.defn} ${td.baseClasses} ${bcs}")
                   tr.targs.isEmpty && // TODO generalize
                     bcs.contains(tr.defn.name)
