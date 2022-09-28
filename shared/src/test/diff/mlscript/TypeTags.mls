@@ -25,7 +25,7 @@ def baz4: #Baz & { x: 1; y: 2 }
 //│     = <missing implementation>
 
 def test01 b = case b of { Baz -> b.x }
-//│ test01: (#Baz & {x: 'x}) -> 'x
+//│ test01: (Baz & {x: 'x}) -> 'x
 //│       = [Function: test01]
 
 def test02 b = case b of { Baz -> b.x + b.y }
@@ -67,19 +67,46 @@ foo2 = foo12
 
 
 def test1 f = case f of { Foo -> f }
-//│ test1: (#Foo & 'a) -> 'a
+//│ test1: (Foo[?] & 'a) -> 'a
 //│      = [Function: test1]
 
 test1 foo
-//│ res: #Foo
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.73: 	test1 foo
+//│ ║        	^^^^^^^^^
+//│ ╟── type `#Foo` is not a compatible record (expected a record with fields: x, y)
+//│ ║  l.43: 	def foo: #Foo
+//│ ║        	         ^^^^
+//│ ╟── but it flows into reference with expected type `{x: ?a, y: ?a}`
+//│ ║  l.73: 	test1 foo
+//│ ║        	      ^^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.40: 	class Foo[A]: { x: A; y: A }
+//│ ║        	              ^^^^^^^^^^^^^^
+//│ ╟── from reference:
+//│ ║  l.69: 	def test1 f = case f of { Foo -> f }
+//│ ╙──      	                   ^
+//│ res: #Foo | error
 //│    = Foo { x: 1, y: 2 }
 
 test1 foo2
-//│ res: #Foo & {x: int, y: int}
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.92: 	test1 foo2
+//│ ║        	^^^^^^^^^^
+//│ ╟── type `#Foo & {x: int, y: int}` does not have field 'Foo#A'
+//│ ║  l.58: 	def foo2: #Foo & { x: int; y: int }
+//│ ║        	          ^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `{Foo#A <: ?a}`
+//│ ║  l.92: 	test1 foo2
+//│ ║        	      ^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.69: 	def test1 f = case f of { Foo -> f }
+//│ ╙──      	                   ^
+//│ res: #Foo & {x: int, y: int} | error
 //│    = Foo { x: 1, y: 2 }
 
 def test2 f = case f of { Foo -> f.x }
-//│ test2: (#Foo & {x: 'x}) -> 'x
+//│ test2: (Foo[?] & {x: 'x}) -> 'x
 //│      = [Function: test2]
 
 test2 foo12
@@ -87,7 +114,19 @@ test2 foo12
 //│    = 1
 
 test2 foo2
-//│ res: int
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.116: 	test2 foo2
+//│ ║         	^^^^^^^^^^
+//│ ╟── type `#Foo & {x: int, y: int}` does not have field 'Foo#A'
+//│ ║  l.58: 	def foo2: #Foo & { x: int; y: int }
+//│ ║        	          ^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `{Foo#A <: ?a}`
+//│ ║  l.116: 	test2 foo2
+//│ ║         	      ^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.108: 	def test2 f = case f of { Foo -> f.x }
+//│ ╙──       	                   ^
+//│ res: error | int
 //│    = 1
 
 
@@ -95,20 +134,20 @@ test2 foo2
 :e
 test2 foo
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.96: 	test2 foo
-//│ ║        	^^^^^^^^^
-//│ ╟── type `#Foo` does not have field 'x'
+//│ ║  l.135: 	test2 foo
+//│ ║         	^^^^^^^^^
+//│ ╟── type `#Foo` is not a compatible record (expected a record with fields: x, y)
 //│ ║  l.43: 	def foo: #Foo
 //│ ║        	         ^^^^
-//│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.96: 	test2 foo
-//│ ║        	      ^^^
-//│ ╟── Note: constraint arises from field selection:
-//│ ║  l.81: 	def test2 f = case f of { Foo -> f.x }
-//│ ║        	                                 ^^^
+//│ ╟── but it flows into reference with expected type `{x: ?a, y: ?a}`
+//│ ║  l.135: 	test2 foo
+//│ ║         	      ^^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.40: 	class Foo[A]: { x: A; y: A }
+//│ ║        	              ^^^^^^^^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.81: 	def test2 f = case f of { Foo -> f.x }
-//│ ╙──      	                   ^
+//│ ║  l.108: 	def test2 f = case f of { Foo -> f.x }
+//│ ╙──       	                   ^
 //│ res: error
 //│    = 1
 
@@ -119,10 +158,10 @@ foo = Foo
 //│   <:  foo:
 //│ #Foo
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.117: 	foo = Foo
+//│ ║  l.156: 	foo = Foo
 //│ ║         	^^^^^^^^^
 //│ ╟── reference of type `{x: ?x, y: ?y} -> (Foo[?A] & {Foo#A = ?A, x: ?x, y: ?y})` is not an instance of type `Foo`
-//│ ║  l.117: 	foo = Foo
+//│ ║  l.156: 	foo = Foo
 //│ ║         	      ^^^
 //│ ╟── Note: constraint arises from class tag:
 //│ ║  l.43: 	def foo: #Foo
@@ -159,13 +198,13 @@ def test: Foo[int] & ~Foo[string]
 :e
 test: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.160: 	test: nothing
+//│ ║  l.199: 	test: nothing
 //│ ║         	^^^^
 //│ ╟── type `int` is not an instance of type `string`
-//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
+//│ ║  l.196: 	def test: Foo[int] & ~Foo[string]
 //│ ║         	              ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
+//│ ║  l.196: 	def test: Foo[int] & ~Foo[string]
 //│ ╙──       	                          ^^^^^^
 //│ res: nothing
 

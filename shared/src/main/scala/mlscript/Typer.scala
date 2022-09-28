@@ -601,19 +601,27 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     case Case(pat, bod, rest) =>
       val patTy = pat match {
         case lit: Lit =>
-          ClassTag(lit, lit.baseClasses)(tp(pat.toLoc, "literal pattern"))
+          val l = ClassTag(lit, lit.baseClasses)(tp(pat.toLoc, "literal pattern"))
+          l -> l
         case Var(nme) =>
           val tpr = tp(pat.toLoc, "type pattern")
           ctx.tyDefs.get(nme) match {
             case None =>
               err("type identifier not found: " + nme, pat.toLoc)(raise)
               val e = ClassTag(ErrTypeId, Set.empty)(tpr)
+              // return (((e, e) -> e) :: Nil) -> e
               return ((e -> e) :: Nil) -> e
             case Some(td) =>
               td.kind match {
-                case Als => err(msg"can only match on classes and traits", pat.toLoc)(raise)
-                case Cls => clsNameToNomTag(td)(tp(pat.toLoc, "class pattern"), ctx)
-                case Trt => trtNameToNomTag(td)(tp(pat.toLoc, "trait pattern"), ctx)
+                case Als =>
+                  val e = err(msg"can only match on classes and traits", pat.toLoc)(raise)
+                  (e, e)
+                case Cls =>
+                  (clsNameToNomTag(td)(tp(pat.toLoc, "class pattern"), ctx),
+                  TypeRef(td.nme, td.tparams.map(_ => freshVar(noProv)))(noProv))
+                case Trt =>
+                  val r = trtNameToNomTag(td)(tp(pat.toLoc, "trait pattern"), ctx)
+                  (r, r)
               }
           }
       }
@@ -625,10 +633,10 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           )
           newCtx += v.name -> tv
           val bod_ty = typeTerm(bod)(newCtx, raise)
-          (patTy -> tv, bod_ty, typeArms(scrutVar, rest))
+          (patTy.mapSecond(_ & tv), bod_ty, typeArms(scrutVar, rest))
         case N =>
           val bod_ty = typeTerm(bod)(newCtx, raise)
-          (patTy -> TopType, bod_ty, typeArms(scrutVar, rest))
+          (patTy, bod_ty, typeArms(scrutVar, rest))
       }
       (req_ty :: tys) -> (bod_ty | rest_ty)
   }

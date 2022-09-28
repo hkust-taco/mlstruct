@@ -216,7 +216,7 @@ def checkP x = case x of
 //│       = [Function: checkR]
 //│ checkQ: anything -> bool
 //│       = [Function: checkQ]
-//│ checkP: anything -> bool
+//│ checkP: (P | ~#P) -> bool
 //│       = [Function: checkP]
 
 // Should pass all checks.

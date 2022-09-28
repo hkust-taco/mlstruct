@@ -8,16 +8,16 @@ def f e = case e of
   Foo -> e.y,
   Foo -> e.z,
   _ -> e
-//│ f: (#Foo & {y: 'y} | 'y & ~#Foo) -> 'y
+//│ f: (Foo[?] & {y: 'y} | 'y & ~#Foo) -> 'y
 //│  = [Function: f]
 
 :ns
 f
 //│ res: 'a -> ('y | 'z | 'b)
 //│   where
-//│     'a <: #Foo & 'c | (#Foo & 'd | 'b & ~#Foo) & ~#Foo
-//│     'd <: {z: 'z}
-//│     'c <: {y: 'y}
+//│     'a <: #Foo & Foo['c] & 'd | (#Foo & Foo['e] & 'f | 'b & ~#Foo) & ~#Foo
+//│     'f <: {z: 'z}
+//│     'd <: {y: 'y}
 //│    = [Function: f]
 
 class Foo2: Foo[int] & { y: int }
@@ -32,6 +32,6 @@ f (Foo2{x=1;y=2})
 def f e = case e of
   Foo2 -> e.y,
   Foo -> e.z,
-//│ f: (#Foo2 & {y: 'y} | #Foo & {z: 'y} & ~#Foo2) -> 'y
+//│ f: (Foo2 & {y: 'y} | Foo[?] & {z: 'y} & ~#Foo2) -> 'y
 //│  = [Function: f1]
 

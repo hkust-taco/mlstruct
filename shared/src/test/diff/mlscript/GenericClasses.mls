@@ -125,7 +125,7 @@ error: Foo2[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2 -> x }
-//│ f: (#Foo2 & 'a) -> 'a
+//│ f: (Foo2['a] & 'b) -> 'b
 //│  = [Function: f]
 
 f (Foo2 {})
@@ -139,7 +139,7 @@ error: (Foo2[?] & 'a) -> 'a
 //│   Error: unexpected runtime error
 
 f: (Foo2[?] & 'a) -> 'a
-//│ res: (Foo2[?] & 'a) -> 'a
+//│ res: ('a & (Foo2['b] | Foo2[?] & ~{Foo2#A})) -> 'a
 //│    = [Function: f]
 
 :ns
@@ -147,11 +147,11 @@ f: (Foo2[?] & 'a) -> 'a
 //│ res: (Foo2[?] & 'a) -> 'a
 //│   where
 //│     'a :> Foo2[?] & 'a
-//│        <: (#Foo2 | ~{Foo2#A} | ~#Foo2 | ~(#Foo2 & {Foo2#A})) & (#Foo2 | ~(#Foo2 & {Foo2#A}))
+//│        <: (#Foo2 | ~{Foo2#A} | ~#Foo2 | ~(#Foo2 & {Foo2#A})) & ({Foo2#A = 'b} | ~{Foo2#A} | ~#Foo2 | ~(#Foo2 & {Foo2#A})) & ({Foo2#A = 'b} | ~(#Foo2 & {Foo2#A})) & (#Foo2 | ~(#Foo2 & {Foo2#A}))
 //│    = [Function: f]
 
 f
-//│ res: (#Foo2 & 'a) -> 'a
+//│ res: (Foo2['a] & 'b) -> 'b
 //│    = [Function: f]
 
 
@@ -216,7 +216,7 @@ error: Foo2_Co[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2_Co -> x }
-//│ f: (#Foo2_Co & 'a) -> 'a
+//│ f: (Foo2_Co[?] & 'a) -> 'a
 //│  = [Function: f1]
 
 f (Foo2_Co {})
@@ -230,7 +230,7 @@ error: (Foo2_Co[?] & 'a) -> 'a
 //│   Error: unexpected runtime error
 
 f: (Foo2_Co[?] & 'a) -> 'a
-//│ res: (Foo2_Co[nothing] & 'a) -> 'a
+//│ res: ('a & (Foo2_Co[nothing] | Foo2_Co[nothing] & ~{Foo2_Co#A})) -> 'a
 //│    = [Function: f1]
 
 :ns
@@ -238,11 +238,11 @@ f: (Foo2_Co[?] & 'a) -> 'a
 //│ res: (Foo2_Co[?] & 'a) -> 'a
 //│   where
 //│     'a :> Foo2_Co[?] & 'a
-//│        <: (#Foo2_Co | ~{Foo2_Co#A} | ~#Foo2_Co | ~(#Foo2_Co & {Foo2_Co#A})) & (#Foo2_Co | ~(#Foo2_Co & {Foo2_Co#A}))
+//│        <: (#Foo2_Co | ~{Foo2_Co#A} | ~#Foo2_Co | ~(#Foo2_Co & {Foo2_Co#A})) & ({Foo2_Co#A <: 'b} | ~{Foo2_Co#A} | ~#Foo2_Co | ~(#Foo2_Co & {Foo2_Co#A})) & ({Foo2_Co#A <: 'b} | ~(#Foo2_Co & {Foo2_Co#A})) & (#Foo2_Co | ~(#Foo2_Co & {Foo2_Co#A}))
 //│    = [Function: f1]
 
 f
-//│ res: (#Foo2_Co & 'a) -> 'a
+//│ res: (Foo2_Co[?] & 'a) -> 'a
 //│    = [Function: f1]
 
 
@@ -288,7 +288,7 @@ error: Foo2_Bi[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2_Bi -> x }
-//│ f: (#Foo2_Bi & 'a) -> 'a
+//│ f: (Foo2_Bi[?] & 'a) -> 'a
 //│  = [Function: f2]
 
 f (Foo2_Bi {})
@@ -302,7 +302,7 @@ error: (Foo2_Bi[?] & 'a) -> 'a
 //│   Error: unexpected runtime error
 
 f: (Foo2_Bi[?] & 'a) -> 'a
-//│ res: (Foo2_Bi[?] & 'a) -> 'a
+//│ res: ('a & (Foo2_Bi[?] | Foo2_Bi[?] & ~{Foo2_Bi#A})) -> 'a
 //│    = [Function: f2]
 
 :ns
@@ -310,11 +310,11 @@ f: (Foo2_Bi[?] & 'a) -> 'a
 //│ res: (Foo2_Bi[?] & 'a) -> 'a
 //│   where
 //│     'a :> Foo2_Bi[?] & 'a
-//│        <: (#Foo2_Bi | ~{Foo2_Bi#A} | ~#Foo2_Bi | ~(#Foo2_Bi & {Foo2_Bi#A})) & (#Foo2_Bi | ~(#Foo2_Bi & {Foo2_Bi#A}))
+//│        <: (#Foo2_Bi | ~{Foo2_Bi#A} | ~#Foo2_Bi | ~(#Foo2_Bi & {Foo2_Bi#A})) & ({Foo2_Bi#A} | ~{Foo2_Bi#A} | ~#Foo2_Bi | ~(#Foo2_Bi & {Foo2_Bi#A})) & ({Foo2_Bi#A} | ~(#Foo2_Bi & {Foo2_Bi#A})) & (#Foo2_Bi | ~(#Foo2_Bi & {Foo2_Bi#A}))
 //│    = [Function: f2]
 
 f
-//│ res: (#Foo2_Bi & 'a) -> 'a
+//│ res: (Foo2_Bi[?] & 'a) -> 'a
 //│    = [Function: f2]
 
 

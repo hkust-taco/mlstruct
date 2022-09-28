@@ -6,7 +6,7 @@ class None: {}
 
 
 def flatMap3 = fun f -> fun opt -> case opt of { Some -> f opt | _ -> opt }
-//│ flatMap3: ('a -> 'b) -> (#Some & 'a | 'b & ~#Some) -> 'b
+//│ flatMap3: ('a -> 'b) -> (Some[?] & 'a | 'b & ~#Some) -> 'b
 //│         = [Function: flatMap3]
 
 
@@ -34,9 +34,9 @@ flatMap3 (fun x -> add x.value x.payload) arg
 //│ ╙──     	                                        ^^^
 //│ res: None | error | int
 //│    = NaN
-//│ constrain calls  : 88
-//│ annoying  calls  : 20
-//│ subtyping calls  : 52
+//│ constrain calls  : 97
+//│ annoying  calls  : 33
+//│ subtyping calls  : 86
 
 
 def arg = if true then Some{value = 42} else None {}
@@ -49,7 +49,7 @@ flatMap3 (fun x -> x.value) arg
 
 
 def foo = flatMap3 (fun x -> x.value)
-//│ foo: (#Some & {value: 'a} | 'a & ~#Some) -> 'a
+//│ foo: (Some[?] & {value: 'a} | 'a & ~#Some) -> 'a
 //│    = [Function (anonymous)]
 
 foo arg
@@ -65,14 +65,16 @@ def fn = foo None
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.64: 	def fn = foo None
 //│ ║        	         ^^^^^^^^
-//│ ╟── expression of type `#Some & anything -> None | anything -> None & ~?a` does not have field 'value'
-//│ ╟── Note: constraint arises from field selection:
-//│ ║  l.51: 	def foo = flatMap3 (fun x -> x.value)
-//│ ║        	                             ^^^^^^^
-//│ ╟── from refined scrutinee:
+//│ ╟── reference of type `anything -> None` does not match type `Some[?a] & ?b | ?c & ~#Some`
+//│ ║  l.64: 	def fn = foo None
+//│ ║        	             ^^^^
+//│ ╟── Note: constraint arises from reference:
 //│ ║  l.8: 	def flatMap3 = fun f -> fun opt -> case opt of { Some -> f opt | _ -> opt }
-//│ ╙──     	                                        ^^^
-//│ fn: error | anything -> None & ~#Some | anything -> None & ~{value: 'a} | 'a
+//│ ║       	                                        ^^^
+//│ ╟── Note: class constructor None is defined at:
+//│ ║  l.2: 	class None: {}
+//│ ╙──     	      ^^^^
+//│ fn: error | anything -> None & ~#Some | anything -> None & ~{Some#A} | anything -> None & ~{value: 'a} | anything -> None & ~{value: anything} | 'a
 //│   = [Function (anonymous)]
 
 // :d
@@ -94,7 +96,7 @@ fun f -> flatMap3 f arg
 
 
 def foo = flatMap3 (fun x -> x)
-//│ foo: 'a -> 'a
+//│ foo: ('a & (Some[?] | ~#Some)) -> 'a
 //│    = [Function (anonymous)]
 
 foo 1
@@ -109,23 +111,23 @@ def simpler = fun f -> case None{} of { Some -> f 1 | _ -> None{} }
 //│        = [Function: simpler]
 
 def simpler = fun f -> fun opt -> case opt of { Some -> f opt | None -> opt }
-//│ simpler: ('a -> 'b) -> (None & 'b | #Some & 'a) -> 'b
+//│ simpler: ('a -> 'b) -> (None & 'b | Some[?] & 'a) -> 'b
 //│        = [Function: simpler1]
 
 simpler (fun x -> x.value)
-//│ res: (None & 'a | #Some & {value: 'a}) -> 'a
+//│ res: (None & 'a | Some[?] & {value: 'a}) -> 'a
 //│    = [Function (anonymous)]
 
 :e
 res 1
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.120: 	res 1
+//│ ║  l.122: 	res 1
 //│ ║         	^^^^^
-//│ ╟── integer literal of type `1` does not match type `None & ?a | #Some & ?b`
-//│ ║  l.120: 	res 1
+//│ ╟── integer literal of type `1` does not match type `None & ?a | Some[?b] & ?c`
+//│ ║  l.122: 	res 1
 //│ ║         	    ^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.111: 	def simpler = fun f -> fun opt -> case opt of { Some -> f opt | None -> opt }
+//│ ║  l.113: 	def simpler = fun f -> fun opt -> case opt of { Some -> f opt | None -> opt }
 //│ ╙──       	                                       ^^^
 //│ res: error
 //│ Runtime error:
@@ -133,5 +135,5 @@ res 1
 
 
 def funny = fun f -> case f of { Some -> f f }
-//│ funny: (#Some & 'a -> 'b & 'a) -> 'b
+//│ funny: (Some[?] & 'a -> 'b & 'a) -> 'b
 //│      = [Function: funny]
