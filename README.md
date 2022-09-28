@@ -1,13 +1,13 @@
-_This repository contains an implementation of the Boolean-algebraic core of [MLscript](https://github.com/hkust-taco/mlscript), in a way that is faithful to the corresponding OOPSLA 2022 paper. In particular, we have removed all the bells and whistles and extra features of the full MLscript language._
+_This repository contains an implementation of **MLstruct**, the Boolean-algebraic core of [MLscript](https://github.com/hkust-taco/mlscript). It is relatively faithful to the OOPSLA 2022 paper **[MLstruct: Principal Type Inference in a Boolean Algebra of Structural Types](https://2022.splashcon.org/details/splash-2022-oopsla/41/MLstruct-Principal-Type-Inference-in-a-Boolean-Algebra-of-Structural-Types)**. To obtain MLstruct, we started from the full MLscript language prototype and removed most of the extra features/bells and whistles, and we also made some additional simplifications._
 
-# MLscript Core Language
+# MLstruct
 
 What would TypeScript look like if it had been designed with type inference and soundness in mind?
 
 We provide one possible answer in MLscript, an object-oriented and functional programming language with records, generic classes, mix-in traits, first-class unions and intersections, instance matching, and ML-style principal type inference.
-These features can be used to implement expressive class hierarchies as well as extensible sums and products.
+These features can be used to implement a form of extensible variants that is as powerful as but also more flexible than unification-based approaches using row variables.
 
-MLscript supports union, intersection, and complement (or negation) connectives, making sure they form a Boolean algebra, and add enough structure to derive a sound and complete type inference algorithm.
+MLstruct supports union, intersection, and complement (or negation) connectives. We make sure they form a Boolean algebra and add enough structure to derive a sound and complete type inference algorithm. For more details, please see the paper mentioned above.
 
 
 ## Running the tests
