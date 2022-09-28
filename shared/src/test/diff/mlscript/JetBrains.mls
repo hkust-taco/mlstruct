@@ -76,7 +76,7 @@ evalN2 evalN2 e
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	evalN2 evalN2 e
 //│ ║        	^^^^^^^^^^^^^^^
-//│ ╟── application of type `Neg & {underlying: ?underlying}` does not match type `Add & ?a | Lit & ?b`
+//│ ╟── application of type `Neg & {underlying: ?underlying}` does not match type `#Add & ?a | #Lit & ?b`
 //│ ║  l.47: 	e = Add{lhs = Lit{val = 1}; rhs = Neg{underlying = Lit{val = 2}}}
 //│ ║        	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:

@@ -8,7 +8,7 @@ def f e = case e of
   Foo -> e.y,
   Foo -> e.z,
   _ -> e
-//│ f: (Foo[?] & {y: 'y} | 'y & ~#Foo) -> 'y
+//│ f: (#Foo & {y: 'y} | 'y & ~#Foo) -> 'y
 //│  = [Function: f]
 
 :ns
@@ -32,6 +32,6 @@ f (Foo2{x=1;y=2})
 def f e = case e of
   Foo2 -> e.y,
   Foo -> e.z,
-//│ f: (Foo2 & {y: 'y} | Foo[?] & {z: 'y} & ~#Foo2) -> 'y
+//│ f: (#Foo2 & {y: 'y} | #Foo & {z: 'y} & ~#Foo2) -> 'y
 //│  = [Function: f1]
 

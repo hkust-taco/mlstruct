@@ -1,10 +1,47 @@
 
 
+class Baz: { x: int; y: int }
+//│ Defined class Baz
+
+def baz1: #Baz
+//│ baz1: #Baz
+//│     = <missing implementation>
+
+def baz2: #Baz & { x: int }
+//│ baz2: #Baz & {x: int}
+//│     = <missing implementation>
+
+// * Notice we now reconstruct the full `Baz` type:
+def baz2: #Baz & { x: int; y: int }
+//│ baz2: Baz
+//│     = <missing implementation>
+
+def baz3: #Baz & { x: 1; y: int }
+//│ baz3: Baz & {x: 1}
+//│     = <missing implementation>
+
+def baz4: #Baz & { x: 1; y: 2 }
+//│ baz4: Baz & {x: 1, y: 2}
+//│     = <missing implementation>
+
+def test01 b = case b of { Baz -> b.x }
+//│ test01: (#Baz & {x: 'x}) -> 'x
+//│       = [Function: test01]
+
+def test02 b = case b of { Baz -> b.x + b.y }
+//│ test02: Baz -> int
+//│       = [Function: test02]
+
+def test02 b = case b of { Baz -> (b.x, b.y + 1) }
+//│ test02: (Baz & {x: 'x}) -> ('x, int,)
+//│       = [Function: test021]
+
+
 class Foo[A]: { x: A; y: A }
 //│ Defined class Foo[+A]
 
 def foo: #Foo
-//│ foo: Foo[?]
+//│ foo: #Foo
 //│    = <missing implementation>
 
 foo12 = Foo { x = 1; y = 2 }
@@ -14,23 +51,43 @@ foo12 = Foo { x = 1; y = 2 }
 foo = foo12
 //│ Foo[1 | 2] & {x: 1, y: 2}
 //│   <:  foo:
-//│ Foo[?]
+//│ #Foo
 //│    = Foo { x: 1, y: 2 }
 
+
+def foo2: #Foo & { x: int; y: int }
+//│ foo2: #Foo & {x: int, y: int}
+//│     = <missing implementation>
+
+foo2 = foo12
+//│ Foo[1 | 2] & {x: 1, y: 2}
+//│   <:  foo2:
+//│ #Foo & {x: int, y: int}
+//│     = Foo { x: 1, y: 2 }
+
+
 def test1 f = case f of { Foo -> f }
-//│ test1: (Foo[?] & 'a) -> 'a
+//│ test1: (#Foo & 'a) -> 'a
 //│      = [Function: test1]
 
 test1 foo
-//│ res: Foo[?]
+//│ res: #Foo
+//│    = Foo { x: 1, y: 2 }
+
+test1 foo2
+//│ res: #Foo & {x: int, y: int}
 //│    = Foo { x: 1, y: 2 }
 
 def test2 f = case f of { Foo -> f.x }
-//│ test2: (Foo[?] & {x: 'x}) -> 'x
+//│ test2: (#Foo & {x: 'x}) -> 'x
 //│      = [Function: test2]
 
 test2 foo12
 //│ res: 1
+//│    = 1
+
+test2 foo2
+//│ res: int
 //│    = 1
 
 
@@ -38,19 +95,19 @@ test2 foo12
 :e
 test2 foo
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.39: 	test2 foo
+//│ ║  l.96: 	test2 foo
 //│ ║        	^^^^^^^^^
-//│ ╟── type `Foo[?]` does not have field 'x'
-//│ ║  l.6: 	def foo: #Foo
-//│ ║       	         ^^^^
+//│ ╟── type `#Foo` does not have field 'x'
+//│ ║  l.43: 	def foo: #Foo
+//│ ║        	         ^^^^
 //│ ╟── but it flows into reference with expected type `{x: ?x}`
-//│ ║  l.39: 	test2 foo
+//│ ║  l.96: 	test2 foo
 //│ ║        	      ^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.28: 	def test2 f = case f of { Foo -> f.x }
+//│ ║  l.81: 	def test2 f = case f of { Foo -> f.x }
 //│ ║        	                                 ^^^
 //│ ╟── from reference:
-//│ ║  l.28: 	def test2 f = case f of { Foo -> f.x }
+//│ ║  l.81: 	def test2 f = case f of { Foo -> f.x }
 //│ ╙──      	                   ^
 //│ res: error
 //│    = 1
@@ -60,21 +117,20 @@ test2 foo
 foo = Foo
 //│ {x: 'x & 'A, y: 'A & 'y} -> (Foo['A] & {x: 'x, y: 'y})
 //│   <:  foo:
-//│ Foo[?]
+//│ #Foo
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.60: 	foo = Foo
-//│ ║        	^^^^^^^^^
+//│ ║  l.117: 	foo = Foo
+//│ ║         	^^^^^^^^^
 //│ ╟── reference of type `{x: ?x, y: ?y} -> (Foo[?A] & {Foo#A = ?A, x: ?x, y: ?y})` is not an instance of type `Foo`
-//│ ║  l.60: 	foo = Foo
-//│ ║        	      ^^^
+//│ ║  l.117: 	foo = Foo
+//│ ║         	      ^^^
 //│ ╟── Note: constraint arises from class tag:
-//│ ║  l.6: 	def foo: #Foo
-//│ ║       	         ^^^^
+//│ ║  l.43: 	def foo: #Foo
+//│ ║        	         ^^^^
 //│ ╟── Note: class constructor Foo is defined at:
-//│ ║  l.3: 	class Foo[A]: { x: A; y: A }
-//│ ╙──     	      ^^^
+//│ ║  l.40: 	class Foo[A]: { x: A; y: A }
+//│ ╙──      	      ^^^
 //│    = [Function: foo1]
-
 
 
 :NoJS
@@ -103,13 +159,13 @@ def test: Foo[int] & ~Foo[string]
 :e
 test: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.104: 	test: nothing
+//│ ║  l.160: 	test: nothing
 //│ ║         	^^^^
 //│ ╟── type `int` is not an instance of type `string`
-//│ ║  l.101: 	def test: Foo[int] & ~Foo[string]
+//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
 //│ ║         	              ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.101: 	def test: Foo[int] & ~Foo[string]
+//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
 //│ ╙──       	                          ^^^^^^
 //│ res: nothing
 

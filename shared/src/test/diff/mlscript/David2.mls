@@ -12,7 +12,7 @@ addOne1 x = case x of {
   | Integer -> x.addOne x
   | Num -> x.addOne x
   }
-//│ addOne1: (Integer & {addOne: 'a -> 'b} & 'a) -> 'b
+//│ addOne1: (#Integer & {addOne: 'a -> 'b} & 'a) -> 'b
 //│        = [Function: addOne1]
 
 
@@ -180,7 +180,7 @@ addOne1 (Str { value = ""; addOne = error })
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.179: 	addOne1 (Str { value = ""; addOne = error })
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── application of type `Str & {addOne: ?addOne, value: ?value}` does not match type `Integer & ?a`
+//│ ╟── application of type `Str & {addOne: ?addOne, value: ?value}` does not match type `#Integer & ?a`
 //│ ║  l.179: 	addOne1 (Str { value = ""; addOne = error })
 //│ ║         	         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
@@ -196,7 +196,7 @@ addOne2 x = case x of {
   | Num -> x.addOne x
   | Str -> x.addOne x
   }
-//│ addOne2: (Integer & {addOne: 'a -> 'b} & 'a | Str & {addOne: 'c -> 'b} & 'c) -> 'b
+//│ addOne2: (#Integer & {addOne: 'a -> 'b} & 'a | #Str & {addOne: 'c -> 'b} & 'c) -> 'b
 //│        = [Function: addOne2]
 
 addOne2 (mkIntegerPrecise 42)

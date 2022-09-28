@@ -29,7 +29,7 @@ nt = nc
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.25: 	nt = nc
 //│ ║        	^^^^^^^
-//│ ╟── type `Lit` does not have field 'n'
+//│ ╟── type `#Lit` does not have field 'n'
 //│ ║  l.7: 	def nt: ~#Lit
 //│ ║       	         ^^^^
 //│ ╟── but it flows into reference with expected type `{n: int}`

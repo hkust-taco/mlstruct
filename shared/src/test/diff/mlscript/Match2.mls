@@ -19,7 +19,7 @@ foo Test
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.18: 	foo Test
 //│ ║        	^^^^^^^^
-//│ ╟── expression of type `Test & {value: ?value} -> (Test & {value: ?value}) | {value: ?value} -> (Test & {value: ?value}) & ~?a` does not have field 'value'
+//│ ╟── expression of type `#Test & {value: ?value} -> (Test & {value: ?value}) | {value: ?value} -> (Test & {value: ?value}) & ~?a` does not have field 'value'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.6: 	  { Test -> x.value
 //│ ║       	            ^^^^^^^
@@ -49,7 +49,7 @@ bar Test
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.48: 	bar Test
 //│ ║        	^^^^^^^^
-//│ ╟── reference of type `{value: ?value} -> (Test & {value: ?value})` does not match type `Test & ?a | Toast & ?b`
+//│ ╟── reference of type `{value: ?value} -> (Test & {value: ?value})` does not match type `#Test & ?a | #Toast & ?b`
 //│ ║  l.48: 	bar Test
 //│ ║        	    ^^^^
 //│ ╟── Note: constraint arises from reference:
@@ -67,7 +67,7 @@ bar "ops"
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.66: 	bar "ops"
 //│ ║        	^^^^^^^^^
-//│ ╟── string literal of type `"ops"` does not match type `Test & ?a | Toast & ?b`
+//│ ╟── string literal of type `"ops"` does not match type `#Test & ?a | #Toast & ?b`
 //│ ║  l.66: 	bar "ops"
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from reference:
@@ -82,7 +82,7 @@ def baz x = case x of
   { Test -> x
   | Toast -> x
   }
-//│ baz: ('a & (Test | Toast)) -> 'a
+//│ baz: ('a & (#Test | #Toast)) -> 'a
 //│    = [Function: baz]
 
 :e
@@ -90,7 +90,7 @@ baz "oops"
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.89: 	baz "oops"
 //│ ║        	^^^^^^^^^^
-//│ ╟── string literal of type `"oops"` does not match type `Test & ?a | Toast & ?b`
+//│ ╟── string literal of type `"oops"` does not match type `#Test & ?a | #Toast & ?b`
 //│ ║  l.89: 	baz "oops"
 //│ ║        	    ^^^^^^
 //│ ╟── Note: constraint arises from reference:

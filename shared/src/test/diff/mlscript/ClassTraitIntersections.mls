@@ -63,12 +63,12 @@ def test: AA[int] & BB[int, int]
 //│ test: AA[int] & BB[int, int]
 
 def test: #AA
-//│ test: AA[?]
+//│ test: #AA
 
 def test: #AA & BB[int, int]
 //│ test: BB[int, int]
 
 def test: AA[(int, int)] & #BB
-//│ test: AA[(int, int,)] & BB[?, ?]
+//│ test: AA[(int, int,)] & #BB
 
 

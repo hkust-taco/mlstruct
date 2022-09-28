@@ -125,7 +125,7 @@ error: Foo2[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2 -> x }
-//│ f: (Foo2[?] & 'a) -> 'a
+//│ f: (#Foo2 & 'a) -> 'a
 //│  = [Function: f]
 
 f (Foo2 {})
@@ -151,7 +151,7 @@ f: (Foo2[?] & 'a) -> 'a
 //│    = [Function: f]
 
 f
-//│ res: (Foo2[?] & 'a) -> 'a
+//│ res: (#Foo2 & 'a) -> 'a
 //│    = [Function: f]
 
 
@@ -216,7 +216,7 @@ error: Foo2_Co[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2_Co -> x }
-//│ f: (Foo2_Co[?] & 'a) -> 'a
+//│ f: (#Foo2_Co & 'a) -> 'a
 //│  = [Function: f1]
 
 f (Foo2_Co {})
@@ -242,7 +242,7 @@ f: (Foo2_Co[?] & 'a) -> 'a
 //│    = [Function: f1]
 
 f
-//│ res: (Foo2_Co[?] & 'a) -> 'a
+//│ res: (#Foo2_Co & 'a) -> 'a
 //│    = [Function: f1]
 
 
@@ -288,7 +288,7 @@ error: Foo2_Bi[int]
 //│   Error: unexpected runtime error
 
 f = fun x -> case x of { Foo2_Bi -> x }
-//│ f: (Foo2_Bi[?] & 'a) -> 'a
+//│ f: (#Foo2_Bi & 'a) -> 'a
 //│  = [Function: f2]
 
 f (Foo2_Bi {})
@@ -314,7 +314,7 @@ f: (Foo2_Bi[?] & 'a) -> 'a
 //│    = [Function: f2]
 
 f
-//│ res: (Foo2_Bi[?] & 'a) -> 'a
+//│ res: (#Foo2_Bi & 'a) -> 'a
 //│    = [Function: f2]
 
 

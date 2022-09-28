@@ -140,7 +140,7 @@ addTwo s n
 //│ ╟── application of type `Num & {val: ?val}` is not an instance of type `Str`
 //│ ║  l.17: 	n = Num { val = 1 }
 //│ ║        	    ^^^^^^^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `Str`
+//│ ╟── but it flows into reference with expected type `#Str`
 //│ ║  l.+1: 	addTwo s n
 //│ ║        	         ^
 //│ ╟── Note: constraint arises from type reference:

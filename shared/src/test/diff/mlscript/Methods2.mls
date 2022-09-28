@@ -137,10 +137,10 @@ case o of {None -> 0 | Some -> o.payload}
 //│ ╔══[ERROR] Type mismatch in `case` expression:
 //│ ║  l.136: 	case o of {None -> 0 | Some -> o.payload}
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `Option[?A]` does not match type `None[?] & ?a | Some[?] & ?b`
+//│ ╟── type `Option[?A]` does not match type `#None & ?a | #Some & ?b`
 //│ ║  l.24: 	    method HeadOption: Option[A]
 //│ ║        	                       ^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `None[?] & ?a | Some[?] & ?c`
+//│ ╟── but it flows into reference with expected type `#None & ?a | #Some & ?c`
 //│ ║  l.136: 	case o of {None -> 0 | Some -> o.payload}
 //│ ╙──       	     ^
 //│ res: 0
@@ -158,7 +158,7 @@ def newHeadOption x = case x of {
     | Cons -> Some {payload = x.head}
     | _ -> None{}
     }
-//│ newHeadOption: (Cons[?] & {head: 'payload} | ~#Cons) -> (None[nothing] | Some['payload])
+//│ newHeadOption: (#Cons & {head: 'payload} | ~#Cons) -> (None[nothing] | Some['payload])
 //│              = [Function: newHeadOption]
 
 // Note that `o` is not a list, so this takes the default case:
@@ -184,10 +184,10 @@ case o of {
 //│ ║         	^^^^^^^^^^^
 //│ ║  l.181: 	    Some -> o.Get | None -> 0 }
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `Option[?A]` does not match type `None[?] & ?a | Some[?] & ?b`
+//│ ╟── type `Option[?A]` does not match type `#None & ?a | #Some & ?b`
 //│ ║  l.24: 	    method HeadOption: Option[A]
 //│ ║        	                       ^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `None[?] & ?a | Some[?] & ?c`
+//│ ╟── but it flows into reference with expected type `#None & ?a | #Some & ?c`
 //│ ║  l.180: 	case o of {
 //│ ╙──       	     ^
 //│ res: 0 | 1

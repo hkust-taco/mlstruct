@@ -67,7 +67,7 @@ trait TypeSimplifier { self: Typer =>
           val td = ctx.tyDefs(prefix)
           td.tvarVariances.fold(v -> default :: Nil)(tvv =>
             tvv(td.tparamsargs.find(_._1.name === postfix).getOrElse(die)._2) match {
-              case VarianceInfo(true, true) => Nil
+              case VarianceInfo(true, true) => v -> FieldType(BotType, TopType)(fty.prov) :: Nil
               case VarianceInfo(co, contra) =>
                 if (co) v -> FieldType(BotType, process(fty.ub, N))(fty.prov) :: Nil
                 else if (contra) v -> FieldType(fty.lb.map(process(_, N)), TopType)(fty.prov) :: Nil
@@ -169,10 +169,11 @@ trait TypeSimplifier { self: Typer =>
               case N => N -> processedFields
             }
             
-            bo match {
+            val lhsr = bo match {
               case S(cls @ ClassTag(Var(tagNme), ps)) if !primitiveTypes.contains(tagNme) =>
-                // * Reconstruct a proper class type when a class tag is found, reconstructing class type arguments
-                // * and ommitting field refinements that do not actually refine the reconstructed class type.
+                // * Try to reconstruct a proper class type when a class tag is found,
+                // *  reconstructing the corresponding class type arguments
+                // *  and ommitting field refinements that do not actually refine the reconstructed class type.
                 
                 val clsNme = tagNme.capitalize
                 val clsTyNme = TypeName(tagNme.capitalize)
@@ -209,32 +210,44 @@ trait TypeSimplifier { self: Typer =>
                 val clsFields = fieldsOf(typeRef.expandWith(paramTags = true), paramTags = true)
                 println(s"clsFields ${clsFields.mkString(", ")}")
                 
-                val cleanedRcd = RecordType(
-                  rcd2.fields.filterNot { case (field, fty) =>
-                    // * This is a bit messy, but was the only way I was able to achieve maximal simplification:
-                    // *  We remove fields that are already inclued by definition of the class by testing for subtyping
-                    // *  with BOTH the new normalized type (from `clsFields`) AND the old one too (from `rcdMap`).
-                    // *  The reason there's a difference is probably because:
-                    // *    - Subtye checking with <:< is an imperfect heuristic and may stop working after normalizing.
-                    // *    - Recursive types will be normalized progressively...
-                    // *        at this point we may look at some bounds that have not yet been normalized.
-                    clsFields.get(field).exists(cf => cf <:< fty ||
-                      rcdMap.get(field).exists(cf <:< _))
+                // * If some fields were not present in the original type, we can't actually reconstruct a class type
+                if (trs.isDefinedAt(clsTyNme) || clsFields.keysIterator.forall(field => rcdMap.contains(field))) {
+                  
+                  val cleanedRcd = RecordType(
+                    rcd2.fields.filterNot { case (field, fty) =>
+                      // * This is a bit messy, but was the only way I was able to achieve maximal simplification:
+                      // *  We remove fields that are already inclued by definition of the class by testing for subtyping
+                      // *  with BOTH the new normalized type (from `clsFields`) AND the old one too (from `rcdMap`).
+                      // *  The reason there's a difference is probably because:
+                      // *    - Subtye checking with <:< is an imperfect heuristic and may stop working after normalizing.
+                      // *    - Recursive types will be normalized progressively...
+                      // *        at this point we may look at some bounds that have not yet been normalized.
+                      clsFields.get(field).exists(cf => cf <:< fty ||
+                        rcdMap.get(field).exists(cf <:< _))
+                    }
+                  )(rcd2.prov)
+                  
+                  val trsFiltered = trs2.filterNot { case (tn, tr) =>
+                    // println(s">>> ${tn} ${tr.defn} ${td.baseClasses} ${bcs}")
+                    tr.targs.isEmpty && // TODO generalize
+                      bcs.contains(tr.defn.name)
                   }
-                )(rcd2.prov)
-                
-                val trsFiltered = trs2.filterNot { case (tn, tr) =>
-                  // println(s">>> ${tn} ${tr.defn} ${td.baseClasses} ${bcs}")
-                  tr.targs.isEmpty && // TODO generalize
-                    bcs.contains(tr.defn.name)
+                  
+                  LhsRefined(N, ft2, at2, tts, cleanedRcd.sorted, trsFiltered + (clsTyNme -> typeRef))
+                  
+                } else {
+                  
+                  LhsRefined(S(cls), ft2, at2, tts, rcd2, trs2)
+                  
                 }
-                
-                LhsRefined(N, ft2, at2, tts, cleanedRcd.sorted, trsFiltered + (clsTyNme -> typeRef)).toType(sort = true)
               
               case _ =>
-                LhsRefined(bo, ft2, at2, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2).toType(sort = true)
+                LhsRefined(bo, ft2, at2, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2)
               
             }
+            
+            lhsr.toType(sort = true)
+            
           case LhsTop => TopType
         }, {
           case RhsBot => BotType

@@ -10,7 +10,7 @@ type Option[A] = Some[A] | None
 def flatMap f opt = case opt of
   Some -> f opt.value,
   None -> None{}
-//│ flatMap: ('value -> 'a) -> (None | Some[?] & {value: 'value}) -> (None | 'a)
+//│ flatMap: ('value -> 'a) -> (None | #Some & {value: 'value}) -> (None | 'a)
 //│        = [Function: flatMap]
 
 res = flatMap (fun x -> x) (Some{value = 42})
@@ -23,7 +23,7 @@ case res of int -> res, None -> 0
 
 
 def flatMap2 f opt = case opt of Some -> f opt.value, _ -> opt
-//│ flatMap2: ('value -> 'a) -> (Some[?] & {value: 'value} | 'a & ~#Some) -> 'a
+//│ flatMap2: ('value -> 'a) -> (#Some & {value: 'value} | 'a & ~#Some) -> 'a
 //│         = [Function: flatMap2]
 
 ex1 = flatMap2 (fun x -> x) 42
@@ -40,7 +40,7 @@ ex3 = flatMap2 (fun x -> Some{value = x}) 42
 
 
 def mapSome f opt = case opt of Some -> f opt, _ -> opt
-//│ mapSome: ('a -> 'b) -> (Some[?] & 'a | 'b & ~#Some) -> 'b
+//│ mapSome: ('a -> 'b) -> (#Some & 'a | 'b & ~#Some) -> 'b
 //│        = [Function: mapSome]
 
 
@@ -113,7 +113,7 @@ rec def mapList f ls = case ls of
 //│ mapList: ('value -> 'value0) -> 'a -> 'tail
 //│   where
 //│     'tail :> Cons['value0] & {tail: 'tail} | None
-//│     'a <: Cons[?] & {tail: 'a, value: 'value} | None
+//│     'a <: #Cons & {tail: 'a, value: 'value} | None
 //│        = [Function: mapList]
 
 
@@ -134,7 +134,7 @@ rec def unzip xs = case xs of
 //│   where
 //│     'tail0 :> Cons['value] & {tail: 'tail0} | None
 //│     'tail :> Cons['value0] & {tail: 'tail} | None
-//│     'a <: None | Some[?] & {tail: 'a, value: {fst: 'value0, snd: 'value}}
+//│     'a <: None | #Some & {tail: 'a, value: {fst: 'value0, snd: 'value}}
 //│      = [Function: unzip]
 
 // * Declare desired types:
@@ -156,7 +156,7 @@ def unzip_ty = unzip
 //│   where
 //│     'tail0 :> Cons['value] & {tail: 'tail0} | None
 //│     'tail :> Cons['value0] & {tail: 'tail} | None
-//│     'a <: None | Some[?] & {tail: 'a, value: {fst: 'value0, snd: 'value}}
+//│     'a <: None | #Some & {tail: 'a, value: {fst: 'value0, snd: 'value}}
 //│   <:  unzip_ty:
 //│ List[{fst: 'a, snd: 'b}] -> {fst: List['a], snd: List['b]}
 //│         = [Function: unzip]
