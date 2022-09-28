@@ -76,3 +76,21 @@ h1, p{
 #mlscript-output td.no-value {
     color: var(--no-value-color);
 }
+
+code {
+    color: rgb(0, 74, 97);
+    padding: 2px;
+    font:12px Monaco,Consolas,"Andale  Mono","DejaVu Sans Mono",monospace
+}
+
+table {
+  border-collapse: collapse;
+  border: 1px solid;
+}
+table td {
+    border: 1px solid black;
+    padding: 0.25rem 0.5rem;
+}
+.firstLine th{
+    border-bottom: 2px solid black;
+}

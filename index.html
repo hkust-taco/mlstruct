@@ -14,18 +14,17 @@ class Some[A]: { value: A }
 type Option[A] = Some[A] | None
 
 
-def flatMap f opt = case opt of {
-  | Some -> f opt.value
-  | None -> None{}
-  }
+def flatMap f opt = case opt of
+  Some -> f opt.value,
+  None -> None{}
 
 res = flatMap (fun x -> x) (Some{value = 42})
 
-case res of { int -> res | None -> 0 }
+case res of int -> res, None -> 0
 
 
 def flatMap2 f opt =
-  case opt of { Some -> f opt.value | _ -> opt }
+  case opt of Some -> f opt.value, _ -> opt
 
 ex1 = flatMap2 (fun x -> x) 42
 
@@ -35,7 +34,7 @@ ex3 = flatMap2 (fun x -> Some{value = x}) 42
 
 
 def mapSome f opt =
-  case opt of { Some -> f opt | _ -> opt }
+  case opt of Some -> f opt, _ -> opt
 
 
 class SomeAnd[A, P]: Some[A] & { payload: P }
@@ -48,26 +47,29 @@ let arg =
 class Cons[A]: Some[A] & { tail: List[A] }
 type List[A] = Cons[A] | None
 
-rec def mapList f ls = case ls of {
-  | Cons -> Cons{value = f ls.value; tail = mapList f ls.tail}
-  | None -> None{}
-  }
+rec def mapList f ls = case ls of
+  Cons -> Cons{value = f ls.value; tail = mapList f ls.tail},
+  None -> None{}
 
-
-def Cons_ty:
-  'a -> ('b & List['a]) -> (Cons['a] & { value: 'a; tail: 'b })
-def unzip_ty:
-  List[{ fst: 'a; snd: 'b }] -> { fst: List['a]; snd: List['b] }
 
 def Cons head tail = Cons { value = head; tail = tail }
 
 def None = None{}
 
-rec def unzip xs = case xs of {
-  | None -> { fst = None; snd = None }
-  | Some -> let tmp = unzip xs.tail
-            in { fst = Cons xs.value.fst tmp.fst ;
-                 snd = Cons xs.value.snd tmp.snd } }
+rec def unzip xs = case xs of
+  None -> { fst = None; snd = None },
+  Some -> let tmp = unzip xs.tail
+          in { fst = Cons xs.value.fst tmp.fst ;
+               snd = Cons xs.value.snd tmp.snd }
+
+
+def Cons_tpd:
+  'a -> ('b & List['a]) -> (Cons['a] & { value: 'a; tail: 'b })
+def unzip_tpd:
+  List[{ fst: 'a; snd: 'b }] -> { fst: List['a]; snd: List['b] }
+
+def Cons_tpd = Cons
+def unzip_tpd = unzip
 </textarea>
 <!-- let rec recursive_monster = fun x ->
   { thing = x;
@@ -75,9 +77,170 @@ rec def unzip xs = case xs of {
     <div id="mlscript-output" class="panel"></div>
   </div>
   <script type="text/javascript" src="bin/mlscript-opt.js"></script>
-  <br/>
+  
   <p>The code is available <a href="https://github.com/hkust-taco/mlstruct">on github</a>.</p>
-  <br/>
-  <p>Note: JavaScript code generation (used to evaluate the result) is not prefect yet and has rough edges.
-    Also, try typing `window.alert "Hello!"` and see what happens!</p>
+  <p>Note: JavaScript code generation (used to evaluate results) is not prefect yet and has rough edges.</p>
+  
+  <h2>Syntax Reference</h2>
+
+  <table style="border: 1px solid">
+  <tr class="firstLine">
+    <th>Feature</th>
+    <th>Type syntax</th>
+    <th>Term syntax</th>
+  </tr>
+  <tr>
+    <td colspan="3"><b>Basic Terms & Types</b></td>
+  </tr>
+  <tr>
+    <td>literals</td>
+    <td>
+      <code>true</code>,
+      <code>false</code>,
+      <code>0</code>,
+      <code>1</code>,
+      <code>""</code>,
+      <code>"a"</code>,
+      etc.
+    </td>
+    <td>(same syntax)</td>
+  </tr>
+  <tr>
+    <td>intersection</td>
+    <td><code>S & T</code></td>
+  </tr>
+  <tr>
+    <td>union</td>
+    <td><code>S | T</code></td>
+    <td><code>if ... then s else t</code></td>
+  </tr>
+  <tr>
+    <td>negation</td>
+    <td><code>~T</code></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>nominal tag</td>
+    <td><code>#C</code></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>record</td>
+    <td><code>{ x: int; y: bool }</code></td>
+    <td><code>{ x = 0; y = false }</code></td>
+  </tr>
+  <tr>
+    <td>selection</td>
+    <td></td>
+    <td><code>t.a</code></td>
+  </tr>
+  <tr>
+    <td>array of known size (tuple)</td>
+    <td><code>()</code>, <code>(int,)</code>, <code>(int, int)</code> etc.</td>
+    <td><code>()</code>, <code>(0,)</code>, <code>(0, 1)</code> etc.</td>
+  </tr>
+  <tr>
+    <td>array of unknown size</td>
+    <td><code>Array[int]</code></td>
+    <td><code>if ... then (0, 1) else (0, 1, 2)</code></td>
+  </tr>
+  <tr>
+    <td>function</td>
+    <td><code>int -> int</code></td>
+    <td><code>fun x -> x + 1</code></td>
+  </tr>
+  <tr>
+    <td>application</td>
+    <td><code>F[A]</code></td>
+    <td><code>f a</code></td>
+  </tr>
+  <tr>
+    <td>variable</td>
+    <td><code>'a</code></td>
+    <td><code>x</code></td>
+  </tr>
+  <tr>
+    <td>let binding</td>
+    <td></td>
+    <td><code>let x = s in t</code></td>
+  </tr>
+  <tr>
+    <td>pattern matching 1</td>
+    <td></td>
+    <td><code>case t of C1 -> t1, C2 -> t2</code></td>
+  </tr>
+  <tr>
+    <td>pattern matching 2</td>
+    <td></td>
+    <td><code>case t of C1 -> t1, C2 -> t2, _ -> t3</code></td>
+  </tr>
+  <tr>
+    <td colspan="3"><b>Top-Level Declarations</b></td>
+  </tr>
+  <tr>
+    <td>definition</td>
+    <td><code>def foo: T</code></td>
+    <td><code>def foo = t </code>or just&ensp;<code>foo = t</code></td>
+  </tr>
+  <tr>
+    <td>class, trait, method</td>
+    <td><code>
+      trait MyBase[T]: { fld1: T }
+      <br/>&emsp; method Foo: T -> T
+      <br/>&emsp; method Bar = this.Foo this.fld1
+      <br/>
+      <br/>class MyClass[A]: MyBase[int] & {
+      <br/>&emsp;&emsp;  fld1: int; fld2: A }
+      <br/>&emsp; method Foo x = x + 1
+    </code></td>
+    <td><code>mc = MyClass { fld1 = 0; fld2 = "ok" }<br/><br/>mc.Bar</code></td>
+  </tr>
+  <tr>
+    <td>type alias</td>
+    <td><code>type Foo[T] =<br/>&emsp; MyClass[(T, T)] -> MyClass[T]</code></td>
+    <td></td>
+  </tr>
+  <tr>
+    <td colspan="3"><b>Miscellaneous</b></td>
+  </tr>
+  <tr>
+    <td>type ascription</td>
+    <td></td>
+    <td><code>t: T</code></td>
+  </tr>
+  <tr>
+    <td>array indexing</td>
+    <td></td>
+    <td><code>a[i]</code></td>
+  </tr>
+  <tr>
+    <td>multi-parameter function</td>
+    <td><code>(int, int) -> int</code></td>
+    <td><code>fun (x, y) -> x + y</code></td>
+  </tr>
+  <tr>
+    <td>multi-argument application</td>
+    <td><code>F[S, T]</code></td>
+    <td><code>f(s, t)</code></td>
+  </tr>
+  <tr>
+    <td>tuple-parameter function</td>
+    <td><code>((int, int)) -> int</code></td>
+    <td>
+      <code>fun ((x, y)) -> x + y</code>
+      <br/>
+      or
+      <br/>
+      <code>fun xy -> xy._1 + xy._2</code>
+    </td>
+  </tr>
+  <tr>
+    <td>tuple-argument application</td>
+    <td><code>F[(S, T)]</code></td>
+    <td><code>f((s, t))</code></td>
+  </tr>
+</table>
+
+<br/>
+
 </html>
