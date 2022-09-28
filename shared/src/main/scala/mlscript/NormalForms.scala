@@ -97,7 +97,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
           assert(that.targs.sizeCompare(other.targs) === 0)
           TypeRef(that.defn, that.targs.lazyZip(other.targs).map{
             case (ta1, ta2) => TypeBounds.mk(ta1 | ta2, ta1 & ta2)
-          }.toList)(that.prov)
+          })(that.prov)
         })
         val res = LhsRefined(b, f1, at, ts, rt, trs2)
         that.mkTag.fold(S(res): Opt[LhsNf])(res & _)
@@ -169,7 +169,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
           assert(that.targs.sizeCompare(other.targs) === 0)
           TypeRef(that.defn, that.targs.lazyZip(other.targs).map{
             case (ta1, ta2) => TypeBounds.mk(ta1 & ta2, ta1 | ta2)
-          }.toList)(that.prov)
+          })(that.prov)
         })
         S(RhsBases(prims, bf, trs2))
     }
