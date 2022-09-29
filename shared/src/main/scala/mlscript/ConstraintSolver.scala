@@ -51,15 +51,15 @@ class ConstraintSolver extends NormalForms { self: Typer =>
               
               // First, we filter out those RHS alternatives that obviously don't match our LHS:
               val possible = fullRhs.cs.filter { r =>
-              
-              // Note that without this subtyping check,
-              //  the number of constraints in the `eval1_ty_ugly = eval1_ty`
-              //  ExprProb subsumption test case explodes.
-              if ((r.rnf is RhsBot) && r.vars.isEmpty && r.nvars.isEmpty && lnf <:< r.lnf) {
-                println(s"OK  $lnf <: $r")
-                return ()
-              }
-              
+                
+                // Note that without this subtyping check,
+                //  the number of constraints in the `eval1_ty_ugly = eval1_ty`
+                //  ExprProb subsumption test case explodes.
+                if ((r.rnf is RhsBot) && r.vars.isEmpty && r.nvars.isEmpty && lnf <:< r.lnf) {
+                  println(s"OK  $lnf <: $r")
+                  return ()
+                }
+                
                 // println(s"Possible? $r ${lnf & r.lnf}")
                 !vars.exists(r.nvars) && ((lnf & r.lnf)(ctx, etf = false)).isDefined && ((lnf, r.rnf) match {
                   case (LhsRefined(_, _, _, ttags, _, _), RhsBases(objTags, rest, trs))
@@ -69,6 +69,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
                     => !objTags.contains(ot)
                   case _ => true
                 })
+                
               }
               
               println(s"Possible: " + possible)
