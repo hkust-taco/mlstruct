@@ -136,17 +136,17 @@ negInt: A | { x: 'a }
 //│ res: A | {x: nothing}
 
 def negWeird: ~(~(~(A & { x: int })))
-//│ negWeird: ~{x: int} | ~A
+//│ negWeird: ~(A & {x: int})
 
 def v = negWeird
-//│ v: ~{x: int} | ~A
+//│ v: ~(A & {x: int})
 
 :e
 v: A | { x: 'a }
 //│ ╔══[ERROR] Type mismatch in type ascription:
 //│ ║  l.145: 	v: A | { x: 'a }
 //│ ║         	^
-//│ ╟── type `~{x: int} | ~A` does not match type `A | {x: ?a}`
+//│ ╟── type `~(A & {x: int})` does not match type `A | {x: ?a}`
 //│ ║  l.138: 	def negWeird: ~(~(~(A & { x: int })))
 //│ ║         	              ^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `A | {x: ?a}`
