@@ -195,6 +195,7 @@ object Main {
       catch {
         case err: TypeError =>
           res ++= formatError("class definitions", err)
+          errorOccurred = true
           Ctx.init
       }
     
