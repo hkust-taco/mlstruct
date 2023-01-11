@@ -265,10 +265,10 @@ trait TypeSimplifier { self: Typer =>
         
     def go(ty: ST, pol: Opt[Bool]): ST = trace(s"norm[${printPol(pol)}] $ty") {
       pol match {
-        case S(p) => helper(DNF.mk(ty, p)(ctx, ptr = true, etf = false), pol)
+        case S(p) => helper(DNF.mk(ty, p)(ctx, ptr = true), pol)
         case N =>
-          val dnf1 = DNF.mk(ty, false)(ctx, ptr = true, etf = false)
-          val dnf2 = DNF.mk(ty, true)(ctx, ptr = true, etf = false)
+          val dnf1 = DNF.mk(ty, false)(ctx, ptr = true)
+          val dnf2 = DNF.mk(ty, true)(ctx, ptr = true)
           TypeBounds.mk(helper(dnf1, S(false)), helper(dnf2, S(true)))
       }
     }(r => s"~> $r")

@@ -126,12 +126,10 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   
   sealed abstract class ArrayBase extends FunOrArrType {
     def inner: SimpleType
-    def toRecord: RecordType
   }
 
   case class ArrayType(val inner: SimpleType)(val prov: TypeProvenance) extends ArrayBase {
     def level: Int = inner.level
-    def toRecord: RecordType = RecordType.empty
     override def toString = s"Array‹$inner›"
   }
 
@@ -139,14 +137,6 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     lazy val inner: SimpleType = fields.map(_._2).reduceLeftOption(_ | _).getOrElse(BotType)
     lazy val level: Int = fields.iterator.map(_._2.level).maxOption.getOrElse(0)
     lazy val toArray: ArrayType = ArrayType(inner)(prov)  // upcast to array
-    lazy val toRecord: RecordType =
-      RecordType(
-        fields.zipWithIndex.map { case ((_, t), i) => (Var("_"+(i+1)), t.toUpper(t.prov)) }
-        // Note: In line with TypeScript, tuple field names are pure type system fictions,
-        //    with no runtime existence. Therefore, they should not be included in the record type
-        //    corresponding to this tuple type.
-        //    i.e., no `::: fields.collect { case (S(n), t) => (n, t) }`
-      )(prov)
     override def toString =
       s"(${fields.map(f => s"${f._1.fold("")(_.name+": ")}${f._2},").mkString(" ")})"
   }

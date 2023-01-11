@@ -6,18 +6,22 @@ def test f =
 //│ test: ((1 | 2) -> int) -> (int -> int, int -> int,)
 //│     = [Function: test]
 
-:re // Positional acessors are not yet supported by JS code-gen
+def fst ((a, b)) = a
+def snd ((a, b)) = b
+//│ fst: ('a, anything,) -> 'a
+//│    = [Function: fst]
+//│ snd: (anything, 'a,) -> 'a
+//│    = [Function: snd]
+
 f_g = test succ
-f_g._1 42
-f_g._2 42
+fst f_g 42
+snd f_g 42
 //│ f_g: (int -> int, int -> int,)
 //│    = [ [Function (anonymous)], [Function (anonymous)] ]
 //│ res: int
-//│ Runtime error:
-//│   TypeError: f_g._1 is not a function
+//│    = 44
 //│ res: int
-//│ Runtime error:
-//│   TypeError: f_g._2 is not a function
+//│    = 45
 
 
 def test f =
@@ -29,10 +33,10 @@ def test f =
 :e
 test succ
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.30: 	test succ
+//│ ║  l.34: 	test succ
 //│ ║        	^^^^^^^^^
 //│ ╟── string literal of type `"ok"` is not an instance of type `int`
-//│ ║  l.25: 	  in (local add 1, local concat "ok")
+//│ ║  l.29: 	  in (local add 1, local concat "ok")
 //│ ╙──      	                                ^^^^
 //│ res: error | (int -> int, string -> string,)
 //│    = [ [Function (anonymous)], [Function (anonymous)] ]
@@ -71,16 +75,16 @@ fun f -> fun x ->
 :e
 res add "1"
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.72: 	res add "1"
+//│ ║  l.76: 	res add "1"
 //│ ║        	^^^^^^^^^^^
 //│ ╟── string literal of type `"1"` is not an instance of type `int`
-//│ ║  l.72: 	res add "1"
+//│ ║  l.76: 	res add "1"
 //│ ║        	        ^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.66: 	  let local = (fun y -> f y) x
+//│ ║  l.70: 	  let local = (fun y -> f y) x
 //│ ║        	                          ^
 //│ ╟── from reference:
-//│ ║  l.66: 	  let local = (fun y -> f y) x
+//│ ║  l.70: 	  let local = (fun y -> f y) x
 //│ ╙──      	                             ^
 //│ res: error | ()
 //│    = []
@@ -95,16 +99,16 @@ fun f -> fun x ->
 :e
 res add "1"
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.96: 	res add "1"
-//│ ║        	^^^^^^^^^^^
+//│ ║  l.100: 	res add "1"
+//│ ║         	^^^^^^^^^^^
 //│ ╟── string literal of type `"1"` is not an instance of type `int`
-//│ ║  l.96: 	res add "1"
-//│ ║        	        ^^^
+//│ ║  l.100: 	res add "1"
+//│ ║         	        ^^^
 //│ ╟── Note: constraint arises from application:
-//│ ║  l.90: 	  let local = f ((fun y -> y) x)
+//│ ║  l.94: 	  let local = f ((fun y -> y) x)
 //│ ║        	                 ^^^^^^^^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.90: 	  let local = f ((fun y -> y) x)
+//│ ║  l.94: 	  let local = f ((fun y -> y) x)
 //│ ╙──      	                              ^
 //│ res: error | ()
 //│    = []

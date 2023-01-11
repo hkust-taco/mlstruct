@@ -44,7 +44,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
             case S(v) =>
               rec(v, rhs.toType() | Conjunct(lnf, vars - v, rnf, nvars).toType().neg(), true)
             case N =>
-              implicit val etf: ExpandTupleFields = true
               val fullRhs = nvars.iterator.map(DNF.mkDeep(_, true))
                 .foldLeft(rhs | DNF.mkDeep(rnf.toType(), false))(_ | _)
               println(s"Consider ${lnf} <: ${fullRhs}")
@@ -61,7 +60,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
                 }
                 
                 // println(s"Possible? $r ${lnf & r.lnf}")
-                !vars.exists(r.nvars) && ((lnf & r.lnf)(ctx, etf = false)).isDefined && ((lnf, r.rnf) match {
+                !vars.exists(r.nvars) && ((lnf & r.lnf)).isDefined && ((lnf, r.rnf) match {
                   case (LhsRefined(_, _, _, ttags, _, _), RhsBases(objTags, rest, trs))
                     if objTags.exists { case t: TraitTag => ttags(t); case _ => false }
                     => false
@@ -105,7 +104,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
         def tys = ls.iterator ++ done_ls.toTypes ++ (rs.iterator ++ done_rs.toTypes).map(_.neg())
         tys.reduceOption(_ & _).getOrElse(TopType)
       }
-      implicit val etf: ExpandTupleFields = false
       (ls, rs) match {
         // If we find a type variable, we can weasel out of the annoying constraint by delaying its resolution,
         // saving it as negations in the variable's bounds!
@@ -138,7 +136,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
         case (ls, (tr @ TypeRef(_, _)) :: rs) => annoying(ls, done_ls, rs, done_rs | tr getOrElse
           (return println(s"OK  $done_rs & $tr  =:=  ${TopType}")))
         
-        case ((l: BasicType) :: ls, rs) => annoying(ls, (done_ls & l)(etf = true) getOrElse
+        case ((l: BasicType) :: ls, rs) => annoying(ls, (done_ls & l) getOrElse
           (return println(s"OK  $done_ls & $l  =:=  ${BotType}")), rs, done_rs)
         case (ls, (r: BasicType) :: rs) => annoying(ls, done_ls, rs, done_rs | r getOrElse
           (return println(s"OK  $done_rs | $r  =:=  ${TopType}")))
@@ -314,8 +312,6 @@ class ConstraintSolver extends NormalForms { self: Typer =>
                 rec(t0.ub, t1.ub, false)
               }
             }
-          case (tup: TupleType, _: RecordType) =>
-            rec(tup.toRecord, rhs, true) // Q: really support this? means we'd put names into tuple reprs at runtime
           case (err @ ClassTag(ErrTypeId, _), RecordType(fs1)) =>
             fs1.foreach(f => rec(err, f._2.ub, false))
           case (RecordType(fs1), err @ ClassTag(ErrTypeId, _)) =>

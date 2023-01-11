@@ -8,7 +8,16 @@ x = { a = 1 }
 //│ ╔══[ERROR] identifier not found: res
 //│ ║  l.7: 	(res: (int,int,int,))._1
 //│ ╙──     	 ^^^
-//│ res: int
+//│ ╔══[ERROR] Type mismatch in field selection:
+//│ ║  l.7: 	(res: (int,int,int,))._1
+//│ ║       	^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── type `(int, int, int,)` does not have field '_1'
+//│ ║  l.7: 	(res: (int,int,int,))._1
+//│ ║       	      ^^^^^^^^^^^^^^
+//│ ╟── but it flows into receiver with expected type `{_1: ?a}`
+//│ ║  l.7: 	(res: (int,int,int,))._1
+//│ ╙──     	^^^^^^^^^^^^^^^^^^^^^
+//│ res: error
 //│    = undefined
 
 
@@ -24,13 +33,13 @@ def arr = (1,2)
 :e
 arr._1
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.25: 	arr._1
+//│ ║  l.34: 	arr._1
 //│ ║        	^^^^^^
 //│ ╟── type `Array[int]` does not have field '_1'
-//│ ║  l.15: 	def arr: Array[int]
+//│ ║  l.24: 	def arr: Array[int]
 //│ ║        	         ^^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `{_1: ?a}`
-//│ ║  l.25: 	arr._1
+//│ ║  l.34: 	arr._1
 //│ ╙──      	^^^
 //│ res: error
 //│    = undefined
@@ -57,19 +66,19 @@ def test: {x: 1} & (1, 2, 3)
 :e
 (arr[0])[1][2]
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.58: 	(arr[0])[1][2]
+//│ ║  l.67: 	(arr[0])[1][2]
 //│ ║        	^^^^^^^^^^^
 //│ ╟── type `int` does not match type `Array[?a]`
-//│ ║  l.15: 	def arr: Array[int]
+//│ ║  l.24: 	def arr: Array[int]
 //│ ║        	               ^^^
 //│ ╟── but it flows into array access with expected type `Array[?b]`
-//│ ║  l.58: 	(arr[0])[1][2]
+//│ ║  l.67: 	(arr[0])[1][2]
 //│ ╙──      	^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.58: 	(arr[0])[1][2]
+//│ ║  l.67: 	(arr[0])[1][2]
 //│ ║        	^^^^^^^^^^^^^^
 //│ ╟── possibly-undefined array access of type `undefined` does not match type `Array[?a]`
-//│ ║  l.58: 	(arr[0])[1][2]
+//│ ║  l.67: 	(arr[0])[1][2]
 //│ ╙──      	^^^^^^^^^^^
 //│ res: error | undefined
 //│ Runtime error:
@@ -148,10 +157,10 @@ rcd = { x = 1 }
 :e
 T rcd
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.149: 	T rcd
+//│ ║  l.158: 	T rcd
 //│ ║         	^
 //│ ╟── Note that traits are always considered abstract
-//│ ║  l.132: 	trait T: { x: int }
+//│ ║  l.141: 	trait T: { x: int }
 //│ ╙──       	      ^^^^^^^^^^^^^
 //│ res: error
 //│    = { x: 1 }
@@ -179,12 +188,12 @@ def rep5 x = (x,x,x,x,x)
 //│ 'a -> Array['a]
 //│     = [Function: rep5]
 
-def hg1 t = (t._1, t._2)
+def hg1 ((t1, t2, t3)) = (t1, t2)
 hg1 ((5,5,5))
-//│ hg1: {_1: 'a, _2: 'b} -> ('a, 'b,)
+//│ hg1: ('a, 'b, anything,) -> ('a, 'b,)
 //│    = [Function: hg1]
 //│ res: (5, 5,)
-//│    = [ undefined, undefined ]
+//│    = [ 5, 5 ]
 
 def ta1: Array[int] | (int, bool)
 def test: (string, 1) & { _1: "hello" }
@@ -226,7 +235,7 @@ fta1 r1
 //│ res: int
 //│    = <no result>
 //│      fta1 is not implemented
-//│ r1: Array[1 | 2 | 3] & {_1: 1, _2: 2}
+//│ r1: Array[1 | 2 | 3]
 //│   = [ 1, 2, 3 ]
 //│ res: int
 //│    = <no result>
@@ -236,8 +245,22 @@ fta1 r1
 def p1: T | Array[bool] | (int, string) | (true, 3)
 def p2: T | (string, bool) | Array[int] | (2, 4)
 def pf t = (t[1], t._1)
-pf((1,2,3))
 //│ p1: Array[bool | int | string] | T
 //│ p2: Array[bool | int | string] | T
 //│ pf: (Array['a & ~undefined] & {_1: 'b}) -> (undefined | 'a, 'b,)
-//│ res: (1 | 2 | 3 | undefined, 1,)
+
+:e
+pf((1,2,3))
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.253: 	pf((1,2,3))
+//│ ║         	^^^^^^^^^^^
+//│ ╟── tuple literal of type `(1, 2, 3,)` does not have field '_1'
+//│ ║  l.253: 	pf((1,2,3))
+//│ ║         	   ^^^^^^^
+//│ ╟── Note: constraint arises from field selection:
+//│ ║  l.247: 	def pf t = (t[1], t._1)
+//│ ║         	                  ^^^^
+//│ ╟── from reference:
+//│ ║  l.247: 	def pf t = (t[1], t._1)
+//│ ╙──       	                  ^
+//│ res: error | (1 | 2 | 3 | undefined, nothing,)

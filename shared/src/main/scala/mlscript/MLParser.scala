@@ -66,9 +66,10 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
   
   def subterm[p: P]: P[Term] = P( Index ~~ subtermNoSel ~ (
     // Fields:
-    ("." ~/ (variable | locate(("(" ~/ ident ~ "." ~ ident ~ ")")
-      .map {case (prt, id) => Var(s"${prt}.${id}")})))
-      .map {(t: Var) => Left(t)} |
+    ("." ~/ (variable |
+      locate(("(" ~/ ident ~ "." ~ ident ~ ")")
+        .map {case (prt, id) => Var(s"${prt}.${id}")}))
+    ).map {(t: Var) => Left(t)} |
     // Array subscripts:
     ("[" ~ term ~/ "]" ~~ Index).map {Right(_)}
     // Assignment:

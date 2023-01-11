@@ -369,13 +369,20 @@ t1 = ("hello", true)
 //│ t1: ("hello", true,)
 //│   = [ 'hello', true ]
 
+def _1((a, b)) = a
+def _2((a, b)) = b
+//│ _1: ('a, anything,) -> 'a
+//│   = [Function: _1]
+//│ _2: (anything, 'a,) -> 'a
+//│   = [Function: _2]
+
 :js
-t1._1
+_1 t1
 //│ // Query 1
-//│ res = t1["_1"];
+//│ res = _1(t1);
 //│ // End of generated code
 //│ res: "hello"
-//│    = undefined
+//│    = 'hello'
 
 :js
 def xpp rc = (fun _ -> rc) (rc.x + 1)
@@ -395,8 +402,8 @@ xpp a1
 
 :js
 tu = ((), 2)
-tu._1
-tu._2
+_1 tu
+_2 tu
 //│ // Query 1
 //│ globalThis.tu = [
 //│   [],
@@ -404,13 +411,13 @@ tu._2
 //│ ];
 //│ res = tu;
 //│ // Query 2
-//│ res = tu["_1"];
+//│ res = _1(tu);
 //│ // Query 3
-//│ res = tu["_2"];
+//│ res = _2(tu);
 //│ // End of generated code
 //│ tu: ((), 2,)
 //│   = [ [], 2 ]
 //│ res: ()
-//│    = undefined
+//│    = []
 //│ res: 2
-//│    = undefined
+//│    = 2
