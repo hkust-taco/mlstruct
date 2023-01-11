@@ -252,9 +252,18 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     override def toString = "#" + id.idStr
   }
   
-  /** `TypeBounds(lb, ub)` represents an unknown type between bounds `lb` and `ub`.
-    * The only way to give something such a type is to make the type part of a def or method signature,
-    * as it will be replaced by a fresh bounded type variable upon subsumption checking (cf rigidification). */
+  /** `TypeBounds(lb, ub)` represents an unknown type between bounds `lb` and `ub`,
+    * where `lb` is in negative position and `ub` is in positive position.
+    * For this type to be meaningful, it is necessary that `lb` be a subtype of `ub` by construction.
+    * Currently, there are essentially two ways these types are introduced:
+    * - During type extrusion, when extruding a variable occurring in neutral position:
+    *   here, we create a type bound to recover the polarity needed to do the extrusion.
+    *   This is correct because the negative extrusion of a type should be a subtype of its positive extrusion.
+    * - In user-entered wildcard types `?`, which are interpreted as `TypeBounds(Bot, Top)`.
+    *   These are also treated as definition-level existentials,
+    *   in that when checking an inferred type against a signature, which is done in the `subsume` method,
+    *   each wildcard or type range is replaced by a fresh type variable bounded between `lb` and `ub`
+    *   (this happens in rigidification). */
   case class TypeBounds(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) extends SimpleType {
     def level: Int = lb.level max ub.level
     override def toString = s"$lb..$ub"

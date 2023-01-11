@@ -95,7 +95,7 @@ def f: ~Lit & 'b -> 'b
 //│  = <missing implementation>
 
 def f: ~Lit & ~Add & 'b -> 'b
-//│ f: 'b -> 'b & ~Add & ~Lit
+//│ f: 'b -> 'b & ~Lit & ~Add
 //│  = <missing implementation>
 
 def f: (~Lit & 'b) -> 'b
@@ -103,7 +103,7 @@ def f: (~Lit & 'b) -> 'b
 //│  = <missing implementation>
 
 def f: (~Lit & ~Add & 'b) -> 'b
-//│ f: ('b & ~Add & ~Lit) -> 'b
+//│ f: ('b & ~Lit & ~Add) -> 'b
 //│  = <missing implementation>
 
 def f: ~Lit & ~Lit

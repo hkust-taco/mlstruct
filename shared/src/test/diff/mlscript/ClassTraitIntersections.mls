@@ -55,12 +55,12 @@ class BB[X, Y]: AA[(X, Y)]
 // * We could simplify this to `BB[int, int]` but currently don't
 // *  because we don't yet have the required reasoning infrastructure.
 def test: AA[(int, int)] & BB[int, int]
-//│ test: AA[(int, int,)] & BB[int, int]
+//│ test: BB[int, int] & AA[(int, int,)]
 
 // * Note that this one denotes a type whose type arguments do not make sense,
 // *  so removing the bad AA refinement would yield a non-equivalent type!
 def test: AA[int] & BB[int, int]
-//│ test: AA[int] & BB[int, int]
+//│ test: BB[int, int] & AA[int]
 
 def test: #AA
 //│ test: #AA

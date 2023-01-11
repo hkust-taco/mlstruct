@@ -76,9 +76,9 @@ abstract class TypeImpl extends Located { self: Type =>
     // 
     case Bounds(Bot, Top) => s"?"
     case Bounds(lb, ub) if lb === ub => lb.showIn(ctx, outerPrec)
-    case Bounds(Bot, ub) => s"out ${ub.showIn(ctx, 0)}"
-    case Bounds(lb, Top) => s"in ${lb.showIn(ctx, 0)}"
-    case Bounds(lb, ub) => s"in ${lb.showIn(ctx, 0)} out ${ub.showIn(ctx, 0)}"
+    case Bounds(Bot, ub) => s".. ${ub.showIn(ctx, 0)}"
+    case Bounds(lb, Top) => s"${lb.showIn(ctx, 0)} .."
+    case Bounds(lb, ub) => s"${lb.showIn(ctx, 0)} .. ${ub.showIn(ctx, 0)}"
     // 
     case AppliedType(n, args) => s"${n.name}[${args.map(_.showIn(ctx, 0)).mkString(", ")}]"
     case Literal(IntLit(n)) => n.toString

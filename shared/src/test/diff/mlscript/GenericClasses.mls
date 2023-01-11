@@ -156,7 +156,7 @@ f
 
 
 def mrg: Foo2[int] & Foo2[string]
-//│ mrg: Foo2[in int | string out nothing]
+//│ mrg: Foo2[int] & Foo2[string]
 //│    = <missing implementation>
 
 mrg: Foo2[int]
@@ -168,7 +168,7 @@ mrg: Foo2[int]
 mrg = Foo2{}
 //│ Foo2['A]
 //│   <:  mrg:
-//│ Foo2[in int | string out nothing]
+//│ Foo2[int] & Foo2[string]
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.168: 	mrg = Foo2{}
 //│ ║         	^^^^^^^^^^^^
@@ -193,7 +193,7 @@ mrg = Foo2{}
 //│    = Foo2 {}
 
 def mrg: Foo2[int] | Foo2[string]
-//│ mrg: Foo2[out int | string]
+//│ mrg: Foo2[int] | Foo2[string]
 //│    = <missing implementation>
 
 
@@ -247,7 +247,7 @@ f
 
 
 def mrg: Foo2_Co[int] & Foo2_Co[string]
-//│ mrg: Foo2_Co[nothing]
+//│ mrg: Foo2_Co[int & string]
 //│    = <missing implementation>
 
 mrg: Foo2_Co[int]
@@ -258,11 +258,11 @@ mrg: Foo2_Co[int]
 mrg = Foo2_Co{}
 //│ Foo2_Co[nothing]
 //│   <:  mrg:
-//│ Foo2_Co[nothing]
+//│ Foo2_Co[int & string]
 //│    = Foo2_Co {}
 
 def mrg: Foo2_Co[int] | Foo2_Co[string]
-//│ mrg: Foo2_Co[int | string]
+//│ mrg: Foo2_Co[int] | Foo2_Co[string]
 //│    = <missing implementation>
 
 

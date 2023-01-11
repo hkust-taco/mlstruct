@@ -148,7 +148,7 @@ def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) ->
 eval1_ty_ugly
 //│ res: ('a -> int) -> 'b -> int
 //│   where
-//│     'b <: Add['b] | Lit | 'a & ~Add[?] & ~Lit
+//│     'b <: Add['b] | Lit | 'a & ~Lit & ~Add[?]
 //│    = <no result>
 //│      eval1_ty_ugly is not implemented
 
@@ -161,7 +161,7 @@ def eval1_ty_ugly = eval1
 //│   <:  eval1_ty_ugly:
 //│ ('a -> int) -> 'b -> int
 //│   where
-//│     'b <: Add['b] | Lit | 'a & ~Add[?] & ~Lit
+//│     'b <: Add['b] | Lit | 'a & ~Lit & ~Add[?]
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.157: 	def eval1_ty_ugly = eval1
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -234,11 +234,11 @@ eval1_ty_ugly = eval1_ty
 //│   <:  eval1_ty_ugly:
 //│ ('a -> int) -> 'b -> int
 //│   where
-//│     'b <: Add['b] | Lit | 'a & ~Add[?] & ~Lit
+//│     'b <: Add['b] | Lit | 'a & ~Lit & ~Add[?]
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Add[?c] & ~Lit)` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
+//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Lit & ~Add[?c])` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
@@ -250,7 +250,7 @@ eval1_ty_ugly = eval1_ty
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Add[?c] & ~Lit)` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
+//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Lit & ~Add[?c])` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
@@ -262,7 +262,7 @@ eval1_ty_ugly = eval1_ty
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Add[?c] & ~Lit)` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
+//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Lit & ~Add[?c])` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
@@ -274,7 +274,7 @@ eval1_ty_ugly = eval1_ty
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.230: 	eval1_ty_ugly = eval1_ty
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Add[?c] & ~Lit)` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
+//│ ╟── type `'b & (Add[?b] | Lit | 'a & ~Lit & ~Add[?c])` does not match type `Add[?b0] | Lit | ?a & ~#Add & ~#Lit`
 //│ ║  l.142: 	def eval1_ty_ugly: ('a -> int) -> (Lit | Add['b] | 'a & ~Lit & ~Add[?] as 'b) -> int
 //│ ║         	                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from union type:
@@ -292,7 +292,7 @@ eval1_ty_ugly = eval1_ty
 eval1_ty = eval1_ty_ugly
 //│ ('a -> int) -> 'b -> int
 //│   where
-//│     'b <: Add['b] | Lit | 'a & ~Add[?] & ~Lit
+//│     'b <: Add['b] | Lit | 'a & ~Lit & ~Add[?]
 //│   <:  eval1_ty:
 //│ ('a -> int) -> 'b -> int
 //│   where

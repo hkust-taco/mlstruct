@@ -6,7 +6,7 @@ import scala.collection.mutable
 package object utils {
 
   import scala.collection.mutable
-  import scala.collection.immutable.{SortedSet, SortedMap}
+  import scala.collection.immutable.{SortedSet, SortedMap, ListSet}
   
   @SuppressWarnings(Array(
     "org.wartremover.warts.Equals",
@@ -169,6 +169,9 @@ package object utils {
   }
   implicit class SortedSetObjectHelpers(self: SortedSet.type) {
     def single[A: Ordering](a: A): SortedSet[A] = (SortedSet.newBuilder[A] += a).result()
+  }
+  implicit class ListSetObjectHelpers(self: ListSet.type) {
+    def single[A](a: A): ListSet[A] = (ListSet.newBuilder[A] += a).result()
   }
   implicit class MapObjectHelpers(self: Map.type) {
     def single[A, B](ab: A -> B): Map[A, B] = (Map.newBuilder[A, B] += ab).result()

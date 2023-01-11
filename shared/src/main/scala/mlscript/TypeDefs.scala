@@ -44,8 +44,9 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
     val thisTv: TypeVariable = freshVar(noProv, S("this"), Nil, TypeRef(nme, targs)(noProv) :: Nil)(1)
     var tvarVariances: Opt[VarianceStore] = N
     def getVariancesOrDefault: collection.Map[TV, VarianceInfo] =
-      tvarVariances.getOrElse(Map.empty[TV, VarianceInfo].withDefaultValue(VarianceInfo.in))
+      tvarVariances.getOrElse(noVarianceInfo)
   }
+  private val noVarianceInfo = Map.empty[TV, VarianceInfo].withDefaultValue(VarianceInfo.in)
   
   /** Represent a set of methods belonging to some owner type.
     * This includes explicitly declared/defined as well as inherited methods. */

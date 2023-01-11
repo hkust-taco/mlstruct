@@ -180,7 +180,7 @@ c = c6
 //│ 'a -> C6['a]
 //│ constrain calls  : 89
 //│ annoying  calls  : 25
-//│ subtyping calls  : 159
+//│ subtyping calls  : 171
 
 
 // Reproduction of an issue found while trying out TypeRef ctor typing:
@@ -243,7 +243,7 @@ L{h=error;t=s2}
 //│ ╟── Note: constraint arises from applied type reference:
 //│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
 //│ ╙──       	                         ^^^^
-//│ res: L['T] & {h: nothing, t: O[in 1 | L['T] out L['T]]} | error
+//│ res: L['T] & {h: nothing, t: O[1 | L['T] .. L['T]]} | error
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.236: 	L{h=error;t=s2}
 //│ ║         	^^^^^^^^^^^^^^^

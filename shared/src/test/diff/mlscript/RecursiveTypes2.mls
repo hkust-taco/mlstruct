@@ -37,12 +37,12 @@ def f: T3 & { x: T1 & 'a } as 'a
 
 :stats
 f.x
-//│ res: 'a & (T1 & T3 & {x: T2} | T1 & T2 & {x: T3})
+//│ res: 'a & (T3 & T1 & {x: T2} | T2 & T1 & {x: T3})
 //│   where
 //│     'a :> T3 & {x: T1 & 'a}
 //│ constrain calls  : 6
 //│ annoying  calls  : 4
-//│ subtyping calls  : 123
+//│ subtyping calls  : 119
 
 g = error : T1 & { x: T2 | 'a } as 'a
 //│ g: 'a
@@ -67,8 +67,8 @@ f = g
 //│ 'a
 //│   where
 //│     'a :> T3 & {x: T1 & 'a}
-//│ constrain calls  : 38
-//│ annoying  calls  : 55
-//│ subtyping calls  : 2789
+//│ constrain calls  : 43
+//│ annoying  calls  : 63
+//│ subtyping calls  : 3669
 
 

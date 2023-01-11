@@ -1,7 +1,7 @@
 package mlscript
 
 import scala.collection.mutable.{Map => MutMap, Set => MutSet, LinkedHashMap, LinkedHashSet}
-import scala.collection.immutable.{SortedMap, SortedSet}
+import scala.collection.immutable.{SortedMap, ListSet}
 import scala.util.chaining._
 import mlscript.utils._, shorthands._
 
@@ -128,8 +128,8 @@ trait TypeSimplifier { self: Typer =>
             // *  because we reconstruct type references from class tags although we may be missing fields!
             
             val trs2 = trs.map {
-              case (d, tr @ TypeRef(defn, targs)) =>
-                d -> TypeRef(defn, tr.mapTargs(pol)((pol, ta) => go(ta, pol)))(tr.prov)
+              case (tr @ TypeRef(defn, targs)) =>
+                TypeRef(defn, tr.mapTargs(pol)((pol, ta) => go(ta, pol)))(tr.prov)
             }
             
             val ft2 = ft.map(ft => FunctionType(go(ft.lhs, pol.map(!_)), go(ft.rhs, pol))(ft.prov))
@@ -168,7 +168,7 @@ trait TypeSimplifier { self: Typer =>
               case S(cls @ ClassTag(Var(tagNme), ps)) if !primitiveTypes.contains(tagNme) =>
                 // * Try to reconstruct a proper class type when a class tag is found,
                 // *  reconstructing the corresponding class type arguments
-                // *  and ommitting field refinements that do not actually refine the reconstructed class type.
+                // *  and omitting field refinements that do not actually refine the reconstructed class type.
                 
                 val clsNme = tagNme.capitalize
                 val clsTyNme = TypeName(tagNme.capitalize)
@@ -182,59 +182,84 @@ trait TypeSimplifier { self: Typer =>
                 
                 val vs = td.getVariancesOrDefault
                 
-                // * Reconstruct a TypeRef from its current structural components
-                val typeRef = TypeRef(td.nme, td.tparamsargs.zipWithIndex.map { case ((tp, tv), tpidx) =>
-                  val fieldTagNme = tparamField(clsTyNme, tp)
-                  val fromTyRef = trs2.get(clsTyNme).map(_.targs(tpidx) |> { ta => FieldType(ta, ta)(noProv) })
-                  fromTyRef.iterator.++(rcd2.fields.iterator.filter(_._1 === fieldTagNme).map(_._2))
-                    .foldLeft((BotType: ST, TopType: ST)) {
-                      case ((acc_lb, acc_ub), FieldType(lb, ub)) =>
-                        (acc_lb | lb, acc_ub & ub)
-                    }.pipe {
-                      case (lb, ub) =>
-                        vs(tv) match {
-                          case VarianceInfo(true, true) => TypeBounds.mk(BotType, TopType)
-                          case VarianceInfo(false, false) => TypeBounds.mk(lb, ub)
-                          case VarianceInfo(co, contra) =>
-                            if (co) ub else lb
-                        }
-                    }
-                })(noProv)
-                println(s"typeRef ${typeRef}")
+                // * Reconstruct a TypeRef from its current structural components and existing TypeRefs.
+                // * This process fails when it is not possible to reconstruct an invariant type parameter argument
+                // * due to apparently-conflicting bounds (as determined by `<:<`).
+                // * When the bounds are not conflicting, we use a `TypeBounds` (for invariant type parameters).
+                def mkTypeRef: Opt[TR] = S(TypeRef(td.nme, td.tparamsargs.zipWithIndex.map { case ((tp, tv), tpidx) =>
+                    val fieldTagNme = tparamField(clsTyNme, tp)
+                    val fromTyRef = trs2.iterator.filter(_.defn === clsTyNme)
+                      .map(_.targs(tpidx) |> { ta => FieldType(ta, ta)(noProv) })
+                    fromTyRef.++(rcd2.fields.iterator.filter(_._1 === fieldTagNme).map(_._2))
+                      .foldLeft((BotType: ST, TopType: ST)) {
+                        case ((acc_lb, acc_ub), FieldType(lb, ub)) =>
+                          (acc_lb | lb, acc_ub & ub)
+                      }.pipe {
+                        case (lb, ub) =>
+                          vs(tv) match {
+                            case VarianceInfo(true, true) => TypeBounds.mk(BotType, TopType)
+                            case VarianceInfo(false, false) =>
+                              if (lb <:< ub) TypeBounds.mk(lb, ub)
+                              else return N
+                            case VarianceInfo(co, contra) =>
+                              if (co) ub else lb
+                          }
+                      }
+                  })(noProv))
                 
-                val clsFields = fieldsOf(typeRef.expandWith(paramTags = true), paramTags = true)
+                val madeTypeRef = mkTypeRef
+                val trs3 = if (madeTypeRef.isEmpty) trs2 else
+                  // * When we managed to reconstruct a single TypeRef for the class,
+                  // * we can remove the ones that were potentially also present in the original type.
+                  trs2.filterNot(_.defn === clsTyNme)
+                
+                // * Picks arbitrarily one of the TypeRefs from the original type, if any
+                val existingTypeRef = trs.find(_.defn === clsTyNme)
+                
+                // * The tentative reconstructed TypeRef.
+                // * We need to construct it in order to query what fields this type implies
+                val typeRef = madeTypeRef orElse existingTypeRef
+                
+                // * The fields that are *implied* by the tentatively constructed class type
+                val clsFields = typeRef match {
+                  case S(typeRef) => fieldsOf(typeRef.expandWith(paramTags = true), paramTags = true)
+                  case N => Map.empty[Var, FieldType]
+                }
                 println(s"clsFields ${clsFields.mkString(", ")}")
                 
-                // * If some fields were not present in the original type, we can't actually reconstruct a class type
-                if (trs.isDefinedAt(clsTyNme) || clsFields.keysIterator.forall(field => rcdMap.contains(field))) {
-                  
-                  val cleanedRcd = RecordType(
-                    rcd2.fields.filterNot { case (field, fty) =>
-                      // * This is a bit messy, but was the only way I was able to achieve maximal simplification:
-                      // *  We remove fields that are already inclued by definition of the class by testing for subtyping
-                      // *  with BOTH the new normalized type (from `clsFields`) AND the old one too (from `rcdMap`).
-                      // *  The reason there's a difference is probably because:
-                      // *    - Subtye checking with <:< is an imperfect heuristic and may stop working after normalizing.
-                      // *    - Recursive types will be normalized progressively...
-                      // *        at this point we may look at some bounds that have not yet been normalized.
-                      clsFields.get(field).exists(cf => cf <:< fty ||
-                        rcdMap.get(field).exists(cf <:< _))
-                    }
-                  )(rcd2.prov)
-                  
-                  val trsFiltered = trs2.filterNot { case (tn, tr) =>
-                    // println(s">>> ${tn} ${tr.defn} ${td.baseClasses} ${bcs}")
-                    tr.targs.isEmpty && // TODO generalize
-                      bcs.contains(tr.defn.name)
+                // * Whether the overall reconstructed type shall contains a TypeRef of the class
+                val shallHaveTR =
+                  // * Either there was one already
+                  existingTypeRef.nonEmpty ||
+                  // * or all the fields are present so one can be reconstructed
+                  clsFields.keysIterator.forall(field => rcdMap.contains(field))
+                
+                // * Removes those fields that are implied by the reconstructed class type, if any
+                val cleanedRcd = if (!shallHaveTR) rcd2 else RecordType(
+                  rcd2.fields.filterNot { case (field, fty) =>
+                    // * This is a bit messy, but was the only way I was able to achieve maximal simplification:
+                    // *  We remove fields that are already inclued by definition of the class by testing for subtyping
+                    // *  with BOTH the new normalized type (from `clsFields`) AND the old one too (from `rcdMap`).
+                    // *  The reason there's a difference is probably because:
+                    // *    - Subtye checking with <:< is an imperfect heuristic and may stop working after normalizing.
+                    // *    - Recursive types will be normalized progressively...
+                    // *        at this point we may look at some bounds that have not yet been normalized.
+                    clsFields.get(field).exists(cf => cf <:< fty ||
+                      rcdMap.get(field).exists(cf <:< _))
                   }
-                  
-                  LhsRefined(N, ft2, at2, tts, cleanedRcd.sorted, trsFiltered + (clsTyNme -> typeRef))
-                  
-                } else {
-                  
-                  LhsRefined(S(cls), ft2, at2, tts, rcd2, trs2)
-                  
+                )(rcd2.prov)
+                
+                // * Remove redundant parent class types
+                val trsFiltered = trs3.filterNot { case tr =>
+                  // println(s">>> ${tn} ${tr.defn} ${td.baseClasses} ${bcs}")
+                  tr.targs.isEmpty && // TODO generalize
+                    bcs.contains(tr.defn.name)
                 }
+                
+                val clsTag = if (shallHaveTR) N else S(cls)
+                
+                LhsRefined(clsTag, ft2, at2, tts, cleanedRcd.sorted, 
+                  if (shallHaveTR) ListSet.from(typeRef) ++ trsFiltered else trsFiltered)
               
               case _ =>
                 LhsRefined(bo, ft2, at2, tts, rcd.copy(nfs)(rcd.prov).sorted, trs2)
@@ -256,13 +281,13 @@ trait TypeSimplifier { self: Typer =>
               case v @ S(L(bty)) => go(bty, pol)
               case N => BotType
             }
-            trs.valuesIterator.map(go(_, pol)).foldLeft(BotType: ST)(_ | _) |
+            trs.iterator.map(go(_, pol)).foldLeft(BotType: ST)(_ | _) |
             ots.sorted.foldLeft(r)(_ | _)
         }, sort = true)
       }.foldLeft(BotType: ST)(_ | _) |> factorize(ctx)
       otherCs2 | csNegs2
     }
-        
+    
     def go(ty: ST, pol: Opt[Bool]): ST = trace(s"norm[${printPol(pol)}] $ty") {
       pol match {
         case S(p) => helper(DNF.mk(ty, p)(ctx, ptr = true), pol)

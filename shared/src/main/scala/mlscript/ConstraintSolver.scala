@@ -2,7 +2,8 @@ package mlscript
 
 import scala.collection.mutable
 import scala.collection.mutable.{Map => MutMap, Set => MutSet}
-import scala.collection.immutable.{SortedSet, SortedMap}
+import scala.collection.immutable.{SortedSet, ListSet}
+import ListSet.{empty => lsEmpty}
 import scala.util.chaining._
 import scala.annotation.tailrec
 import mlscript.utils._, shorthands._
@@ -154,12 +155,12 @@ class ConstraintSolver extends NormalForms { self: Typer =>
             case (LhsRefined(_, _, _, ts, _, trs), RhsBases(pts, _, _)) if ts.exists(pts.contains) => ()
             
             case (LhsRefined(bo, ft, at, ts, r, trs), _) if trs.nonEmpty =>
-              annoying(trs.valuesIterator.map(_.expand).toList,
-                LhsRefined(bo, ft, at, ts, r, SortedMap.empty), Nil, done_rs)
+              annoying(trs.iterator.map(_.expand).toList,
+                LhsRefined(bo, ft, at, ts, r, lsEmpty), Nil, done_rs)
             
             case (_, RhsBases(pts, bf, trs)) if trs.nonEmpty =>
-              annoying(Nil, done_ls, trs.valuesIterator.map(_.expand).toList,
-                RhsBases(pts, bf, SortedMap.empty))
+              annoying(Nil, done_ls, trs.iterator.map(_.expand).toList,
+                RhsBases(pts, bf, lsEmpty))
             
             // From this point on, trs should be empty!
             case (LhsRefined(_, _, _, _, _, trs), _) if trs.nonEmpty => die
@@ -180,7 +181,7 @@ class ConstraintSolver extends NormalForms { self: Typer =>
               else annoying(Nil, LhsRefined(N, ft, at, ts, r, trs), Nil, RhsBases(Nil, bf, trs2))
             case (lr @ LhsRefined(bo, ft, at, ts, r, _), rf @ RhsField(n, t2)) =>
               // Reuse the case implemented below:  (note – this shortcut adds a few more "annoying" calls in stats)
-              annoying(Nil, lr, Nil, RhsBases(Nil, S(R(rf)), SortedMap.empty))
+              annoying(Nil, lr, Nil, RhsBases(Nil, S(R(rf)), lsEmpty))
             case (LhsRefined(bo, ft, at, ts, r, _), RhsBases(ots, S(R(RhsField(n, t2))), trs)) =>
               r.fields.find(_._1 === n) match {
                 case S(nt1) =>

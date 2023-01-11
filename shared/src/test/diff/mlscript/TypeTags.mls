@@ -184,3 +184,26 @@ test: nothing
 //│ res: nothing
 
 
+class Ber[A]: Foo[(A, A)] & { x: (int, int); z: A -> A }
+//│ Defined class Ber[=A]
+
+fun (x: Ber['A]) -> (x.x, x.y, x.z)
+//│ res: Ber['A] -> ((int & 'A, int & 'A,), ('A, 'A,), 'A -> 'A,)
+
+def b: Ber[int] & Foo[123]
+//│ b: Ber[int] & Foo[123]
+
+def b: Ber[int] & #Foo & #Ber
+//│ b: Ber[int]
+
+def b: Foo[(int, int)] & #Ber & #Foo
+//│ b: Foo[(int, int,)] & #Ber
+
+b = Ber { x = (1, 1); y = (2, 2) ;z = id }
+//│ Ber['A] & {x: (1, 1,), y: (2, 2,)}
+//│   where
+//│     'A :> 1 | 2
+//│   <:  b:
+//│ Foo[(int, int,)] & #Ber
+
+
