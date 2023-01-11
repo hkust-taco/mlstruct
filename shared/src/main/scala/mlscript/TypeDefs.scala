@@ -139,7 +139,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
         mergeMap(fieldsOf(l, paramTags), fieldsOf(r, paramTags))(_ && _)
       case RecordType(fs) => fs.toMap
       case p: ProxyType => fieldsOf(p.underlying, paramTags)
-      case TypeBounds(lb, ub) => fieldsOf(ub, paramTags)
+      case TypeRange(lb, ub) => fieldsOf(ub, paramTags)
       case _: ObjectTag | _: FunctionType | _: ArrayBase | _: TypeVariable
         | _: NegType | _: ExtrType | _: ComposedType => Map.empty
     }
@@ -210,7 +210,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case ComposedType(_, l, r) => checkCycle(l) && checkCycle(r)
           case NegType(u) => checkCycle(u)
           case p: ProxyType => checkCycle(p.underlying)
-          case TypeBounds(lb, ub) => checkCycle(lb) && checkCycle(ub)
+          case TypeRange(lb, ub) => checkCycle(lb) && checkCycle(ub)
           case tv: TypeVariable => travsersed(R(tv)) || {
             val t2 = travsersed + R(tv)
             tv.lowerBounds.forall(checkCycle(_)(t2)) && tv.upperBounds.forall(checkCycle(_)(t2))
@@ -262,7 +262,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
               case _: ArrayType => 
                 err(msg"cannot inherit from a array type", prov.loco)
                 false
-              case _: TypeBounds =>
+              case _: TypeRange =>
                 err(msg"cannot inherit from type bounds", prov.loco)
                 false
               case _: RecordType | _: ExtrType => true
@@ -632,7 +632,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case ComposedType(pol, lhs, rhs) =>
             updateVariance(lhs, curVariance)
             updateVariance(rhs, curVariance)
-          case TypeBounds(lb, ub) =>
+          case TypeRange(lb, ub) =>
             updateVariance(lb, VarianceInfo.contra)
             updateVariance(ub, VarianceInfo.co)
           case ArrayType(inner) => updateVariance(inner, curVariance)

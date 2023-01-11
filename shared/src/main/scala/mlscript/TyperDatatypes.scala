@@ -218,7 +218,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
         (td.tparamsargs lazyZip targs).map { case ((_, tv), ta) =>
           tvv(tv) match {
             case VarianceInfo(true, true) =>
-              f(N, TypeBounds(BotType, TopType)(noProv))
+              f(N, TypeRange(BotType, TopType)(noProv))
             case VarianceInfo(co, contra) =>
               f(if (co) pol else if (contra) pol.map(!_) else N, ta)
           }
@@ -252,28 +252,28 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     override def toString = "#" + id.idStr
   }
   
-  /** `TypeBounds(lb, ub)` represents an unknown type between bounds `lb` and `ub`,
+  /** `TypeRange(lb, ub)` represents an unknown type between bounds `lb` and `ub`,
     * where `lb` is in negative position and `ub` is in positive position.
     * For this type to be meaningful, it is necessary that `lb` be a subtype of `ub` by construction.
     * Currently, there are essentially two ways these types are introduced:
     * - During type extrusion, when extruding a variable occurring in neutral position:
     *   here, we create a type bound to recover the polarity needed to do the extrusion.
     *   This is correct because the negative extrusion of a type should be a subtype of its positive extrusion.
-    * - In user-entered wildcard types `?`, which are interpreted as `TypeBounds(Bot, Top)`.
+    * - In user-entered wildcard types `?`, which are interpreted as `TypeRange(Bot, Top)`.
     *   These are also treated as definition-level existentials,
     *   in that when checking an inferred type against a signature, which is done in the `subsume` method,
     *   each wildcard or type range is replaced by a fresh type variable bounded between `lb` and `ub`
     *   (this happens in rigidification). */
-  case class TypeBounds(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) extends SimpleType {
+  case class TypeRange(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) extends SimpleType {
     def level: Int = lb.level max ub.level
     override def toString = s"$lb..$ub"
   }
-  object TypeBounds {
+  object TypeRange {
     final def mk(lb: SimpleType, ub: SimpleType, prov: TypeProvenance = noProv)(implicit ctx: Ctx): SimpleType =
       if ((lb is ub) || lb === ub || lb <:< ub && ub <:< lb) lb else (lb, ub) match {
-        case (TypeBounds(lb, _), ub) => mk(lb, ub, prov)
-        case (lb, TypeBounds(_, ub)) => mk(lb, ub, prov)
-        case _ => TypeBounds(lb, ub)(prov)
+        case (TypeRange(lb, _), ub) => mk(lb, ub, prov)
+        case (lb, TypeRange(_, ub)) => mk(lb, ub, prov)
+        case _ => TypeRange(lb, ub)(prov)
       }
   }
   

@@ -214,8 +214,8 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
       case Bot => ExtrType(true)(tyTp(ty.toLoc, "bottom type"))
       case Bounds(Bot, Top) =>
         val p = tyTp(ty.toLoc, "type wildcard")
-        TypeBounds(ExtrType(true)(p), ExtrType(false)(p))(p)
-      case Bounds(lb, ub) => TypeBounds(rec(lb), rec(ub))(tyTp(ty.toLoc, "type bounds"))
+        TypeRange(ExtrType(true)(p), ExtrType(false)(p))(p)
+      case Bounds(lb, ub) => TypeRange(rec(lb), rec(ub))(tyTp(ty.toLoc, "type bounds"))
       case Tuple(fields) =>
         TupleType(fields.mapValues(rec))(tyTp(ty.toLoc, "tuple type"))
       case Inter(lhs, rhs) => (if (simplify) rec(lhs) & (rec(rhs), _: TypeProvenance)
@@ -692,7 +692,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
           case ta @ ((S(true), TopType) | (S(false), BotType)) => Bounds(Bot, Top)
           case (_, ty) => go(ty)
         })
-        case TypeBounds(lb, ub) => Bounds(go(lb), go(ub))
+        case TypeRange(lb, ub) => Bounds(go(lb), go(ub))
     }
     // }(r => s"~> $r")
     

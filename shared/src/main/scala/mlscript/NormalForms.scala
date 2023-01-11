@@ -422,13 +422,13 @@ class NormalForms extends TyperDatatypes { self: Typer =>
         ty match {
       case ProvType(und) =>
         mkDeepST(und, pol).withProv(ty.prov)
-      case TypeBounds(lb, ub) => mkDeepST(if (pol) ub else lb, pol).withProv(ty.prov)
+      case TypeRange(lb, ub) => mkDeepST(if (pol) ub else lb, pol).withProv(ty.prov)
       case _ =>
         val dnf = mk(ty, pol)
         def go(polo: Opt[Bool], st: ST): ST = polo match {
           case _ if st === ty => ty.mapPol(polo)(go)
           case S(pol) => mkDeepST(st, pol)(ctx, ptr = true)
-          case N => TypeBounds.mk(
+          case N => TypeRange.mk(
             mkDeepST(st, false)(ctx, ptr = true),
             mkDeepST(st, true)(ctx, ptr = true))
         }
@@ -458,7 +458,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
         if (preserveTypeRefs && !primitiveTypes.contains(defn.name)) {
           of(LhsRefined(tr.mkTag, N, N, ssEmp, RecordType.empty, ListSet.single(tr)))
         } else mk(tr.expand, pol)
-      case TypeBounds(lb, ub) => mk(if (pol) ub else lb, pol)
+      case TypeRange(lb, ub) => mk(if (pol) ub else lb, pol)
     }
     // }(r => s"= $r")
   }
@@ -493,7 +493,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
           if (preserveTypeRefs && !primitiveTypes.contains(defn.name)) {
             CNF(Disjunct(RhsBases(Nil, N, ListSet.single(tr)), ssEmp, LhsTop, ssEmp) :: Nil)
           } else mk(tr.expand, pol)
-        case TypeBounds(lb, ub) => mk(if (pol) ub else lb, pol)
+        case TypeRange(lb, ub) => mk(if (pol) ub else lb, pol)
       }
       // }(r => s"!CNF $r")
   }

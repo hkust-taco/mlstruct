@@ -185,7 +185,7 @@ trait TypeSimplifier { self: Typer =>
                 // * Reconstruct a TypeRef from its current structural components and existing TypeRefs.
                 // * This process fails when it is not possible to reconstruct an invariant type parameter argument
                 // * due to apparently-conflicting bounds (as determined by `<:<`).
-                // * When the bounds are not conflicting, we use a `TypeBounds` (for invariant type parameters).
+                // * When the bounds are not conflicting, we use a `TypeRange` (for invariant type parameters).
                 def mkTypeRef: Opt[TR] = S(TypeRef(td.nme, td.tparamsargs.zipWithIndex.map { case ((tp, tv), tpidx) =>
                     val fieldTagNme = tparamField(clsTyNme, tp)
                     val fromTyRef = trs2.iterator.filter(_.defn === clsTyNme)
@@ -197,9 +197,9 @@ trait TypeSimplifier { self: Typer =>
                       }.pipe {
                         case (lb, ub) =>
                           vs(tv) match {
-                            case VarianceInfo(true, true) => TypeBounds.mk(BotType, TopType)
+                            case VarianceInfo(true, true) => TypeRange.mk(BotType, TopType)
                             case VarianceInfo(false, false) =>
-                              if (lb <:< ub) TypeBounds.mk(lb, ub)
+                              if (lb <:< ub) TypeRange.mk(lb, ub)
                               else return N
                             case VarianceInfo(co, contra) =>
                               if (co) ub else lb
@@ -294,7 +294,7 @@ trait TypeSimplifier { self: Typer =>
         case N =>
           val dnf1 = DNF.mk(ty, false)(ctx, ptr = true)
           val dnf2 = DNF.mk(ty, true)(ctx, ptr = true)
-          TypeBounds.mk(helper(dnf1, S(false)), helper(dnf2, S(true)))
+          TypeRange.mk(helper(dnf1, S(false)), helper(dnf2, S(true)))
       }
     }(r => s"~> $r")
     
@@ -384,7 +384,7 @@ trait TypeSimplifier { self: Typer =>
           if (pol =/= S(false)) analyze2(ta, true)
           if (pol =/= S(true)) analyze2(ta, false)
         }
-      case TypeBounds(lb, ub) =>
+      case TypeRange(lb, ub) =>
         if (pol) analyze2(ub, true) else analyze2(lb, false)
     }
     }
@@ -596,7 +596,7 @@ trait TypeSimplifier { self: Typer =>
           case S(N) =>
             println(s"-> bound");
             pol.fold(
-              TypeBounds.mk(mergeTransform(true, tv, parent), mergeTransform(false, tv, parent))
+              TypeRange.mk(mergeTransform(true, tv, parent), mergeTransform(false, tv, parent))
             )(mergeTransform(_, tv, parent))
           case N =>
             var wasDefined = true
@@ -651,8 +651,8 @@ trait TypeSimplifier { self: Typer =>
       case ProxyType(underlying) => transform(underlying, pol, parent)
       case tr @ TypeRef(defn, targs) =>
         TypeRef(defn, tr.mapTargs(pol)((pol, ty) => transform(ty, pol, N)))(tr.prov)
-      case tb @ TypeBounds(lb, ub) =>
-        pol.fold[ST](TypeBounds.mk(transform(lb, S(false), parent), transform(ub, S(true), parent), noProv))(pol =>
+      case tb @ TypeRange(lb, ub) =>
+        pol.fold[ST](TypeRange.mk(transform(lb, S(false), parent), transform(ub, S(true), parent), noProv))(pol =>
           if (pol) transform(ub, S(true), parent) else transform(lb, S(false), parent))
     }
     }(r => s"~> $r")
@@ -764,7 +764,7 @@ trait TypeSimplifier { self: Typer =>
                         case (FunctionType(lhs1, rhs1), FunctionType(lhs2, rhs2)) => unify(lhs1, lhs2) && unify(rhs1, rhs2)
                         case (TraitTag(id1), TraitTag(id2)) => id1 === id2 || nope
                         case (ExtrType(pol1), ExtrType(pol2)) => pol1 === pol2 || nope
-                        case (TypeBounds(lb1, ub1), TypeBounds(lb2, ub2)) =>
+                        case (TypeRange(lb1, ub1), TypeRange(lb2, ub2)) =>
                           unify(lb1, lb2) && unify(ub1, ub2)
                         case (ComposedType(pol1, lhs1, rhs1), ComposedType(pol2, lhs2, rhs2)) =>
                           (pol1 === pol2 || nope) && unify(lhs1, lhs2) && unify(rhs1, rhs2)
