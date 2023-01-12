@@ -199,8 +199,11 @@ trait TypeSimplifier { self: Typer =>
                           vs(tv) match {
                             case VarianceInfo(true, true) => TypeRange.mk(BotType, TopType)
                             case VarianceInfo(false, false) =>
-                              if (lb <:< ub) TypeRange.mk(lb, ub)
-                              else return N
+                              if (lb >:< ub) lb
+                              else
+                                // * Here we could do something better if we had Scala/Kotlin-style bounded wildcards,
+                                // * as in `C[in S | T out U & V]`.
+                                return N
                             case VarianceInfo(co, contra) =>
                               if (co) ub else lb
                           }
@@ -232,7 +235,7 @@ trait TypeSimplifier { self: Typer =>
                   // * Either there was one already
                   existingTypeRef.nonEmpty ||
                   // * or all the fields are present so one can be reconstructed
-                  clsFields.keysIterator.forall(field => rcdMap.contains(field))
+                  madeTypeRef.isDefined && clsFields.keysIterator.forall(field => rcdMap.contains(field))
                 
                 // * Removes those fields that are implied by the reconstructed class type, if any
                 val cleanedRcd = if (!shallHaveTR) rcd2 else RecordType(
