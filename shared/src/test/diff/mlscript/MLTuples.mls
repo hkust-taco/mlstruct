@@ -18,11 +18,11 @@ Hey t
 //│    = [ 1, 2, 3 ]
 
 f ((a, b, c)) = { a; b; c }
-//│ f: ('a, 'b, 'c,) -> {a: 'a, b: 'b, c: 'c}
+//│ f: ('a, 'b, 'c,) -> {$fields: ~{a: nothing, b: nothing, c: nothing}, a: 'a, b: 'b, c: 'c}
 //│  = [Function: f]
 
 f t
-//│ res: {a: 1, b: 2, c: 3}
+//│ res: {$fields: ~{a: nothing, b: nothing, c: nothing}, a: 1, b: 2, c: 3}
 //│    = { a: 1, b: 2, c: 3 }
 
 f ((a, b)) = add a b

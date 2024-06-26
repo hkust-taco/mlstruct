@@ -56,7 +56,7 @@ aa = { a = 1; a = "oops" }
 //│ ╟── Declared at
 //│ ║  l.+1: 	aa = { a = 1; a = "oops" }
 //│ ╙──      	              ^
-//│ aa: {a: 1, a: "oops"}
+//│ aa: {$fields: ~{a: nothing}, a: 1, a: "oops"}
 //│   = { a: 'oops' }
 
 :e

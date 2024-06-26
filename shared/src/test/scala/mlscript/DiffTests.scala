@@ -669,7 +669,7 @@ object DiffTests {
   
   private val files = allFiles.filter { file =>
       val fileName = file.baseName
-      validExt(file.ext) && filter(fileName)
+      validExt(file.ext) // && filter(fileName)
   }
   
   

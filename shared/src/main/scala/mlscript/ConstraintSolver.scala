@@ -307,7 +307,10 @@ class ConstraintSolver extends NormalForms { self: Typer =>
           case (RecordType(fs0), RecordType(fs1)) =>
             fs1.foreach { case (n1, t1) =>
               fs0.find(_._1 === n1).fold {
-                reportError()
+                if (n1 === Internal("fields"))
+                  rec(ExtrType(false)(noProv), t1.ub, false)
+                else
+                  reportError()
               } { case (n0, t0) =>
                 recLb(t1, t0)
                 rec(t0.ub, t1.ub, false)

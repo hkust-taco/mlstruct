@@ -12,6 +12,6 @@ def n: C{}
 //│ Desugared: {}
 //│ n: C
 //│  = <missing implementation>
-//│ res: anything
+//│ res: {$fields: nothing}
 //│    = {}
 

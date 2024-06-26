@@ -85,7 +85,7 @@ Bar3
 //│ ╔══[ERROR] Field identifiers must start with a small letter
 //│ ║  l.84: 	{A = 1}
 //│ ╙──      	^^^^^^^
-//│ res: {A <: 1}
+//│ res: {$fields: ~{A = nothing}, A <: 1}
 //│    = { A: 1 }
 
 :e

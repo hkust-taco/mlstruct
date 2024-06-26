@@ -47,7 +47,7 @@ def dv = D{}
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.46: 	def dv = D{}
 //│ ║        	         ^^^
-//│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
+//│ ╟── record literal of type `{$fields: nothing}` does not have field 'y'
 //│ ║  l.46: 	def dv = D{}
 //│ ╙──      	          ^^
 //│ dv: D & {x: nothing, y: nothing} | error
@@ -104,7 +104,7 @@ E{}
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.103: 	E{}
 //│ ║         	^^^
-//│ ╟── record literal of type `anything` does not have field 'x'
+//│ ╟── record literal of type `{$fields: nothing}` does not have field 'x'
 //│ ║  l.103: 	E{}
 //│ ╙──       	 ^^
 //│ res: E & {x: nothing} | error
@@ -178,7 +178,7 @@ def c1 = C1 { }
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.177: 	def c1 = C1 { }
 //│ ║         	         ^^^^^^
-//│ ╟── record literal of type `anything` is not a compatible record (expected a record with fields: y, x)
+//│ ╟── record literal of type `{$fields: nothing}` does not have field 'y'
 //│ ║  l.177: 	def c1 = C1 { }
 //│ ╙──       	            ^^^
 //│ c1: C1 & {x: nothing, y: nothing} | error

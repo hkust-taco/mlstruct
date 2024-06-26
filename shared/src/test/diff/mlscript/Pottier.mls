@@ -39,7 +39,7 @@ rec def f = fun x -> fun y -> add (f x.tail y) (f y.tail x)
 //│  = [Function: f6]
 
 def f = fun x -> fun y -> if true then { l = x; r = y } else { l = y; r = x } // 2-crown
-//│ f: 'a -> 'a -> {l: 'a, r: 'a}
+//│ f: 'a -> 'a -> {$fields: ~{l: nothing, r: nothing}, l: 'a, r: 'a}
 //│  = [Function: f7]
 
 
@@ -49,7 +49,8 @@ rec def f = fun x -> fun y -> if true then x else { t = f x.t y.t }
 //│ f: 'a -> 'b -> 'a
 //│   where
 //│     'b <: {t: 'b}
-//│     'a := {t: 'a}
+//│     'a :> {$fields: ~{t: nothing}, t: 'a}
+//│        <: {t: 'a}
 //│  = [Function: f8]
 
 

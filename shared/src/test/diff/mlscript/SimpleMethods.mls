@@ -14,18 +14,18 @@ class C0
 //│ ╙──     	              ^
 //│ Defined class C0
 //│ Defined C0.Foo0: C0 -> anything -> (error | int)
-//│ Defined C0.Foo1: C0 -> 'A -> {a: 'A}
+//│ Defined C0.Foo1: C0 -> 'A -> {$fields: ~{a: nothing}, a: 'A}
 
 (C0{}).Foo0
 //│ res: anything -> (error | int)
 //│    = [Function: Foo0]
 
 f1 = (C0{}).Foo1
-//│ f1: 'A -> {a: 'A}
+//│ f1: 'A -> {$fields: ~{a: nothing}, a: 'A}
 //│   = [Function: Foo1]
 
 f1 1
-//│ res: {a: 1}
+//│ res: {$fields: ~{a: nothing}, a: 1}
 //│    = { a: 1 }
 
 

@@ -62,7 +62,7 @@ class Cons[A]: List[A] & { head: A; tail: List[A] }
 :stats
 l0 = Cons { head = 1; tail = Nil {} }
 //│ l0: Cons[1] & {tail: Nil[?]}
-//│ constrain calls  : 23
+//│ constrain calls  : 25
 //│ annoying  calls  : 2
 //│ subtyping calls  : 41
 
@@ -76,7 +76,7 @@ Cons.HeadOption l0
 :stats
 l1 = Cons { head = 1; tail = Cons { head = 2; tail = Cons { head = 3; tail = Nil {} } } }
 //│ l1: Cons[1] & {tail: Cons[2] & {tail: Cons[3] & {tail: Nil[?]}}}
-//│ constrain calls  : 59
+//│ constrain calls  : 61
 //│ annoying  calls  : 6
 //│ subtyping calls  : 101
 
@@ -154,19 +154,19 @@ l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	                                 ^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
+//│ ╟── record literal of type `{$fields: ~{tail: nothing}, tail: ?a}` does not have field 'head'
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	                                      ^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
+//│ ╟── record literal of type `{$fields: ~{tail: nothing}, tail: ?a}` does not have field 'head'
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ║         	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── record literal of type `{tail: ?a}` does not have field 'head'
+//│ ╟── record literal of type `{$fields: ~{tail: nothing}, tail: ?a}` does not have field 'head'
 //│ ║  l.153: 	l1 = Cons { tail = Cons { tail = Cons { tail = Nil {} } } }
 //│ ╙──       	          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ l1: Cons[nothing] & {tail: Cons[nothing] & {tail: Cons[nothing] & {tail: Nil[?]} | error} | error} | error

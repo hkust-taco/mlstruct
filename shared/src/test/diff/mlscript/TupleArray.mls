@@ -1,6 +1,6 @@
 
 x = { a = 1 }
-//│ x: {a: 1}
+//│ x: {$fields: ~{a: nothing}, a: 1}
 //│  = { a: 1 }
 
 :e
@@ -151,7 +151,7 @@ t.x
 //│      t is not implemented
 
 rcd = { x = 1 }
-//│ rcd: {x: 1}
+//│ rcd: {$fields: ~{x: nothing}, x: 1}
 //│    = { x: 1 }
 
 :e

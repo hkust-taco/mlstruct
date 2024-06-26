@@ -227,7 +227,7 @@ rec def eval2 subst = eval_expr eval2 subst
 //│   where
 //│     'b <: #Add & {lhs: 'b, rhs: 'b} | #Mul & {lhs: 'b, rhs: 'b} | 'result & (#Num | #Var)
 //│     'a <: #Cons & {head: (string, 'result,), tail: 'a} | Nil
-//│     'result :> Mul['result] | Num | Add['result]
+//│     'result :> Num | Add['result] | Mul['result]
 //│             <: (Num & {lhs: Num | ~#Num, rhs: Num | ~#Num} | {lhs: Num | ~#Num, rhs: Num | ~#Num} & ~#Num) & (Num & {name: string} | {name: string} & ~#Num) & (Num | ~#Num)
 //│      = <no result>
 //│        eval_expr, eval_var, list_assoc and eq are not implemented

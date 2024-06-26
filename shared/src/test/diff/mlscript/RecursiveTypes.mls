@@ -457,13 +457,13 @@ f_manual { a = 1 }
 //│ ╟── from intersection type:
 //│ ║  l.425: 	def f_manual: (({a: 'b & 'a & 'c} as 'a) & 'd) -> ('c | ('d | 'e & {a: int} as 'e))
 //│ ╙──       	                    ^^^^^^^^^^^^
-//│ res: 1 | error | {a: 1}
+//│ res: 1 | error | {$fields: ~{a: nothing}, a: 1}
 
 f_manual error
 //│ res: nothing
 
 def f_manual_ns: 'a | ('b & (({a: 'd & 'c} as 'c) | ~{a: 'e | int} | ~{}) & (({a: 'd & 'c} as 'c) | ~{a: 'e | int}) & (({a: 'f} as 'c) as 'f) & (int | ~{a: 'e | int} | ~{}) & (int | ~{a: 'e | int}) & int & int) -> ('g | 'd | ('b | 'h & {a: 'e | int} as 'h))
-//│ f_manual_ns: ('b & 'f & (int & 'c | int & ~{a: int})) -> 'b
+//│ f_manual_ns: ('f & 'b & (int & 'c | int & ~{a: int})) -> 'b
 //│   where
 //│     'c <: {a: 'b & 'c}
 //│     'f <: {a: 'f}

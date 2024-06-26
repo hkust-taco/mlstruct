@@ -30,7 +30,7 @@ Nil{}
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.29: 	Nil{}
 //│ ║        	^^^^^
-//│ ╟── record literal of type `anything` does not have field 'size'
+//│ ╟── record literal of type `{$fields: nothing}` does not have field 'size'
 //│ ║  l.29: 	Nil{}
 //│ ╙──      	   ^^
 //│ res: Nil & {size: nothing} | error

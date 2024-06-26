@@ -37,7 +37,7 @@ def foo { _ } = { _ }
 //│ ╔══[ERROR] Widlcard in expression position.
 //│ ║  l.36: 	def foo { _ } = { _ }
 //│ ╙──      	                  ^
-//│ foo: {_: anything} -> {_: error}
+//│ foo: {_: anything} -> {$fields: ~{_: nothing}, _: error}
 //│    = [Function: foo4]
 
 { _ = 1 }._

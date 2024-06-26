@@ -66,7 +66,7 @@ test2 { value = 1 }
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.65: 	test2 { value = 1 }
 //│ ║        	^^^^^^^^^^^^^^^^^^^
-//│ ╟── expression of type `{value: 1} & ~#MyTrait` does not have field 'default'
+//│ ╟── expression of type `{$fields: ~{value: nothing}, value: 1} & ~#MyTrait` does not have field 'default'
 //│ ╟── Note: constraint arises from field selection:
 //│ ║  l.48: 	def test2 x = case x of { MyTrait -> x.value | _ -> x.default }
 //│ ╙──      	                                                    ^^^^^^^^^

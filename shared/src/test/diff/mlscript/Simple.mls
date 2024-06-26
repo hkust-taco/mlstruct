@@ -76,6 +76,6 @@ f (if true then { u = 1; v = 2 } else { u = 1 })
 //│    = 1
 
 if true then { u = 1; v = 2 } else { u = 2 }
-//│ res: {u: 1 | 2}
+//│ res: {$fields: ~{u: nothing, v: nothing}, u: 1 | 2}
 //│    = { u: 1, v: 2 }
 

@@ -46,7 +46,7 @@ def foo x = case x of {
   | B -> x.fB
   | C -> { l = x.fC; r = x.payload }
   }
-//│ foo: (A & {payload: int} | B & {fB: 'fB} | C & {fC: 'fC, payload: 'payload}) -> (int | 'fB | {l: 'fC, r: 'payload})
+//│ foo: (A & {payload: int} | B & {fB: 'fB} | C & {fC: 'fC, payload: 'payload}) -> (int | 'fB | {$fields: ~{l: nothing, r: nothing}, l: 'fC, r: 'payload})
 //│    = [Function: foo1]
 
 :e
@@ -67,10 +67,10 @@ foo arg
 //│ ╟── from reference:
 //│ ║  l.44: 	def foo x = case x of {
 //│ ╙──      	                 ^
-//│ res: error | int | string | {l: bool, r: nothing}
+//│ res: error | int | string | {$fields: ~{l: nothing, r: nothing}, l: bool, r: nothing}
 //│    = <no result>
 //│      arg is not implemented
 //│ constrain calls  : 53
 //│ annoying  calls  : 40
-//│ subtyping calls  : 117
+//│ subtyping calls  : 121
 

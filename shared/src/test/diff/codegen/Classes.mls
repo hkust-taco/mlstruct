@@ -171,7 +171,7 @@ f(Box{})
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.170: 	f(Box{})
 //│ ║         	^^^^^^^^
-//│ ╟── record literal of type `anything` does not match type `nothing`
+//│ ╟── record literal of type `{$fields: nothing}` does not match type `nothing`
 //│ ║  l.170: 	f(Box{})
 //│ ║         	     ^^
 //│ ╟── Note: constraint arises from type wildcard:

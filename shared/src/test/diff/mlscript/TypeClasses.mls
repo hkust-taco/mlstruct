@@ -94,7 +94,7 @@ cmi = ComplexMonoid { base = IntMonoid }
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	cmi = ComplexMonoid { base = IntMonoid }
 //│ ║        	      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── record literal of type `{base: ?a}` is not an instance of type `Monoid`
+//│ ╟── record literal of type `{$fields: ~{base: nothing}, base: ?a}` is not an instance of type `Monoid`
 //│ ║  l.+1: 	cmi = ComplexMonoid { base = IntMonoid }
 //│ ║        	                    ^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from applied type reference:
@@ -103,7 +103,7 @@ cmi = ComplexMonoid { base = IntMonoid }
 //│ ╟── from reference:
 //│ ║  l.52: 	def ComplexMonoid base = ComplexMonoid { base }
 //│ ╙──      	                                         ^^^^
-//│ cmi: ComplexMonoid['A] & {base: {base: IntMonoid}} | error
+//│ cmi: ComplexMonoid['A] & {base: {$fields: ~{base: nothing}, base: IntMonoid}} | error
 
 
 
@@ -156,7 +156,7 @@ class ComplexMonoid_bad_0[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ║  l.3: 	  method Empty: A
 //│ ╙──     	         ^^^^^^^^
 //│ Defined class ComplexMonoid_bad_0[=A]
-//│ Defined ComplexMonoid_bad_0.Empty: ComplexMonoid_bad_0['A] -> 'imaginary -> (Complex['imaginary | {real: Monoid['A]}] & {real: {real: Monoid['A]}})
+//│ Defined ComplexMonoid_bad_0.Empty: ComplexMonoid_bad_0['A] -> 'imaginary -> (Complex['imaginary | {$fields: ~{real: nothing}, real: Monoid['A]}] & {real: {$fields: ~{real: nothing}, real: Monoid['A]}})
 //│ Defined ComplexMonoid_bad_0.Add: ComplexMonoid_bad_0['A] -> anything -> anything -> nothing
 
 
@@ -215,7 +215,7 @@ class ComplexMonoid_bad_1[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ║  l.3: 	  method Empty: A
 //│ ╙──     	         ^^^^^^^^
 //│ Defined class ComplexMonoid_bad_1[=A]
-//│ Defined ComplexMonoid_bad_1.Empty: ComplexMonoid_bad_1['A] -> 'imaginary -> (Complex['imaginary | {imaginary: error, real: 'A}] & {real: {imaginary: error, real: 'A}})
+//│ Defined ComplexMonoid_bad_1.Empty: ComplexMonoid_bad_1['A] -> 'imaginary -> (Complex['imaginary | {$fields: ~{imaginary: nothing, real: nothing}, imaginary: error, real: 'A}] & {real: {$fields: ~{imaginary: nothing, real: nothing}, imaginary: error, real: 'A}})
 //│ Defined ComplexMonoid_bad_1.Add: ComplexMonoid_bad_1['A] -> anything -> anything -> nothing
 
 

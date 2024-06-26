@@ -140,7 +140,7 @@ f 0
 //│ // Query 1
 //│ res = {};
 //│ // End of generated code
-//│ res: anything
+//│ res: {$fields: nothing}
 //│    = {}
 
 // Rcd: Sole
@@ -149,7 +149,7 @@ f 0
 //│ // Query 1
 //│ res = { x: 0 };
 //│ // End of generated code
-//│ res: {x: 0}
+//│ res: {$fields: ~{x: nothing}, x: 0}
 //│    = { x: 0 }
 
 // Rcd: Flat
@@ -161,7 +161,7 @@ f 0
 //│   y: 0
 //│ };
 //│ // End of generated code
-//│ res: {x: 0, y: 0}
+//│ res: {$fields: ~{x: nothing, y: nothing}, x: 0, y: 0}
 //│    = { x: 0, y: 0 }
 
 // Rcd: Nested
@@ -173,7 +173,7 @@ f 0
 //│   z: 0
 //│ };
 //│ // End of generated code
-//│ res: {x: {y: 0}, z: 0}
+//│ res: {$fields: ~{x: nothing, z: nothing}, x: {$fields: ~{y: nothing}, y: 0}, z: 0}
 //│    = { x: { y: 0 }, z: 0 }
 
 // Rcd: Super nested
@@ -195,7 +195,7 @@ f 0
 //│   z: z
 //│ };
 //│ // End of generated code
-//│ res: {a: (0, 0,), w: 0, x: {y: {a: 0, b: "s"}}, z: 2}
+//│ res: {$fields: ~{a: nothing, w: nothing, x: nothing, z: nothing}, a: (0, 0,), w: 0, x: {$fields: ~{y: nothing}, y: {$fields: ~{a: nothing, b: nothing}, a: 0, b: "s"}}, z: 2}
 //│    = { x: { y: { a: 0, b: 's' } }, w: 0, a: [ 0, 0 ], z: 2 }
 
 // Sel: Select an immediate record

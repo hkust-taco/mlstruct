@@ -135,7 +135,7 @@ Cons 1 (Cons 2 Nil)
 //│    = Cons { head: 1, tail: Cons { head: 2, tail: Nil {} } }
 
 { a = res.head; b = res.tail.head; c = res.tail.tail }
-//│ res: {a: 1, b: 2, c: Nil}
+//│ res: {$fields: ~{a: nothing, b: nothing, c: nothing}, a: 1, b: 2, c: Nil}
 //│    = { a: 1, b: 2, c: Nil {} }
 
 Cons 2 Nil
@@ -147,7 +147,7 @@ Cons 1 (id res)
 //│    = Cons { head: 1, tail: Cons { head: 2, tail: Nil {} } }
 
 { a = res.head; b = res.tail.head; c = res.tail.tail }
-//│ res: {a: 1, b: 2, c: Nil}
+//│ res: {$fields: ~{a: nothing, b: nothing, c: nothing}, a: 1, b: 2, c: Nil}
 //│    = { a: 1, b: 2, c: Nil {} }
 
 

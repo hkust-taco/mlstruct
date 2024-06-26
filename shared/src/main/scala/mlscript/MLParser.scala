@@ -132,7 +132,7 @@ class MLParser(origin: Origin, indent: Int = 0, recordLocations: Bool = true) {
     "&",
     "= !",
     "< >",
-    "+ -",
+    "++ + -",
     "* / %",
     ".",
   ).zipWithIndex.flatMap {

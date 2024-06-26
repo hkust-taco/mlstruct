@@ -170,6 +170,13 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
       "<=" -> intBinPred,
       ">=" -> intBinPred,
       "==" -> intBinPred,
+      "++" -> {
+        val r1 = freshVar(noProv)(1)
+        val r2 = freshVar(noProv)(1)
+        val f = freshVar(noProv)(1)
+        // PolymorphicType(0, fun(singleTup(r1), fun(singleTup(ComposedType(false, r2, RecordType(Internal("fields") -> f.toUpper(noProv) :: Nil)(noProv))(noProv)), ComposedType(false, ComposedType(true, r1, f)(noProv), r2)(noProv))(noProv))(noProv))
+        PolymorphicType(0, fun(singleTup(r1), fun(singleTup(ComposedType(false, r2, RecordType(Internal("fields") -> r1.toUpper(noProv) :: Nil)(noProv))(noProv)), ComposedType(false, r1, r2)(noProv))(noProv))(noProv))
+      },
       "&&" -> fun(singleTup(BoolType), fun(singleTup(BoolType), BoolType)(noProv))(noProv),
       "||" -> fun(singleTup(BoolType), fun(singleTup(BoolType), BoolType)(noProv))(noProv),
       "id" -> {
@@ -467,13 +474,19 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
               :: fieldNames.map(tp => msg"Declared at" -> tp.toLoc))(raise)
           case _ =>
         }
-        RecordType.mk(fs.map { case (n, t) => 
+        val fields = Internal("fields") -> fs.map { case (n, _) =>
+          NegType(RecordType.mk(n -> ExtrType(true)(noProv).toUpper(noProv) :: Nil)(noProv))(noProv) }
+            .reduceLeftOption[SimpleType]((lhs, rhs) => ComposedType(true, lhs, rhs)(noProv))
+            .getOrElse(ExtrType(true)(noProv))
+            .toUpper(tp(term.toLoc, "internal record literal"))
+        val body = fs.map { case (n, t) => 
           if (n.name.isCapitalized)
             err(msg"Field identifiers must start with a small letter", term.toLoc)(raise)
           val tym = typeTerm(t)
           val fprov = tp(Located.coveringLoc(n :: t :: Nil), "record field")
           (n, tym.toUpper(fprov))
-        })(prov)
+        }
+        RecordType.mk(if (ctx.inPattern) body else fields :: body)(prov)
       case Tup(fs) =>
         TupleType(fs.map { case (n, t) =>
           val tym = typeTerm(t)
