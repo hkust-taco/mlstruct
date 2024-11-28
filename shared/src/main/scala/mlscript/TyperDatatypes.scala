@@ -77,6 +77,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   
   /** A type without universally quantified type variables. */
   sealed abstract class SimpleType extends TypeScheme with SimpleTypeImpl {
+    def syntax: SyntacticType = ???
     val prov: TypeProvenance
     def level: Int
     def uninstantiatedBody: SimpleType = this
@@ -85,7 +86,17 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   type ST = SimpleType
   
-  sealed abstract class BasicType extends SimpleType
+  abstract class SyntacticType extends SimpleType {
+    override def syntax: SyntacticType = this
+  }
+  
+  abstract class NormalType extends SimpleType {
+    override lazy val syntax: SyntacticType = ???
+    def level: Int = syntax.level
+    val prov: TypeProvenance = syntax.prov
+  }
+  
+  sealed abstract class BasicType extends SyntacticType
   
   sealed abstract class FunOrArrType extends BasicType
   
@@ -99,7 +110,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     }} -> $rhs)"
   }
   
-  case class RecordType(fields: List[(Var, FieldType)])(val prov: TypeProvenance) extends SimpleType {
+  case class RecordType(fields: List[(Var, FieldType)])(val prov: TypeProvenance) extends SyntacticType {
     lazy val level: Int = fields.iterator.map(_._2.level).maxOption.getOrElse(0)
     def toInter: SimpleType =
       fields.map(f => RecordType(f :: Nil)(prov)).foldLeft(TopType: ST)(((l, r) => ComposedType(false, l, r)(noProv)))
@@ -142,16 +153,16 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   
   /** Polarity `pol` being `true` means Bot; `false` means Top. These are extrema of the subtyping lattice. */
-  case class ExtrType(pol: Bool)(val prov: TypeProvenance) extends SimpleType {
+  case class ExtrType(pol: Bool)(val prov: TypeProvenance) extends SyntacticType {
     def level: Int = 0
     override def toString = if (pol) "⊥" else "⊤"
   }
   /** Polarity `pol` being `true` means union; `false` means intersection. */
-  case class ComposedType(pol: Bool, lhs: SimpleType, rhs: SimpleType)(val prov: TypeProvenance) extends SimpleType {
+  case class ComposedType(pol: Bool, lhs: SimpleType, rhs: SimpleType)(val prov: TypeProvenance) extends SyntacticType {
     def level: Int = lhs.level max rhs.level
     override def toString = s"($lhs ${if (pol) "|" else "&"} $rhs)"
   }
-  case class NegType(negated: SimpleType)(val prov: TypeProvenance) extends SimpleType {
+  case class NegType(negated: SimpleType)(val prov: TypeProvenance) extends SyntacticType {
     def level: Int = negated.level
     override def toString = s"~(${negated})"
   }
@@ -182,7 +193,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   
   type TR = TypeRef
-  case class TypeRef(defn: TypeName, targs: Ls[SimpleType])(val prov: TypeProvenance) extends SimpleType {
+  case class TypeRef(defn: TypeName, targs: Ls[SimpleType])(val prov: TypeProvenance) extends SyntacticType {
     def level: Int = targs.iterator.map(_.level).maxOption.getOrElse(0)
     def expand(implicit ctx: Ctx): SimpleType = expandWith(paramTags = true)
     def expandWith(paramTags: Bool)(implicit ctx: Ctx): SimpleType = {
@@ -264,7 +275,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     *   in that when checking an inferred type against a signature, which is done in the `subsume` method,
     *   each wildcard or type range is replaced by a fresh type variable bounded between `lb` and `ub`
     *   (this happens in rigidification). */
-  case class TypeRange(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) extends SimpleType {
+  case class TypeRange(lb: SimpleType, ub: SimpleType)(val prov: TypeProvenance) extends SyntacticType {
     def level: Int = lb.level max ub.level
     override def toString = s"$lb..$ub"
   }
