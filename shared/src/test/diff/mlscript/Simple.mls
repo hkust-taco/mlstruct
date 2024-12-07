@@ -55,7 +55,7 @@ test (Foo { field = 2 })
 //│    = 2
 
 def test x = case x of { Foo -> x.field | _ -> 1 }
-//│ test: (#Foo & {field: 'field} | ~#Foo) -> (1 | 'field)
+//│ test: (#Foo & {field: 'field} | Object & ~#Foo) -> (1 | 'field)
 //│     = [Function: test2]
 
 

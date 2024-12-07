@@ -17,7 +17,7 @@ case r of { T1 -> r | _ -> 0 }
 //│    = C_1 {}
 
 case r of { T1 -> r | T2 -> r }
-//│ res: C_1 & ~#T2 | C_2 & ~#T1 | 'a | #T1 & (C_1 | C_2) | ~'a & (C_1 | C_2)
+//│ res: C_1 & ~#T2 | C_2 & ~#T1 | 'a | ~'a & (C_1 | C_2) | #T1 & (C_1 | C_2)
 //│    = C_1 {}
 
 r = if true then C_1 ((1,2,3)) else C_2 ((3,4,5,4))
@@ -29,7 +29,7 @@ case r of { T1 -> r | _ -> 0 }
 //│    = C_1 {}
 
 case r of { T1 -> r | T2 -> r }
-//│ res: C_1 & ~#T2 | C_2 & ~#T1 | 'a | ~'a & (C_1 | C_2) | #T1 & (C_1 | C_2)
+//│ res: C_1 & ~#T2 | C_2 & ~#T1 | 'a | #T1 & (C_1 | C_2) | ~'a & (C_1 | C_2)
 //│    = C_1 {}
 
 
@@ -499,7 +499,7 @@ def gett1 p q = case p of {T1 -> p | _ -> q}
 def gt: (T1 & Array[int | bool]) -> Array[int]
 gt ta
 def tg: ((T1 & Array[int]) | (T2 & Array[bool])) -> (T1 | T2)
-//│ gett1: (#T1 & 'a | ~#T1) -> 'a -> 'a
+//│ gett1: (Object & ~#T1 | #T1 & 'a) -> 'a -> 'a
 //│      = [Function: gett1]
 //│ gt: (T1 & Array[bool | int]) -> Array[int]
 //│   = <missing implementation>
@@ -519,7 +519,7 @@ tg (T2 ((true,false,false)))
 //│ ╟── Note that traits are always considered abstract
 //│ ║  l.2: 	trait T1
 //│ ╙──     	      ^^
-//│ res: error | Array[int] & #T1
+//│ res: Object & Array[int] & #T1 | error
 //│    = <no result>
 //│      ta is not implemented
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
@@ -788,11 +788,11 @@ def definedOr x els = case x of {
   }
 def defined x = definedOr x (fun () -> error)
 def ornull x = definedOr x (fun () -> null)
-//│ definedOr: (undefined | 'a & ~undefined) -> (() -> 'a) -> 'a
+//│ definedOr: (Object & 'a & ~undefined | undefined) -> (() -> 'a) -> 'a
 //│          = [Function: definedOr]
-//│ defined: (undefined | 'a & ~undefined) -> 'a
+//│ defined: (Object & 'a & ~undefined | undefined) -> 'a
 //│        = [Function: defined]
-//│ ornull: (undefined | 'a & ~undefined) -> (null | 'a)
+//│ ornull: (Object & 'a & ~undefined | undefined) -> (null | 'a)
 //│       = [Function: ornull]
 
 ()
@@ -814,36 +814,119 @@ defined (()[0])
 //│   Error: unexpected runtime error
 
 
+:e
 ta1 = defined((2,3,4,5))
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.818: 	ta1 = defined((2,3,4,5))
+//│ ║         	      ^^^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(2, 3, 4, 5,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.818: 	ta1 = defined((2,3,4,5))
+//│ ║         	              ^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ta1: error | (2, 3, 4, 5,) & ~undefined
+//│    = [ 2, 3, 4, 5 ]
+
 ta1[1]
+//│ res: 2 | 3 | 4 | 5 | undefined
+//│    = 3
+
+:e
 ta2 = (defined((1,2,4)), defined((true, false)))
 (ornull ((defined ta2[0])[1+4]), defined ta[1])[0]
 ta3 = (defined((1,2,3)), "hello", false)
-ta3[1-2]
-(1,2,3)[4]
-//│ ta1: (2, 3, 4, 5,) & ~undefined
-//│    = [ 2, 3, 4, 5 ]
-//│ res: 2 | 3 | 4 | 5 | undefined
-//│    = 3
-//│ ta2: ((1, 2, 4,) & ~undefined, (true, false,) & ~undefined,)
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.839: 	ta2 = (defined((1,2,4)), defined((true, false)))
+//│ ║         	       ^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(1, 2, 4,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.839: 	ta2 = (defined((1,2,4)), defined((true, false)))
+//│ ║         	               ^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.839: 	ta2 = (defined((1,2,4)), defined((true, false)))
+//│ ║         	                         ^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(true, false,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.839: 	ta2 = (defined((1,2,4)), defined((true, false)))
+//│ ║         	                                 ^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ta2: (error | (1, 2, 4,) & ~undefined, error | (true, false,) & ~undefined,)
 //│    = [ [ 1, 2, 4 ], [ true, false ] ]
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.840: 	(ornull ((defined ta2[0])[1+4]), defined ta[1])[0]
+//│ ║         	         ^^^^^^^^^^^^^^^^
+//│ ╟── wildcard pattern of type `(1, 2, 4,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.787: 	  | _ -> x
+//│ ║         	         ^
+//│ ╟── but it flows into array access with expected type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.840: 	(ornull ((defined ta2[0])[1+4]), defined ta[1])[0]
+//│ ║         	                  ^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
 //│ res: false | int | null | true | undefined
 //│    = <no result>
 //│      ta is not implemented
-//│ ta3: ((1, 2, 3,) & ~undefined, "hello", false,)
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.841: 	ta3 = (defined((1,2,3)), "hello", false)
+//│ ║         	       ^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(1, 2, 3,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.841: 	ta3 = (defined((1,2,3)), "hello", false)
+//│ ║         	               ^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ta3: (error | (1, 2, 3,) & ~undefined, "hello", false,)
 //│    = [ [ 1, 2, 3 ], 'hello', false ]
-//│ res: "hello" | false | undefined | (1, 2, 3,) & ~undefined
+
+ta3[1-2]
+(1,2,3)[4]
+//│ res: "hello" | error | false | undefined | (1, 2, 3,) & ~undefined
 //│    = undefined
 //│ res: 1 | 2 | 3 | undefined
 //│    = undefined
 
 :e
 ((defined ta2[0])[1+4], ta[1])[0]
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.909: 	((defined ta2[0])[1+4], ta[1])[0]
+//│ ║         	 ^^^^^^^^^^^^^^^^
+//│ ╟── wildcard pattern of type `(1, 2, 4,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.787: 	  | _ -> x
+//│ ║         	         ^
+//│ ╟── but it flows into array access with expected type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.909: 	((defined ta2[0])[1+4], ta[1])[0]
+//│ ║         	          ^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.841: 	((defined ta2[0])[1+4], ta[1])[0]
+//│ ║  l.909: 	((defined ta2[0])[1+4], ta[1])[0]
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── possibly-undefined array access of type `undefined` does not match type `~undefined`
-//│ ║  l.841: 	((defined ta2[0])[1+4], ta[1])[0]
+//│ ║  l.909: 	((defined ta2[0])[1+4], ta[1])[0]
 //│ ╙──       	 ^^^^^^^^^^^^^^^^^^^^^
 //│ res: error | false | int | true | undefined
 //│    = <no result>
@@ -858,53 +941,53 @@ ge[2]
 //│ ge: int -> int
 //│   = [Function: ge]
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.854: 	ta3[ge 3][ge (1+2)]
+//│ ║  l.937: 	ta3[ge 3][ge (1+2)]
 //│ ║         	^^^^^^^^^^^^^^^^^^^
 //│ ╟── string literal of type `"hello"` does not match type `Array[?a]`
-//│ ║  l.821: 	ta3 = (defined((1,2,3)), "hello", false)
+//│ ║  l.841: 	ta3 = (defined((1,2,3)), "hello", false)
 //│ ║         	                         ^^^^^^^
 //│ ╟── but it flows into array access with expected type `Array[?b]`
-//│ ║  l.854: 	ta3[ge 3][ge (1+2)]
+//│ ║  l.937: 	ta3[ge 3][ge (1+2)]
 //│ ╙──       	^^^^^^^^^
 //│ res: 1 | 2 | 3 | error | undefined
 //│ Runtime error:
 //│   TypeError: Cannot read properties of undefined (reading '4')
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.855: 	true[false]
+//│ ║  l.938: 	true[false]
 //│ ║         	^^^^^^^^^^^
 //│ ╟── reference of type `false` is not an instance of type `int`
-//│ ║  l.855: 	true[false]
+//│ ║  l.938: 	true[false]
 //│ ╙──       	     ^^^^^
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.855: 	true[false]
+//│ ║  l.938: 	true[false]
 //│ ║         	^^^^^^^^^^^
 //│ ╟── reference of type `true` does not match type `Array[?a]`
-//│ ║  l.855: 	true[false]
+//│ ║  l.938: 	true[false]
 //│ ╙──       	^^^^
 //│ res: error | undefined
 //│    = undefined
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.856: 	4["hello"]
+//│ ║  l.939: 	4["hello"]
 //│ ║         	^^^^^^^^^^
 //│ ╟── string literal of type `"hello"` is not an instance of type `int`
-//│ ║  l.856: 	4["hello"]
+//│ ║  l.939: 	4["hello"]
 //│ ╙──       	  ^^^^^^^
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.856: 	4["hello"]
+//│ ║  l.939: 	4["hello"]
 //│ ║         	^^^^^^^^^^
 //│ ╟── integer literal of type `4` does not match type `Array[?a]`
-//│ ║  l.856: 	4["hello"]
+//│ ║  l.939: 	4["hello"]
 //│ ╙──       	^
 //│ res: error | undefined
 //│    = undefined
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.857: 	ge[2]
+//│ ║  l.940: 	ge[2]
 //│ ║         	^^^^^
 //│ ╟── function of type `?a -> ?b` does not match type `Array[?c]`
-//│ ║  l.853: 	def ge x = x + 1
+//│ ║  l.936: 	def ge x = x + 1
 //│ ║         	       ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `Array[?d]`
-//│ ║  l.857: 	ge[2]
+//│ ║  l.940: 	ge[2]
 //│ ╙──       	^^
 //│ res: error | undefined
 //│    = undefined
@@ -931,22 +1014,22 @@ mkarr ((1,true,"hi")[0])
 mkarr (3 [  1])
 mk1[2  ]
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.931: 	mkarr (3 [  1])
-//│ ║         	       ^^^^^^^
+//│ ║  l.1014: 	mkarr (3 [  1])
+//│ ║          	       ^^^^^^^
 //│ ╟── integer literal of type `3` does not match type `Array[?a]`
-//│ ║  l.931: 	mkarr (3 [  1])
-//│ ╙──       	       ^
+//│ ║  l.1014: 	mkarr (3 [  1])
+//│ ╙──        	       ^
 //│ res: Array[error | undefined]
 //│    = [ undefined, undefined, undefined, undefined, undefined ]
 //│ ╔══[ERROR] Type mismatch in array access:
-//│ ║  l.932: 	mk1[2  ]
-//│ ║         	^^^^^^^^
+//│ ║  l.1015: 	mk1[2  ]
+//│ ║          	^^^^^^^^
 //│ ╟── integer literal of type `6` does not match type `Array[?a]`
-//│ ║  l.914: 	mk1 = defined ((mkarr 6)[ 0])
+//│ ║  l.997: 	mk1 = defined ((mkarr 6)[ 0])
 //│ ║         	                      ^
 //│ ╟── but it flows into reference with expected type `Array[?b]`
-//│ ║  l.932: 	mk1[2  ]
-//│ ╙──       	^^^
+//│ ║  l.1015: 	mk1[2  ]
+//│ ╙──        	^^^
 //│ res: error | undefined
 //│    = undefined
 
@@ -955,22 +1038,73 @@ def s2 a = (defined ((defined a[1])[0]))._2 + (defined a[2])._1
 def s3 a = defined (a._1.t[0]) + defined ((defined (a.x[1]))[2])
 //│ s1: Array[int & 'a] -> (int, undefined | 'a,)
 //│   = [Function: s1]
-//│ s2: Array[Array[{_2: int} & ~undefined] & {_1: int} & ~undefined] -> int
+//│ s2: Array[Object & Array[Object & {_2: int} & ~undefined] & {_1: int} & ~undefined] -> int
 //│   = [Function: s2]
-//│ s3: {_1: {t: Array[int]}, x: Array[Array[int] & ~undefined]} -> int
+//│ s3: {_1: {t: Array[int]}, x: Array[Object & Array[int] & ~undefined]} -> int
 //│   = [Function: s3]
 
 :e
 fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.964: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	               ^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(1, "hello",)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	                       ^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(2, true, false,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	                                              ^^^^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	                                                                 ^^^^^^^^^^^^^^^^
+//│ ╟── tuple literal of type `(3, 3, 4,)` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	                                                                         ^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── wildcard pattern of type `(1, "hello",) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.787: 	  | _ -> x
+//│ ║         	         ^
+//│ ╟── but it flows into application with expected type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	               ^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── wildcard pattern of type `(3, 3, 4,) & ~undefined` is not a 2-element tuple
 //│ ║  l.787: 	  | _ -> x
 //│ ║         	         ^
 //│ ╟── but it flows into application with expected type `(?a, ?b,)`
-//│ ║  l.964: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
-//│ ║         	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║  l.1047: 	fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)))[0]))
+//│ ║          	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from tuple literal:
 //│ ║  l.544: 	def fst ((a, b)) = a
 //│ ╙──       	         ^^^^^^
@@ -979,29 +1113,106 @@ fst (defined ((defined((1, "hello")), defined((2, true, false)), defined((3,3,4)
 
 def ara: Array[(int, bool) & ~undefined] & ~undefined
 def arb: Array[Array[(int, int) & ~undefined] & ~undefined] & ~undefined
-fst (defined (ara[1]))
-snd (defined ((defined arb[0])[1]))
-def s4 arr = (defined ((defined ((defined (arr.x[0]))._3[6]))[7]))._h.hello
 //│ ara: Array[(int, bool,) & ~undefined] & ~undefined
 //│    = <missing implementation>
 //│ arb: Array[Array[(int, int,) & ~undefined] & ~undefined] & ~undefined
 //│    = <missing implementation>
+
+:e
+fst (defined (ara[1]))
+snd (defined ((defined arb[0])[1]))
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1122: 	fst (defined (ara[1]))
+//│ ║          	     ^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `(int, bool,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1122: 	fst (defined (ara[1]))
+//│ ║          	              ^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
 //│ res: int
 //│    = <no result>
 //│      ara is not implemented
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1123: 	snd (defined ((defined arb[0])[1]))
+//│ ║          	              ^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `Array[(int, int,) & ~undefined] & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1123: 	snd (defined ((defined arb[0])[1]))
+//│ ║          	                       ^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1123: 	snd (defined ((defined arb[0])[1]))
+//│ ║          	     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `(int, int,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1123: 	snd (defined ((defined arb[0])[1]))
+//│ ║          	              ^^^^^^^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
 //│ res: int
 //│    = <no result>
 //│      arb is not implemented
-//│ s4: {x: Array[{_3: Array[Array[{_h: {hello: 'hello}} & ~undefined] & ~undefined]} & ~undefined]} -> 'hello
+
+def s4 arr = (defined ((defined ((defined (arr.x[0]))._3[6]))[7]))._h.hello
+//│ s4: {x: Array[Object & {_3: Array[Object & Array[Object & {_h: {hello: 'hello}} & ~undefined] & ~undefined]} & ~undefined]} -> 'hello
 //│   = [Function: s4]
 
 def at1 xs = fst (defined (xs[0]))
 def dup a b = a * 2 + b
-dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
-//│ at1: Array[('a, anything,) & ~undefined] -> 'a
+//│ at1: Array[Object & ('a, anything,) & ~undefined] -> 'a
 //│    = [Function: at1]
 //│ dup: int -> int -> int
 //│    = [Function: dup]
+
+:e
+dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	          ^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `(int, bool,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	                   ^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	                                            ^^^^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `Array[(int, int,) & ~undefined] & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	                                                      ^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── array access of type `(int, int,) & ~undefined` does not match type `Object & ?a & ~undefined | undefined & ?b`
+//│ ║  l.1179: 	dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
+//│ ║          	                                            ^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.785: 	def definedOr x els = case x of {
+//│ ║         	                           ^
+//│ ╟── from reference:
+//│ ║  l.789: 	def defined x = definedOr x (fun () -> error)
+//│ ╙──       	                          ^
 //│ res: int
 //│    = <no result>
 //│      ara is not implemented
@@ -1009,10 +1220,10 @@ dup (fst (defined (ara[1]))) (snd (defined ((defined (arb[10]))[8]))) + 1
 :e
 (1,2,3)._1[1]
 //│ ╔══[ERROR] Type mismatch in field selection:
-//│ ║  l.1010: 	(1,2,3)._1[1]
+//│ ║  l.1221: 	(1,2,3)._1[1]
 //│ ║          	^^^^^^^^^^
 //│ ╟── tuple literal of type `(1, 2, 3,)` does not have field '_1'
-//│ ║  l.1010: 	(1,2,3)._1[1]
+//│ ║  l.1221: 	(1,2,3)._1[1]
 //│ ╙──        	^^^^^^^
 //│ res: undefined
 //│ Runtime error:

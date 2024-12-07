@@ -86,29 +86,31 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
   
   val TopType: ExtrType = ExtrType(false)(noTyProv)
   val BotType: ExtrType = ExtrType(true)(noTyProv)
-  val UnitType: ClassTag = ClassTag(Var("unit"), Set.empty)(noTyProv)
-  val BoolType: ClassTag = ClassTag(Var("bool"), Set.empty)(noTyProv)
-  val TrueType: ClassTag = ClassTag(Var("true"), Set.single(TypeName("bool")))(noTyProv)
-  val FalseType: ClassTag = ClassTag(Var("false"), Set.single(TypeName("bool")))(noTyProv)
-  val IntType: ClassTag = ClassTag(Var("int"), Set.single(TypeName("number")))(noTyProv)
-  val DecType: ClassTag = ClassTag(Var("number"), Set.empty)(noTyProv)
-  val StrType: ClassTag = ClassTag(Var("string"), Set.empty)(noTyProv)
+  val UnitType: ClassTag = ClassTag(Var("unit"), Set.single(TypeName("Object")))(noTyProv)
+  val BoolType: ClassTag = ClassTag(Var("bool"), Set.single(TypeName("Object")))(noTyProv)
+  val TrueType: ClassTag = ClassTag(Var("true"), Set(TypeName("Object"), TypeName("bool")))(noTyProv)
+  val FalseType: ClassTag = ClassTag(Var("false"), Set(TypeName("Object"), TypeName("bool")))(noTyProv)
+  val IntType: ClassTag = ClassTag(Var("int"), Set(TypeName("Object"), TypeName("number")))(noTyProv)
+  val DecType: ClassTag = ClassTag(Var("number"), Set.single(TypeName("Object")))(noTyProv)
+  val StrType: ClassTag = ClassTag(Var("string"), Set.single(TypeName("Object")))(noTyProv)
+  val ObjType: ClassTag = ClassTag(Var("Object"), Set.empty)(noTyProv)
   
   val ErrTypeId: SimpleTerm = Var("error")
   
   val builtinTypes: Ls[TypeDef] =
     TypeDef(Cls, TypeName("int"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("number")), N) ::
-    TypeDef(Cls, TypeName("number"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
-    TypeDef(Cls, TypeName("bool"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
+    TypeDef(Cls, TypeName("number"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("Object")), N) ::
+    TypeDef(Cls, TypeName("bool"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("Object")), N) ::
     TypeDef(Cls, TypeName("true"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("bool")), N) ::
     TypeDef(Cls, TypeName("false"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("bool")), N) ::
-    TypeDef(Cls, TypeName("string"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
-    TypeDef(Als, TypeName("undefined"), Nil, Nil, ClassTag(UnitLit(true), Set.empty)(noProv), Nil, Nil, Set.empty, N) ::
-    TypeDef(Als, TypeName("null"), Nil, Nil, ClassTag(UnitLit(false), Set.empty)(noProv), Nil, Nil, Set.empty, N) ::
+    TypeDef(Cls, TypeName("string"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("Object")), N) ::
+    TypeDef(Als, TypeName("undefined"), Nil, Nil, ClassTag(UnitLit(true), Set.single(TypeName("Object")))(noProv), Nil, Nil, Set.empty, N) ::
+    TypeDef(Als, TypeName("null"), Nil, Nil, ClassTag(UnitLit(false), Set.single(TypeName("Object")))(noProv), Nil, Nil, Set.empty, N) ::
     TypeDef(Als, TypeName("anything"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
     TypeDef(Als, TypeName("nothing"), Nil, Nil, BotType, Nil, Nil, Set.empty, N) ::
-    TypeDef(Cls, TypeName("error"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
-    TypeDef(Cls, TypeName("unit"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
+    TypeDef(Cls, TypeName("error"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("Object")), N) ::
+    TypeDef(Cls, TypeName("unit"), Nil, Nil, TopType, Nil, Nil, Set.single(TypeName("Object")), N) ::
+    TypeDef(Cls, TypeName("Object"), Nil, Nil, TopType, Nil, Nil, Set.empty, N) ::
     {
       val tv = freshVar(noTyProv)(1)
       val tyDef = TypeDef(Als, TypeName("Array"), List(TypeName("A") -> tv), Nil,
@@ -594,9 +596,9 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         case Some(v) =>
           newCtx += v.name -> fv
           val b_ty = typeTerm(b)(newCtx, raise)
-          (fv -> TopType :: Nil) -> b_ty
+          (fv -> ObjType :: Nil) -> b_ty
         case _ =>
-          (fv -> TopType :: Nil) -> typeTerm(b)
+          (fv -> ObjType :: Nil) -> typeTerm(b)
       }
     case Case(pat, bod, rest) =>
       val patTy = pat match {

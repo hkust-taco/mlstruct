@@ -9,15 +9,17 @@ class Hidden[A]
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.8: 	  method Main (a: A) = this.Foo a
 //│ ║       	                       ^^^^^^^^^^^
-//│ ╟── expression of type `#A & (#Class1 | ~?a)` does not have field 'payload'
-//│ ╟── Note: constraint arises from field selection:
+//│ ╟── reference of type `#A` does not match type `#Class1 & ?a | Object & ?b & ~#Class1`
+//│ ║  l.8: 	  method Main (a: A) = this.Foo a
+//│ ║       	                                ^
+//│ ╟── Note: constraint arises from reference:
 //│ ║  l.7: 	  method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
-//│ ║       	                                       ^^^^^^^^^
-//│ ╟── from refined scrutinee:
-//│ ║  l.7: 	  method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
-//│ ╙──     	                      ^
+//│ ║       	                      ^
+//│ ╟── Note: class type parameter A is defined at:
+//│ ║  l.6: 	class Hidden[A]
+//│ ╙──     	             ^
 //│ Defined class Hidden[-A]
-//│ Defined Hidden.Foo: Hidden[?] -> (Class1 & {payload: 'payload} | ~#Class1) -> (123 | 'payload)
+//│ Defined Hidden.Foo: Hidden[?] -> (Class1 & {payload: 'payload} | Object & ~#Class1) -> (123 | 'payload)
 //│ Defined Hidden.Main: Hidden['A] -> 'A -> (123 | error)
 
 :e
@@ -25,17 +27,19 @@ class Hidden2[A]
   method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
   method Main (a: A) = this.Foo a
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.26: 	  method Main (a: A) = this.Foo a
+//│ ║  l.28: 	  method Main (a: A) = this.Foo a
 //│ ║        	                       ^^^^^^^^^^^
-//│ ╟── expression of type `#A & (#Class1 | ~?a)` does not have field 'payload'
-//│ ╟── Note: constraint arises from field selection:
-//│ ║  l.25: 	  method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
-//│ ║        	                                       ^^^^^^^^^
-//│ ╟── from refined scrutinee:
-//│ ║  l.25: 	  method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
-//│ ╙──      	                      ^
+//│ ╟── reference of type `#A` does not match type `#Class1 & ?a | Object & ?b & ~#Class1`
+//│ ║  l.28: 	  method Main (a: A) = this.Foo a
+//│ ║        	                                ^
+//│ ╟── Note: constraint arises from reference:
+//│ ║  l.27: 	  method Foo s = case s of { Class1 -> s.payload | _ -> 123 }
+//│ ║        	                      ^
+//│ ╟── Note: class type parameter A is defined at:
+//│ ║  l.26: 	class Hidden2[A]
+//│ ╙──      	              ^
 //│ Defined class Hidden2[-A]
-//│ Defined Hidden2.Foo: Hidden2[?] -> (Class1 & {payload: 'payload} | ~#Class1) -> (123 | 'payload)
+//│ Defined Hidden2.Foo: Hidden2[?] -> (Class1 & {payload: 'payload} | Object & ~#Class1) -> (123 | 'payload)
 //│ Defined Hidden2.Main: Hidden2['A] -> 'A -> (123 | error)
 
 
@@ -50,16 +54,16 @@ arg = if true then "B" else if false then "C" else "D"
 :e
 foo arg
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.51: 	foo arg
+//│ ║  l.55: 	foo arg
 //│ ║        	^^^^^^^
 //│ ╟── string literal of type `"C"` does not match type `"A" | "B" | "D" | "E" | "F" | "G" | "H" | "I" | "J"`
-//│ ║  l.46: 	arg = if true then "B" else if false then "C" else "D"
+//│ ║  l.50: 	arg = if true then "B" else if false then "C" else "D"
 //│ ║        	                                          ^^^
 //│ ╟── but it flows into reference with expected type `"A" | "B" | "D" | "E" | "F" | "G" | "H" | "I" | "J"`
-//│ ║  l.51: 	foo arg
+//│ ║  l.55: 	foo arg
 //│ ║        	    ^^^
 //│ ╟── Note: constraint arises from union type:
-//│ ║  l.42: 	def foo: ("A" | "B" | "D" | "E" | "F" | "G" | "H" | "I" | "J") -> int
+//│ ║  l.46: 	def foo: ("A" | "B" | "D" | "E" | "F" | "G" | "H" | "I" | "J") -> int
 //│ ╙──      	         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ res: error | int
 //│    = <no result>
@@ -82,16 +86,16 @@ foo2 x = case x of {
 :e
 foo2 arg
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.83: 	foo2 arg
+//│ ║  l.87: 	foo2 arg
 //│ ║        	^^^^^^^^
 //│ ╟── string literal of type `"C"` does not match type `"A" & ?a | "B" & ?b | "D" & ?c | "E" & ?d | "F" & ?e | "G" & ?f | "H" & ?g | "I" & ?h | "J" & ?i`
-//│ ║  l.46: 	arg = if true then "B" else if false then "C" else "D"
+//│ ║  l.50: 	arg = if true then "B" else if false then "C" else "D"
 //│ ║        	                                          ^^^
 //│ ╟── but it flows into reference with expected type `"A" & ?a | "B" & ?j | "D" & ?c | "E" & ?d | "F" & ?e | "G" & ?f | "H" & ?g | "I" & ?h | "J" & ?i`
-//│ ║  l.83: 	foo2 arg
+//│ ║  l.87: 	foo2 arg
 //│ ║        	     ^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.68: 	foo2 x = case x of {
+//│ ║  l.72: 	foo2 x = case x of {
 //│ ╙──      	              ^
 //│ res: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | error
 //│    = 2

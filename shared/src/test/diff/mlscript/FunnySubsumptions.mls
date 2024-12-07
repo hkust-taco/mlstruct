@@ -24,7 +24,7 @@ A0 = B0
 //│ D & {x: T} | {x: T, y: S} | C & {y: S} | C & D
 //│ constrain calls  : 12
 //│ annoying  calls  : 6
-//│ subtyping calls  : 199
+//│ subtyping calls  : 259
 
 :stats
 B0 = A0
@@ -32,8 +32,8 @@ B0 = A0
 //│   <:  B0:
 //│ {x: T, y: S} | D & {x: T} | C & {y: S}
 //│ constrain calls  : 2
-//│ annoying  calls  : 32
-//│ subtyping calls  : 274
+//│ annoying  calls  : 81
+//│ subtyping calls  : 382
 
 
 def A1: C & {x : T} | D & {y : U}
@@ -47,8 +47,8 @@ A1 = B1
 //│   <:  A1:
 //│ C & {x: T} | D & {y: U}
 //│ constrain calls  : 2
-//│ annoying  calls  : 13
-//│ subtyping calls  : 200
+//│ annoying  calls  : 29
+//│ subtyping calls  : 336
 
 :stats
 B1 = A1
@@ -57,6 +57,6 @@ B1 = A1
 //│ C & {x: T} | D & {y: U} | C & D
 //│ constrain calls  : 12
 //│ annoying  calls  : 6
-//│ subtyping calls  : 180
+//│ subtyping calls  : 283
 
 

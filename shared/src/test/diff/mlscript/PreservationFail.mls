@@ -14,7 +14,7 @@ def foo x = case x of {
   | C2 -> C3{}
   | _ -> x
   }
-//│ foo: (C2 | 'a & ~#C2) -> (C3 | 'a)
+//│ foo: (C2 | Object & 'a & ~#C2) -> (C3 | 'a)
 //│    = [Function: foo]
 
 c1 = C1{}

@@ -327,12 +327,12 @@ trait TermImpl extends StatementImpl { self: Term =>
 }
 
 trait LitImpl { self: Lit =>
-  def baseClasses: Set[TypeName] = this match {
+  def baseClasses: Set[TypeName] = (this match {
     case _: IntLit => Set.single(TypeName("int")) + TypeName("number")
     case _: StrLit => Set.single(TypeName("string"))
     case _: DecLit => Set.single(TypeName("number"))
-    case _: UnitLit => Set.empty
-  }
+    case _: UnitLit => Set.empty[TypeName]
+  }) + TypeName("Object")
 }
 
 trait VarImpl { self: Var =>

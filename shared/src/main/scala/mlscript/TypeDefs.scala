@@ -176,8 +176,13 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
       val tparamsargs = td.tparams.lazyZip(dummyTargs)
       val (bodyTy, tvars) = 
         typeType2(td.body, simplify = false)(ctx.copy(lvl = 0), raise, tparamsargs.map(_.name -> _).toMap, newDefsInfo)
-      val td1 = TypeDef(td.kind, td.nme, tparamsargs.toList, tvars, bodyTy,
-        td.mthDecls, td.mthDefs, baseClassesOf(td), td.toLoc)
+      val baseClasses = baseClassesOf(td)
+      val td1 =
+        if ((td.kind === Cls || td.kind === Trt) && baseClasses.isEmpty) TypeDef(td.kind, td.nme, tparamsargs.toList, tvars,
+          ComposedType(false, ObjType, bodyTy)(tp(N, "intersection type", N, true)),
+          td.mthDecls, td.mthDefs, Set.single(TypeName("Object")), td.toLoc)
+        else TypeDef(td.kind, td.nme, tparamsargs.toList, tvars, bodyTy,
+          td.mthDecls, td.mthDefs, baseClasses, td.toLoc)
       allDefs += n -> td1
       td1
     }

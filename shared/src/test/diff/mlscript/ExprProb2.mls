@@ -334,13 +334,12 @@ fix eval2f_oops e2
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	fix eval2f_oops e2
 //│ ║        	^^^^^^^^^^^^^^^
-//│ ╟── expression of type `?a -> ?b & ~#Nega` does not match type `#Add & ?c | #Lit & ?d`
+//│ ╟── function of type `?a -> ?b` does not match type `#Nega & ?c | Object & ?d & ~#Nega`
+//│ ║  l.135: 	def fix f = let fixed = fun x -> f (fun v -> (x x) v) in fixed fixed
+//│ ║         	                                    ^^^^^^^^^^^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.18: 	def eval1 eval1 e = case e of {
-//│ ║        	                         ^
-//│ ╟── from wildcard pattern:
-//│ ║  l.328: 	  | _ -> eval1 eval2 e // should be: eval1f eval2 e
-//│ ╙──       	         ^^^^^^^^^^^^^
+//│ ║  l.326: 	def eval2f_oops eval2 e = case e of {
+//│ ╙──       	                               ^
 //│ res: error
 
 

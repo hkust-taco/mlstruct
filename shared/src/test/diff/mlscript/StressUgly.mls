@@ -57,31 +57,9 @@ eval1_ty = eval1_ty_ugly
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── expression of type `int & ~{val: int}` does not match type `#Add | {val: int}`
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ║        	              ^^^^^^^^
-//│ ╟── from intersection type:
-//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
-//│ ╙──      	                             ^^^^^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.30: 	eval1_ty = eval1_ty_ugly
-//│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int & ~{val: int}` does not match type `#Add | #Lit`
+//│ ╟── type `int & {val: int} | int & ~?a` does not match type `#Add | #Lit`
 //│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
 //│ ║        	                             ^^^^^^^^^
-//│ ╟── but it flows into reference with expected type `#Add | #Lit`
-//│ ║  l.30: 	eval1_ty = eval1_ty_ugly
-//│ ║        	           ^^^^^^^^^^^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ╙──      	              ^^^^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.30: 	eval1_ty = eval1_ty_ugly
-//│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int & {val: int}` does not match type `#Add | #Lit`
-//│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ║        	                  ^^^
 //│ ╟── but it flows into reference with expected type `#Add | #Lit`
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	           ^^^^^^^^^^^^^
@@ -115,18 +93,23 @@ eval1_ty = eval1_ty_ugly
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int` does not match type `#Lit | {lhs: int, rhs: int}`
+//│ ╟── expression of type `int & ~{val: int}` does not match type `#Add | {val: int}`
+//│ ╟── Note: constraint arises from applied type reference:
 //│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ║        	                  ^^^
-//│ ╟── but it flows into reference with expected type `#Lit | {lhs: int, rhs: int}`
+//│ ║        	              ^^^^^^^^
+//│ ╟── from intersection type:
+//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
+//│ ╙──      	                             ^^^^^^^^^
+//│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
-//│ ║        	           ^^^^^^^^^^^^^
-//│ ╟── Note: constraint arises from record type:
-//│ ║  l.3: 	class Add[E]: { lhs: E; rhs: E }
-//│ ║       	              ^^^^^^^^^^^^^^^^^^
-//│ ╟── from applied type reference:
+//│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── expression of type `int & ~{val: int}` does not match type `#Add | #Lit`
+//│ ╟── Note: constraint arises from applied type reference:
 //│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ╙──      	              ^^^^^^^^
+//│ ║        	              ^^^^^^^^
+//│ ╟── from intersection type:
+//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
+//│ ╙──      	                             ^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
@@ -145,7 +128,7 @@ eval1_ty = eval1_ty_ugly
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int & {val: int}` does not match type `#Lit | {lhs: int, rhs: int}`
+//│ ╟── type `int` does not match type `#Lit | {lhs: int, rhs: int}`
 //│ ║  l.20: 	def eval1_ty: Add[int] // ~500
 //│ ║        	                  ^^^
 //│ ╟── but it flows into reference with expected type `#Lit | {lhs: int, rhs: int}`
@@ -160,9 +143,24 @@ eval1_ty = eval1_ty_ugly
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int & {val: int}` does not match type `#Lit | {lhs: int, rhs: int}`
+//│ ╟── type `int & {val: int} | int & ~?a` does not match type `#Lit | {lhs: int, rhs: int}`
+//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
+//│ ║        	                             ^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `#Lit | {lhs: int, rhs: int}`
+//│ ║  l.30: 	eval1_ty = eval1_ty_ugly
+//│ ║        	           ^^^^^^^^^^^^^
+//│ ╟── Note: constraint arises from record type:
+//│ ║  l.3: 	class Add[E]: { lhs: E; rhs: E }
+//│ ║       	              ^^^^^^^^^^^^^^^^^^
+//│ ╟── from applied type reference:
 //│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ║        	                  ^^^
+//│ ╙──      	              ^^^^^^^^
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.30: 	eval1_ty = eval1_ty_ugly
+//│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── type `int & {val: int} | int & ~?a` does not match type `#Lit | {lhs: int, rhs: int}`
+//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
+//│ ║        	                             ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `#Lit | {lhs: int, rhs: int}`
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	           ^^^^^^^^^^^^^
@@ -227,9 +225,9 @@ eval1_ty = eval1_ty_ugly
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `int & {val: int}` does not match type `#Lit | {Add#E = int}`
-//│ ║  l.20: 	def eval1_ty: Add[int] // ~500
-//│ ║        	                  ^^^
+//│ ╟── type `int & {val: int} | int & ~?a` does not match type `#Lit | {Add#E = int}`
+//│ ║  l.13: 	def eval1_ty_ugly: Add['b] | 'a & ~Lit as 'b
+//│ ║        	                             ^^^^^^^^^
 //│ ╟── but it flows into reference with expected type `#Lit | {Add#E = int}`
 //│ ║  l.30: 	eval1_ty = eval1_ty_ugly
 //│ ║        	           ^^^^^^^^^^^^^
@@ -258,7 +256,7 @@ eval1_ty = eval1_ty_ugly
 //│ ╙──      	                             ^^^^^^^^^
 //│         = <no result>
 //│           eval1_ty_ugly is not implemented
-//│ constrain calls  : 257
-//│ annoying  calls  : 137
-//│ subtyping calls  : 973
+//│ constrain calls  : 349
+//│ annoying  calls  : 153
+//│ subtyping calls  : 2031
 

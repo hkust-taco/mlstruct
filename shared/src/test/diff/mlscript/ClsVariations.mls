@@ -7,7 +7,7 @@ def test x = case x of
   { Cls -> 0
   | _ -> x
   }
-//│ test: (#Cls | 'a & ~#Cls) -> (0 | 'a)
+//│ test: (#Cls | Object & 'a & ~#Cls) -> (0 | 'a)
 //│     = [Function: test]
 
 // :ds
@@ -15,27 +15,27 @@ def test x = case x of
   { Cls -> x
   | _ -> "nope"
   }
-//│ test: (#Cls & 'a | ~#Cls) -> ("nope" | 'a)
+//│ test: (#Cls & 'a | Object & ~#Cls) -> ("nope" | 'a)
 //│     = [Function: test1]
 
 def test x = case x of
   { Cls -> x.value
   | _ -> "nope"
   }
-//│ test: (#Cls & {value: 'value} | ~#Cls) -> ("nope" | 'value)
+//│ test: (#Cls & {value: 'value} | Object & ~#Cls) -> ("nope" | 'value)
 //│     = [Function: test2]
 
 def test x = case x of
   { Cls -> x.value
   | _ -> x
   }
-//│ test: (#Cls & {value: 'value} | 'value & ~#Cls) -> 'value
+//│ test: (#Cls & {value: 'value} | Object & 'value & ~#Cls) -> 'value
 //│     = [Function: test3]
 
 def test x = case x of
   { Cls -> x
   | _ -> x
   }
-//│ test: 'a -> 'a
+//│ test: ('a & (#Cls | Object & ~#Cls)) -> 'a
 //│     = [Function: test4]
 
