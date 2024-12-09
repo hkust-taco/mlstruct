@@ -115,7 +115,7 @@ test2 foo
 // * Mistakenly passing the constructor
 :e
 foo = Foo
-//│ {x: 'x & 'A, y: 'A & 'y} -> (Foo['A] & {x: 'x, y: 'y})
+//│ {x: 'A & 'x, y: 'y & 'A} -> (Foo['A] & {x: 'x, y: 'y})
 //│   <:  foo:
 //│ #Foo
 //│ ╔══[ERROR] Type mismatch in def definition:

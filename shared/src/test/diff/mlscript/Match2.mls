@@ -6,7 +6,7 @@ def foo x = case x of
   { Test -> x.value
   | _ -> 1
   }
-//│ foo: (Test & {value: 'value} | ~#Test) -> (1 | 'value)
+//│ foo: (Object & ~#Test | Test & {value: 'value}) -> (1 | 'value)
 //│    = [Function: foo]
 
 // Q: why type of `value` widened?
@@ -19,13 +19,15 @@ foo Test
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.18: 	foo Test
 //│ ║        	^^^^^^^^
-//│ ╟── expression of type `#Test & {value: ?value} -> (Test & {value: ?value}) | {value: ?value} -> (Test & {value: ?value}) & ~?a` does not have field 'value'
-//│ ╟── Note: constraint arises from field selection:
-//│ ║  l.6: 	  { Test -> x.value
-//│ ║       	            ^^^^^^^
-//│ ╟── from refined scrutinee:
+//│ ╟── reference of type `{value: ?value} -> (Test & {value: ?value})` does not match type `Object & ?a & ~#Test | #Test & ?b`
+//│ ║  l.18: 	foo Test
+//│ ║        	    ^^^^
+//│ ╟── Note: constraint arises from reference:
 //│ ║  l.5: 	def foo x = case x of
-//│ ╙──     	                 ^
+//│ ║       	                 ^
+//│ ╟── Note: class constructor Test is defined at:
+//│ ║  l.2: 	class Test: { value: int }
+//│ ╙──     	      ^^^^
 //│ res: 1 | error
 //│    = 1
 
@@ -47,13 +49,13 @@ def bar x = case x of
 :e
 bar Test
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.48: 	bar Test
+//│ ║  l.50: 	bar Test
 //│ ║        	^^^^^^^^
 //│ ╟── reference of type `{value: ?value} -> (Test & {value: ?value})` does not match type `#Test & ?a | #Toast & ?b`
-//│ ║  l.48: 	bar Test
+//│ ║  l.50: 	bar Test
 //│ ║        	    ^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.40: 	def bar x = case x of
+//│ ║  l.42: 	def bar x = case x of
 //│ ║        	                 ^
 //│ ╟── Note: class constructor Test is defined at:
 //│ ║  l.2: 	class Test: { value: int }
@@ -65,13 +67,13 @@ bar Test
 :e
 bar "ops"
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.66: 	bar "ops"
+//│ ║  l.68: 	bar "ops"
 //│ ║        	^^^^^^^^^
 //│ ╟── string literal of type `"ops"` does not match type `#Test & ?a | #Toast & ?b`
-//│ ║  l.66: 	bar "ops"
+//│ ║  l.68: 	bar "ops"
 //│ ║        	    ^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.40: 	def bar x = case x of
+//│ ║  l.42: 	def bar x = case x of
 //│ ╙──      	                 ^
 //│ res: error
 //│ Runtime error:
@@ -88,13 +90,13 @@ def baz x = case x of
 :e
 baz "oops"
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.89: 	baz "oops"
+//│ ║  l.91: 	baz "oops"
 //│ ║        	^^^^^^^^^^
 //│ ╟── string literal of type `"oops"` does not match type `#Test & ?a | #Toast & ?b`
-//│ ║  l.89: 	baz "oops"
+//│ ║  l.91: 	baz "oops"
 //│ ║        	    ^^^^^^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.81: 	def baz x = case x of
+//│ ║  l.83: 	def baz x = case x of
 //│ ╙──      	                 ^
 //│ res: error
 //│ Runtime error:
@@ -107,14 +109,14 @@ def test3 x = case x of
   | true -> true
   | _ -> false
   }
-//│ test3: anything -> bool
+//│ test3: (1 | Object & ~1 & ~true | true) -> bool
 //│      = [Function: test3]
 
 :ns
 test3
 //│ res: 'a -> (true | false)
 //│   where
-//│     'a <: 1 & 'b | (true & 'c | 'd & ~true) & ~1
+//│     'a <: 1 & 'b | (true & 'c | 'd & Object & ~true) & ~1
 //│    = [Function: test3]
 
 
@@ -123,7 +125,7 @@ def test3 x = case x of
   | true -> true
   | _ -> false
   }
-//│ test3: (1 & 'a | ~1) -> (false | true | 'a)
+//│ test3: (1 & 'a | Object & ~1 & ~true | true) -> (false | true | 'a)
 //│      = [Function: test31]
 
 

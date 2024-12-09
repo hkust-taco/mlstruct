@@ -8,14 +8,14 @@ def f e = case e of
   Foo -> e.y,
   Foo -> e.z,
   _ -> e
-//│ f: (#Foo & {y: 'y} | 'y & ~#Foo) -> 'y
+//│ f: (#Foo & {y: 'y} | Object & 'y & ~#Foo) -> 'y
 //│  = [Function: f]
 
 :ns
 f
 //│ res: 'a -> ('y | 'z | 'b)
 //│   where
-//│     'a <: #Foo & 'c | (#Foo & 'd | 'b & ~#Foo) & ~#Foo
+//│     'a <: #Foo & 'c | (#Foo & 'd | 'b & Object & ~#Foo) & ~#Foo
 //│     'd <: {z: 'z}
 //│     'c <: {y: 'y}
 //│    = [Function: f]

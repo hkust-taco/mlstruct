@@ -1,0 +1,77 @@
+
+class A : { x: int }
+//│ Defined class A
+
+class B[A] : { y: A -> A }
+//│ Defined class B[=A]
+
+s = fun x -> x
+//│ s: 'a -> 'a
+//│  = [Function: s]
+
+a = A { x = 42 }
+b = B { y = s }
+//│ a: A & {x: 42}
+//│  = A { x: 42 }
+//│ b: B['A]
+//│  = B { y: [Function: s] }
+
+c = if true then a else b
+//│ c: A & {x: 42} | B['A]
+//│  = A { x: 42 }
+
+c : Object
+//│ res: Object
+//│    = A { x: 42 }
+
+c : #Object
+//│ res: Object
+//│    = A { x: 42 }
+
+:e
+s : ~#Object
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.32: 	s : ~#Object
+//│ ║        	^
+//│ ╟── function of type `?a -> ?a` does not match type `~Object`
+//│ ║  l.8: 	s = fun x -> x
+//│ ║       	    ^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `~Object`
+//│ ║  l.32: 	s : ~#Object
+//│ ║        	^
+//│ ╟── Note: constraint arises from type negation:
+//│ ║  l.32: 	s : ~#Object
+//│ ╙──      	    ^^^^^^^^
+//│ res: ~Object
+//│    = [Function: s]
+
+:e
+(case s of { A -> B { y = s } | _ -> s }) : ~A
+//│ ╔══[ERROR] Type mismatch in `case` expression:
+//│ ║  l.49: 	(case s of { A -> B { y = s } | _ -> s }) : ~A
+//│ ║        	^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── function of type `?a -> ?a` does not match type `#A & ?b | Object & ?c & ~#A`
+//│ ║  l.8: 	s = fun x -> x
+//│ ║       	    ^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `#A & ?d | Object & ?c & ~#A`
+//│ ║  l.49: 	(case s of { A -> B { y = s } | _ -> s }) : ~A
+//│ ╙──      	      ^
+//│ res: ~A
+//│    = [Function: s]
+
+:e
+s : ~A
+//│ ╔══[ERROR] Type mismatch in type ascription:
+//│ ║  l.63: 	s : ~A
+//│ ║        	^
+//│ ╟── function of type `?a -> ?a` does not match type `~A`
+//│ ║  l.8: 	s = fun x -> x
+//│ ║       	    ^^^^^^^^^^
+//│ ╟── but it flows into reference with expected type `~A`
+//│ ║  l.63: 	s : ~A
+//│ ║        	^
+//│ ╟── Note: constraint arises from type negation:
+//│ ║  l.63: 	s : ~A
+//│ ╙──      	    ^^
+//│ res: ~A
+//│    = [Function: s]

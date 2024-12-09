@@ -58,9 +58,9 @@ ty3A = ty3A
 //│ 'a
 //│   where
 //│     'a := MyArray['a]
-//│ constrain calls  : 56
-//│ annoying  calls  : 44
-//│ subtyping calls  : 88
+//│ constrain calls  : 58
+//│ annoying  calls  : 45
+//│ subtyping calls  : 109
 
 def ty3B: MyArray[MyArray['a]] as 'a
 //│ ty3B: 'a
@@ -76,9 +76,9 @@ ty3B = ty3A
 //│ 'a
 //│   where
 //│     'a := MyArray[MyArray['a]]
-//│ constrain calls  : 128
-//│ annoying  calls  : 86
-//│ subtyping calls  : 165
+//│ constrain calls  : 132
+//│ annoying  calls  : 87
+//│ subtyping calls  : 190
 
 :stats
 ty3A = ty3B
@@ -89,9 +89,9 @@ ty3A = ty3B
 //│ 'a
 //│   where
 //│     'a := MyArray['a]
-//│ constrain calls  : 128
-//│ annoying  calls  : 86
-//│ subtyping calls  : 153
+//│ constrain calls  : 132
+//│ annoying  calls  : 87
+//│ subtyping calls  : 178
 
 def ty4B: MyArray[MyArray[MyArray['a]]] as 'a
 //│ ty4B: 'a
@@ -107,9 +107,9 @@ ty4B = ty4B
 //│ 'a
 //│   where
 //│     'a := MyArray[MyArray[MyArray['a]]]
-//│ constrain calls  : 66
-//│ annoying  calls  : 48
-//│ subtyping calls  : 85
+//│ constrain calls  : 68
+//│ annoying  calls  : 49
+//│ subtyping calls  : 106
 
 
 
@@ -182,6 +182,15 @@ ty2A = ty2B
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	ty2A = ty2B
 //│ ║        	^^^^^^^^^^^
+//│ ╟── type `'a` is not an instance of type `Object`
+//│ ║  l.23: 	def ty2A: MyArray['a]
+//│ ║        	                  ^^
+//│ ╟── Note: constraint arises from applied type reference:
+//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ╙──      	                  ^^^^^^^^^^^
+//│ ╔══[ERROR] Type mismatch in def definition:
+//│ ║  l.+1: 	ty2A = ty2B
+//│ ║        	^^^^^^^^^^^
 //│ ╟── type `'a` is not a compatible record (expected a record with fields: size, set, get)
 //│ ║  l.23: 	def ty2A: MyArray['a]
 //│ ║        	                  ^^
@@ -200,8 +209,8 @@ ty2A = ty2B
 //│ ╟── Note: constraint arises from applied type reference:
 //│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
 //│ ╙──      	                  ^^^^^^^^^^^
-//│ constrain calls  : 12
+//│ constrain calls  : 14
 //│ annoying  calls  : 4
-//│ subtyping calls  : 24
+//│ subtyping calls  : 26
 
 

@@ -64,7 +64,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 38
 //│ annoying  calls  : 20
-//│ subtyping calls  : 65
+//│ subtyping calls  : 67
 
 
 // ====== 3 ====== //
@@ -82,7 +82,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 52
 //│ annoying  calls  : 30
-//│ subtyping calls  : 152
+//│ subtyping calls  : 155
 
 
 // ====== 4 ====== //
@@ -101,7 +101,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 66
 //│ annoying  calls  : 40
-//│ subtyping calls  : 294
+//│ subtyping calls  : 298
 
 
 // ====== 5 ====== //
@@ -121,7 +121,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 80
 //│ annoying  calls  : 50
-//│ subtyping calls  : 505
+//│ subtyping calls  : 510
 
 
 // ====== 6 ====== //
@@ -142,7 +142,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 94
 //│ annoying  calls  : 60
-//│ subtyping calls  : 799
+//│ subtyping calls  : 805
 
 
 // ====== 7 ====== //
@@ -164,7 +164,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 108
 //│ annoying  calls  : 70
-//│ subtyping calls  : 1190
+//│ subtyping calls  : 1197
 
 
 // ====== 8 ====== //
@@ -187,6 +187,6 @@ foo arg
 //│ res: int
 //│ constrain calls  : 122
 //│ annoying  calls  : 80
-//│ subtyping calls  : 1692
+//│ subtyping calls  : 1700
 
 

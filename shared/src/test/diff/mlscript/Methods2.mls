@@ -73,9 +73,9 @@ l.Size
 l.Map (fun x -> mul x 2)
 //│ res: List[int]
 //│    = Cons { head: 0, tail: Cons { head: 2, tail: Nil {} } }
-//│ constrain calls  : 74
-//│ annoying  calls  : 6
-//│ subtyping calls  : 12
+//│ constrain calls  : 78
+//│ annoying  calls  : 7
+//│ subtyping calls  : 17
 
 l0 = Cons { head = 0; tail = Nil {} }
 //│ l0: Cons[0] & {tail: Nil[nothing]}
@@ -87,9 +87,9 @@ Cons.HeadOption l0
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 41
-//│ annoying  calls  : 27
-//│ subtyping calls  : 64
+//│ constrain calls  : 49
+//│ annoying  calls  : 29
+//│ subtyping calls  : 74
 
 
 l1 = Cons { head = 0; tail = Nil {} }
@@ -102,9 +102,9 @@ Cons.HeadOption l1
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 41
-//│ annoying  calls  : 27
-//│ subtyping calls  : 64
+//│ constrain calls  : 49
+//│ annoying  calls  : 29
+//│ subtyping calls  : 74
 
 :re
 :stats
@@ -112,17 +112,17 @@ Cons.HeadOption l
 //│ res: Some[0 | 1]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 50
-//│ annoying  calls  : 27
-//│ subtyping calls  : 89
+//│ constrain calls  : 58
+//│ annoying  calls  : 29
+//│ subtyping calls  : 99
 
 :stats
 o = l.(Cons.HeadOption)
 //│ o: Some[0 | 1]
 //│  = undefined
-//│ constrain calls  : 48
-//│ annoying  calls  : 27
-//│ subtyping calls  : 89
+//│ constrain calls  : 56
+//│ annoying  calls  : 29
+//│ subtyping calls  : 99
 
 o = l.(Cons.HeadOption)
 //│ o: Some[0 | 1]
@@ -158,7 +158,7 @@ def newHeadOption x = case x of {
     | Cons -> Some {payload = x.head}
     | _ -> None{}
     }
-//│ newHeadOption: (#Cons & {head: 'payload} | ~#Cons) -> (None[nothing] | Some['payload])
+//│ newHeadOption: (#Cons & {head: 'payload} | Object & ~#Cons) -> (None[nothing] | Some['payload])
 //│              = [Function: newHeadOption]
 
 // Note that `o` is not a list, so this takes the default case:

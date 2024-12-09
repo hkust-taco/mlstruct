@@ -48,11 +48,11 @@ f t
 
 
 g arg = case arg of { Hey -> arg.x | _ -> () }
-//│ g: ({x: 'x} & #Hey | ~#Hey) -> (() | 'x)
+//│ g: (Object & ~#Hey | {x: 'x} & #Hey) -> (() | 'x)
 //│  = [Function: g]
 
 g arg = case arg of { Hey -> arg.x | _ -> arg.y }
-//│ g: ({x: 'x} & #Hey | {y: 'x} & ~#Hey) -> 'x
+//│ g: (Object & {y: 'x} & ~#Hey | {x: 'x} & #Hey) -> 'x
 //│  = [Function: g1]
 
 if true then (1,) else (2,)

@@ -463,7 +463,7 @@ f_manual error
 //│ res: nothing
 
 def f_manual_ns: 'a | ('b & (({a: 'd & 'c} as 'c) | ~{a: 'e | int} | ~{}) & (({a: 'd & 'c} as 'c) | ~{a: 'e | int}) & (({a: 'f} as 'c) as 'f) & (int | ~{a: 'e | int} | ~{}) & (int | ~{a: 'e | int}) & int & int) -> ('g | 'd | ('b | 'h & {a: 'e | int} as 'h))
-//│ f_manual_ns: ('b & 'f & (int & 'c | int & ~{a: int})) -> 'b
+//│ f_manual_ns: ('f & 'b & (int & 'c | int & ~{a: int})) -> 'b
 //│   where
 //│     'c <: {a: 'b & 'c}
 //│     'f <: {a: 'f}
@@ -572,7 +572,7 @@ f "a"
 //│ res: int
 
 rec def f x = case x of {int -> f "ok" | string -> f (impossible x) | _ -> x}
-//│ f: (int | string & (int | string | ~int) | 'a & ~int & ~string) -> 'a
+//│ f: (Object & 'a & ~int & ~string | int | string & (int | string | ~int)) -> 'a
 
 f 1
 f "a"

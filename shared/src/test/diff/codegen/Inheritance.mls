@@ -210,13 +210,13 @@ def checkP x = case x of
   { P -> true
   | _ -> false
   }
-//│ checkS: anything -> bool
+//│ checkS: (Object & ~#S | #S) -> bool
 //│       = [Function: checkS]
-//│ checkR: anything -> bool
+//│ checkR: (Object & ~#R | #R) -> bool
 //│       = [Function: checkR]
-//│ checkQ: anything -> bool
+//│ checkQ: (Object & ~#Q | #Q) -> bool
 //│       = [Function: checkQ]
-//│ checkP: anything -> bool
+//│ checkP: (Object & ~#P | #P) -> bool
 //│       = [Function: checkP]
 
 // Should pass all checks.

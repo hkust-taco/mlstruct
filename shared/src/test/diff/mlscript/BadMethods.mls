@@ -483,12 +483,12 @@ Test6A
 //│ ╟── Note that class Test6A is abstract:
 //│ ║  l.465: 	class Test6A[A]
 //│ ║         	      ^^^^^^^^
-//│ ╟── Hint: method Mth6A is abstract
-//│ ║  l.466: 	    method Mth6A: A
-//│ ║         	           ^^^^^^^^
 //│ ╟── Hint: method Mth6B is abstract
 //│ ║  l.467: 	    method Mth6B[B]: (A -> B) -> B
-//│ ╙──       	           ^^^^^^^^^^^^^^^^^^^^^^^
+//│ ║         	           ^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── Hint: method Mth6A is abstract
+//│ ║  l.466: 	    method Mth6A: A
+//│ ╙──       	           ^^^^^^^^
 //│ res: error
 
 :e
@@ -561,9 +561,9 @@ t = Dup { x = 42 }
 :stats
 t : Dup[bool, int]
 //│ res: Dup[?, int]
-//│ constrain calls  : 21
-//│ annoying  calls  : 21
-//│ subtyping calls  : 42
+//│ constrain calls  : 23
+//│ annoying  calls  : 22
+//│ subtyping calls  : 48
 
 :stats
 t : Dup[int, bool]
@@ -577,23 +577,23 @@ t : Dup[int, bool]
 //│ ║  l.569: 	t : Dup[int, bool]
 //│ ╙──       	             ^^^^
 //│ res: Dup[?, bool]
-//│ constrain calls  : 32
-//│ annoying  calls  : 23
-//│ subtyping calls  : 41
+//│ constrain calls  : 36
+//│ annoying  calls  : 24
+//│ subtyping calls  : 47
 
 :stats
 t.MthDup (fun x -> mul 2 x)
 //│ res: int
-//│ constrain calls  : 74
-//│ annoying  calls  : 21
-//│ subtyping calls  : 35
+//│ constrain calls  : 76
+//│ annoying  calls  : 22
+//│ subtyping calls  : 41
 
 :stats
 t.MthDup id
 //│ res: 42
-//│ constrain calls  : 61
-//│ annoying  calls  : 19
-//│ subtyping calls  : 29
+//│ constrain calls  : 63
+//│ annoying  calls  : 20
+//│ subtyping calls  : 35
 
 
 // We don't currently analyze forward method declarations
