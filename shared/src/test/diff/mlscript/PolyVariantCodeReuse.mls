@@ -153,17 +153,140 @@ def eval_lambda eval_rec subst v = case v of {
 // :d
 :ns
 rec def eval1 subst = eval_lambda eval1 subst
-//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.Typer.go$1(Typer.scala:659)
-//│ 	at: mlscript.Typer.field$1(Typer.scala:654)
-//│ 	at: mlscript.Typer.$anonfun$expandType$3(Typer.scala:674)
-//│ 	at: mlscript.utils.package$PairIterableOps$.$anonfun$mapValuesIter$1(package.scala:58)
-//│ 	at: scala.collection.Iterator$$anon$9.next(Iterator.scala:584)
-//│ 	at: scala.collection.immutable.List.prependedAll(List.scala:153)
-//│ 	at: scala.collection.IterableOnceOps.toList(IterableOnce.scala:1446)
-//│ 	at: scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1446)
-//│ 	at: scala.collection.AbstractIterator.toList(Iterator.scala:1303)
-//│ 	at: mlscript.utils.package$PairIterableOps$.mapValues$extension(package.scala:57)
+//│ eval1: 'eval1
+//│   where
+//│     'eval1 :> 'b -> 'c
+//│            <: 'd
+//│     'd :> 'b -> 'c
+//│        <: 'e -> 'f & 'g -> 'h & 'i -> 'j & 'i -> 'k
+//│     'g :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A}
+//│        <: 'b
+//│     'e :> #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'b
+//│     'c :> 'l -> ('m | 'n | 'o | 'p)
+//│        <: 'k & 'j & 'h & 'f
+//│     'f :> 'l -> ('m | 'n | 'o | 'p)
+//│        <: 'body -> 'q
+//│     'q :> 'm | 'n | 'o | 'p
+//│        <: 'body0
+//│     'h :> 'l -> ('m | 'n | 'o | 'p)
+//│        <: 'body1 -> 'n
+//│     'j :> 'l -> ('m | 'n | 'o | 'p)
+//│        <: 'rhs -> 'r
+//│     'r :> 'm | 'n | 'o | 'p
+//│        <: #Abs & 's | 't & Object & ~#Abs
+//│     'rhs :> 'rhs0
+//│          <: 'l
+//│     'k :> 'l -> ('m | 'n | 'o | 'p)
+//│        <: 'lhs -> 'u
+//│     'u :> 'm | 'n | 'o | 'p
+//│        <: 'rhs1 & 'v
+//│     'lhs :> 'lhs0
+//│          <: 'l
+//│     'b :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'i
+//│     'i :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'b & 'w & 'x
+//│     'x :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: #Cons & 'y | #Nil & 'z & ~#Cons
+//│     'w :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'tail0
+//│     'tail :> #Nil
+//│           <: List['A0] & 'tail1 & List['A]
+//│     'tail1 :> #Nil | #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│            <: 'a1
+//│     'a1 :> #Nil | #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: #Cons & 'y | #Nil & 'z & ~#Cons
+//│     'z :> #Nil
+//│     'y :> #Cons & {Cons#A = 'A, head: 'head, tail: 'tail} | #Cons & {Cons#A = 'A0, head: 'head0, tail: 'tail0}
+//│        <: {tail: 'tail1} & {head: 'head1} & {head: 'head2}
+//│     'tail0 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│            <: 'tail1 & List['A0]
+//│     'head0 :> ('b1, 'c1,)
+//│            <: 'head2 & 'head1 & 'A0
+//│     'head :> ('d1, 'v,)
+//│           <: 'A0 & 'head2 & 'head1 & 'A
+//│     'A :> ('d1, 'v,)
+//│        <: 'A0
+//│     'head1 :> ('d1, 'v,) | ('b1, 'c1,)
+//│            <: ('e1, 'f1,)
+//│     'head2 :> ('d1, 'v,) | ('b1, 'c1,)
+//│            <: ('g1, 'h1,)
+//│     'A0 :> ('d1, 'v,) | ('b1, 'c1,)
+//│     'c1 :> #Var & {name: 'name}
+//│         <: 'h1 & 'f1
+//│     'v :> 'm | 'n | 'o | 'p
+//│        <: 'h1 & 'f1
+//│     'f1 :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│         <: 'i1
+//│     'i1 :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│         <: 'j1
+//│     'j1 :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│         <: 'result
+//│     'result :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│             <: 'result0 & anything
+//│     'h1 :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│     'm :> 'k1 | 'result0
+//│        <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs)
+//│     'result0 :> 'm | 'n | 'o | 'p | #Var & {name: 'name}
+//│              <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs)
+//│     'k1 :> #Var & {name: 'name}
+//│         <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs) & {name: 'name0}
+//│     'm1 :> #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: {rhs: 'rhs0} & {lhs: 'lhs0}
+//│     'a :> 'm | 'n | 'o | 'p | #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1} | #Var & {name: 'name}
+//│     'n :> 'm | 'n | 'o | 'p
+//│        <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs)
+//│     'o :> #App & {lhs: 'lhs1, rhs: 'rhs1, App#a = 'a}
+//│        <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs)
+//│     'lhs1 :> #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1} | #Var & {name: 'name}
+//│           <: 'lhs0 & 'a
+//│     'lhs0 :> #Var & {name: 'name} | #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1}
+//│           <: 'l
+//│     'rhs1 :> 'm | 'n | 'o | 'p
+//│           <: 'rhs0 & 'a
+//│     'rhs0 :> 'm | 'n | 'o | 'p
+//│           <: 'l
+//│     'p :> #Abs & {name: 'name1, body: 'body0, Abs#a = 'a0}
+//│        <: anything & (#Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var) & (#Abs & 's | 't & Object & ~#Abs)
+//│     't :> #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1} | #Var & {name: 'name}
+//│        <: 'lhs1
+//│     's :> #Abs & {Abs#a = 'a0, name: 'name1, body: 'body0}
+//│        <: {body: 'body1} & {name: 'name2}
+//│     'body0 :> 'm | 'n | 'o | 'p
+//│            <: 'body & 'body1 & 'a0
+//│     'body1 :> 'm | 'n | 'o | 'p
+//│            <: 'l
+//│     'body :> 'm | 'n | 'o | 'p
+//│           <: 'l
+//│     'l :> #App & {App#a = 'a, lhs: 'lhs1, rhs: 'rhs1} | #Var & {name: 'name} | 'm | 'n | 'o | 'p
+//│        <: #Var & 'l1 | (#App & 'm1 | #Abs & 'n1 & ~#App) & ~#Var
+//│     'n1 :> #Abs & {Abs#a = 'a0, name: 'name1, body: 'body0}
+//│         <: {body: 'body} & {name: 'name3}
+//│     'a0 :> 'm | 'n | 'o | 'p
+//│     'name1 :> string
+//│            <: 'name2 & 'name3 & string
+//│     'name3 :> string
+//│            <: 'b1
+//│     'b1 :> string
+//│         <: 'g1 & 'e1
+//│     'name2 :> string
+//│            <: 'd1
+//│     'l1 :> #Var & {name: 'name}
+//│         <: 'o1
+//│     'o1 :> #Var & {name: 'name}
+//│         <: #Var & 'k1
+//│     'name :> string
+//│           <: 'name0 & string
+//│     'name0 := string
+//│     'd1 :> string
+//│         <: 'g1 & 'e1
+//│     'e1 :> string
+//│     'g1 :> string
+//│         <: 'p1
+//│     'p1 := string
+//│      = <no result>
+//│        eval_lambda, eval_var, list_assoc and eq are not implemented
 
 // ------------- OCaml's type -------------
 // val eval_lambda :
@@ -291,7 +414,7 @@ def eval_lexpr eval_rec subst v = case v of {
 
 rec def eval3 subst = eval_lexpr eval3 subst
 //│ ╔══[ERROR] identifier not found: eval_lexpr
-//│ ║  l.292: 	rec def eval3 subst = eval_lexpr eval3 subst
+//│ ║  l.415: 	rec def eval3 subst = eval_lexpr eval3 subst
 //│ ╙──       	                      ^^^^^^^^^^
 //│ eval3: anything -> error
 //│      = <no result>

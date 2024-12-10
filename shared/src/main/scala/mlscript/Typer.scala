@@ -656,7 +656,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     
     def go(st: SimpleType): Type =
             // trace(s"expand $st") {
-          st.unwrapProvs match {
+          st.syntax.unwrapProvs match {
         case tv: TypeVariable if stopAtTyVars => tv.asTypeVar
         case tv: TypeVariable =>
           val nv = tv.asTypeVar
