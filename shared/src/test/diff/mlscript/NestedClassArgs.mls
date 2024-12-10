@@ -96,11 +96,33 @@ rec def c a = C3 { a = c a }
 //│     'a :> C3['A] & {a: 'a}
 //│   <:  c:
 //│ 'a -> C3['a]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A165') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: scala.collection.immutable.List.map(List.scala:247)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
 
 rec def c (a: 'X) = C3 { a = c a: 'X }: C3['X]
 //│ anything -> C3['X]
 //│   <:  c:
 //│ 'a -> C3['a]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF('X193') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: scala.collection.immutable.List.map(List.scala:247)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
 
 
 class C4[A]: { a: C[C4[A]] }
@@ -117,10 +139,23 @@ C{}
 //│ res: C['A]
 
 def c4 a = C4{ a = C{} }
-//│ c4: anything -> C4['A]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A242') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 def c = c4
-//│ anything -> C4['A]
+//│ ╔══[ERROR] identifier not found: c4
+//│ ║  l.154: 	def c = c4
+//│ ╙──       	        ^^
+//│ error
 //│   <:  c:
 //│ 'a -> C4['a]
 
@@ -136,20 +171,30 @@ def c: 'a -> C5['a]
 //│ c: 'a -> C5['a]
 
 rec def c5 a = C5{ a = C2 { a = c5 a } }
-//│ c5: anything -> 'a
-//│   where
-//│     'a :> C5['A] & {a: C2['A0] & {a: 'a}}
-//│     'A0 :> C5['A] | 'a
-//│         <: C5['A]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A278') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 c = c5
-//│ anything -> 'a
-//│   where
-//│     'a :> C5['A] & {a: C2['A0] & {a: 'a}}
-//│     'A0 :> C5['A] | 'a
-//│         <: C5['A]
-//│   <:  c:
-//│ 'a -> C5['a]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A278') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 
 class C6[A]: { a: C5[C6[A]] }
@@ -163,25 +208,31 @@ def c: 'a -> C6['a]
 //│ c: 'a -> C6['a]
 
 rec def c6 a = C6{ a = c5 (c6 a) }
-//│ c6: anything -> (C6['A] & {a: 'a})
-//│   where
-//│     'a :> C5[C6['A]] & {a: C2['A0] & {a: 'a}}
-//│     'A0 :> C5[C6['A]] | 'a
-//│         <: C5[C6['A]]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(#C6<Object>{}∧C6[DNF(A322')]) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 :stats
 c = c6
-//│ anything -> (C6['A] & {a: 'a})
-//│   where
-//│     'a :> C5[C6['A]] & {a: C2['A0] & {a: 'a}}
-//│     'A0 :> C5[C6['A]] | 'a
-//│         <: C5[C6['A]]
-//│   <:  c:
-//│ 'a -> C6['a]
-//│ constrain calls  : 95
-//│ annoying  calls  : 28
-//│ subtyping calls  : 176
-//│ mkDeep calls     : 36
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(#C6<Object>{}∧C6[DNF(A322')]) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 
 // Reproduction of an issue found while trying out TypeRef ctor typing:
@@ -214,46 +265,48 @@ type O[T] = S[T] | N
 class L[T]: { h: T; t: O[L[T]] }
   method Append: T -> L[T]
   method Append elem = L { h = elem; t = S { v = this } }
-//│ Defined class N
-//│ Defined class S[=T]
-//│ Declared S.In: S['T] -> 'T -> ()
-//│ Defined S.In: S['T] -> anything -> ()
-//│ Defined type alias O[=T]
-//│ Defined class L[=T]
-//│ Declared L.Append: L['T] -> 'T -> L['T]
-//│ Defined L.Append: (L['T] & 'this) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: L['T] & 'this}})
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(T387') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: scala.collection.immutable.List.map(List.scala:247)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
 
 s1 = S{v=1}:O['_]
 s2 = S{v=S{v=1}}:O[O['_]]
-//│ s1: O['_]
-//│   where
-//│     '_ :> 1
-//│ s2: O[O['_]]
-//│   where
-//│     '_ :> 1
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.280: 	s1 = S{v=1}:O['_]
+//│ ╙──       	     ^
+//│ ╔══[ERROR] type identifier not found: O
+//│ ║  l.280: 	s1 = S{v=1}:O['_]
+//│ ╙──       	            ^^^^^
+//│ s1: error
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.281: 	s2 = S{v=S{v=1}}:O[O['_]]
+//│ ╙──       	     ^
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.281: 	s2 = S{v=S{v=1}}:O[O['_]]
+//│ ╙──       	         ^
+//│ ╔══[ERROR] type identifier not found: O
+//│ ║  l.281: 	s2 = S{v=S{v=1}}:O[O['_]]
+//│ ╙──       	                 ^^^^^^^^
+//│ s2: error
 
 :e
 L{h=error;t=s1}
 L{h=error;t=s2}
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.235: 	L{h=error;t=s1}
-//│ ║         	^^^^^^^^^^^^^^^
-//│ ╟── integer literal of type `1` is not an instance of type `L`
-//│ ║  l.225: 	s1 = S{v=1}:O['_]
-//│ ║         	         ^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ╙──       	                         ^^^^
-//│ res: L['T] & {h: nothing, t: O[1 | L['T] .. L['T]]} | error
-//│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.236: 	L{h=error;t=s2}
-//│ ║         	^^^^^^^^^^^^^^^
-//│ ╟── type `S[?_]` is not an instance of type `L`
-//│ ║  l.212: 	type O[T] = S[T] | N
-//│ ║         	            ^^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ╙──       	                         ^^^^
+//│ ╔══[ERROR] identifier not found: L
+//│ ║  l.301: 	L{h=error;t=s1}
+//│ ╙──       	^
+//│ res: error
+//│ ╔══[ERROR] identifier not found: L
+//│ ║  l.302: 	L{h=error;t=s2}
+//│ ╙──       	^
 //│ res: error
 
 // :ds
@@ -263,222 +316,109 @@ L{h=error;t=s2}
 //  Defined L.Append: L['T] -> ('T & 'a & 'b) -> (L['T & 'b .. 'T | 'b] with {h: 'a, t: S[L['T & 'b .. 'T | 'b] & 'c .. L['T & 'b .. 'T | 'b] | L['T] | 'c] with {v: L['T]}})
 
 L.Append
-//│ res: L['T] -> 'T -> L['T]
+//│ ╔══[ERROR] Method Append not found
+//│ ║  l.318: 	L.Append
+//│ ╙──       	^^^^^^^^
+//│ res: error
 
 
 def append ls elem = L { h = elem; t = S { v = ls } }
-//│ append: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ ╔══[ERROR] identifier not found: L
+//│ ║  l.325: 	def append ls elem = L { h = elem; t = S { v = ls } }
+//│ ╙──       	                     ^
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.325: 	def append ls elem = L { h = elem; t = S { v = ls } }
+//│ ╙──       	                                       ^
+//│ append: anything -> anything -> error
 
 :ns
 append
 //│ res: 'a -> 'b -> 'c
 //│   where
-//│     'c :> #L & {t: 't, h: 'h, L#T = 'T}
-//│     't :> #S & {v: 'v, S#T = 'T0}
-//│        <: O[L['T]]
-//│     'b <: 'h
-//│     'h <: 'T
-//│     'a <: 'v
-//│     'v <: L['T] & 'T0
-//│     'T0 := L['T]
+//│     'c :> error
 
 append error
-//│ res: ('h & 'T) -> (L['T] & {h: 'h, t: S[L['T]] & {v: nothing}})
+//│ res: anything -> error
 
 
 def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ ╔══[ERROR] type identifier not found: L
+//│ ║  l.344: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
+//│ ╙──       	                ^^^^^
+//│ ╔══[ERROR] type identifier not found: L
+//│ ║  l.344: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
+//│ ╙──       	                                             ^^^^^
+//│ ╔══[ERROR] type identifier not found: S
+//│ ║  l.344: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
+//│ ╙──       	                                                                ^^^^^^^^
+//│ append_ty: (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 append_ty error
-//│ res: ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: nothing}})
+//│ res: 'h -> (error & {h: 'h, t: error & {v: nothing}})
 
 append_ty = append
-//│ (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ anything -> anything -> error
 //│   <:  append_ty:
-//│ (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 
 // * Note: An older bug (fixed in 2a562ddfc712ab44a55a12370380ef4f1c3383cb)
 // *    was dropping the bounds on T0 and generating this signature, which is too general:
 def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h, t: S['T0] & {v: 'v}})
+//│ ╔══[ERROR] type identifier not found: L
+//│ ║  l.367: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
+//│ ╙──       	                  ^^^^^
+//│ ╔══[ERROR] type identifier not found: L
+//│ ║  l.367: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
+//│ ╙──       	                                                     ^^^^^
+//│ ╔══[ERROR] type identifier not found: S
+//│ ║  l.367: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
+//│ ╙──       	                                                                        ^^^^^^
+//│ append_ty_2: (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 append_ty_2 error
-//│ res: ('T & 'h) -> (L['T] & {h: 'h, t: S['T0] & {v: nothing}})
+//│ res: 'h -> (error & {h: 'h, t: error & {v: nothing}})
 
 :e
 append_ty_2 = append
-//│ (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ anything -> anything -> error
 //│   <:  append_ty_2:
-//│ (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h, t: S['T0] & {v: 'v}})
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not an instance of type `L`
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not an instance of type `Object`
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not a compatible record (expected a record with fields: h, t)
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from record type:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	            ^^^^^^^^^^^^^^^^^^^^
-//│ ╟── from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` does not have field 'L#T'
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not a compatible record (expected a record with fields: h, t)
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from record type:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	            ^^^^^^^^^^^^^^^^^^^^
-//│ ╟── from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` does not have field 'L#T'
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: class type parameter T is defined at:
-//│ ║  l.209: 	class S[T]: { v: T }
-//│ ╙──       	        ^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `L['T]` is not an instance of type `'T0`
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: constraint arises from type variable:
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ╙──       	                                                                          ^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.309: 	append_ty_2 = append
-//│ ║         	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `L[?T]` is not an instance of type `'T0`
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	                         ^^^^
-//│ ╟── Note: constraint arises from type variable:
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ╙──       	                                                                          ^^^
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 append_ty = append_ty_2
-//│ (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h, t: S['T0] & {v: 'v}})
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 //│   <:  append_ty:
-//│ (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 :e
 append_ty_2 = append_ty
-//│ (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T]] & {v: 'v}})
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 //│   <:  append_ty_2:
-//│ (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h, t: S['T0] & {v: 'v}})
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.416: 	append_ty_2 = append_ty
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not an instance of type `L`
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.288: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ ╙──       	                                                                  ^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.416: 	append_ty_2 = append_ty
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not an instance of type `Object`
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.288: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ ╙──       	                                                                  ^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.416: 	append_ty_2 = append_ty
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` is not a compatible record (expected a record with fields: h, t)
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from record type:
-//│ ║  l.213: 	class L[T]: { h: T; t: O[L[T]] }
-//│ ║         	            ^^^^^^^^^^^^^^^^^^^^
-//│ ╟── from applied type reference:
-//│ ║  l.288: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ ╙──       	                                                                  ^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.416: 	append_ty_2 = append_ty
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `'T0` does not have field 'L#T'
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ║         	                                                                          ^^^
-//│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.288: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ ╙──       	                                                                  ^^^^^
-//│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.416: 	append_ty_2 = append_ty
-//│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ╟── type `L[?T]` is not an instance of type `'T0`
-//│ ║  l.288: 	def append_ty: (L['T] & 'v) -> ('T & 'h) -> (L['T] & {h: 'h; t: S[L['T]] & {v: 'v}})
-//│ ║         	                                                                  ^^^^^
-//│ ╟── Note: constraint arises from type variable:
-//│ ║  l.302: 	def append_ty_2: (L['T] & 'v & 'T0) -> ('T & 'h) -> (L['T] & {h: 'h; t: S['T0] & {v: 'v}})
-//│ ╙──       	                                                                          ^^^
+//│ (error & 'v) -> 'h -> (error & {h: 'h, t: error & {v: 'v}})
 
 
 def append0 ls = L { h = 0; t = S { v = ls } }
-//│ append0: (L['T] & 'v) -> (L['T] & {h: 0, t: S[L['T]] & {v: 'v}})
-//│   where
-//│     'T :> 0
+//│ ╔══[ERROR] identifier not found: L
+//│ ║  l.400: 	def append0 ls = L { h = 0; t = S { v = ls } }
+//│ ╙──       	                 ^
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.400: 	def append0 ls = L { h = 0; t = S { v = ls } }
+//│ ╙──       	                                ^
+//│ append0: anything -> error
 
 def appendNil elem = L { h = elem; t = N{} }
-//│ appendNil: ('h & 'T) -> (L['T] & {h: 'h, t: N})
+//│ ╔══[ERROR] identifier not found: L
+//│ ║  l.409: 	def appendNil elem = L { h = elem; t = N{} }
+//│ ╙──       	                     ^
+//│ ╔══[ERROR] identifier not found: N
+//│ ║  l.409: 	def appendNil elem = L { h = elem; t = N{} }
+//│ ╙──       	                                       ^
+//│ appendNil: anything -> error
 
 
 S{v=1}
-//│ res: S['T] & {v: 1}
-//│   where
-//│     'T :> 1
+//│ ╔══[ERROR] identifier not found: S
+//│ ║  l.419: 	S{v=1}
+//│ ╙──       	^
+//│ res: error
 

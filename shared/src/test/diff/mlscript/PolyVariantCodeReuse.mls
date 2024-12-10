@@ -149,18 +149,21 @@ def eval_lambda eval_rec subst v = case v of {
 //│            = <no result>
 //│              eval_var, list_assoc and eq are not implemented
 
+// :stdout
+// :d
+:ns
 rec def eval1 subst = eval_lambda eval1 subst
-//│ eval1: (List[?] & 'tail) -> 'a -> 'result
-//│   where
-//│     'tail <: #Cons & {head: (string, 'result,), tail: 'tail} | Nil
-//│     'result :> Var | Abs['result] | App['lhs] & {rhs: 'result}
-//│             <: 'a & (#Abs & {name: string} & 'b | Object & {name: string} & 'lhs & ~#Abs) & (#Abs & 'b | Object & 'lhs & ~#Abs)
-//│     'lhs :> App['lhs] & {rhs: 'result} | Var | 'result
-//│          <: 'a
-//│     'a <: #Abs & 'b | #App & {lhs: 'a, rhs: 'a} | #Var & 'result
-//│     'b <: {body: 'a, name: string}
-//│      = <no result>
-//│        eval_lambda, eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.Typer.go$1(Typer.scala:659)
+//│ 	at: mlscript.Typer.field$1(Typer.scala:654)
+//│ 	at: mlscript.Typer.$anonfun$expandType$3(Typer.scala:674)
+//│ 	at: mlscript.utils.package$PairIterableOps$.$anonfun$mapValuesIter$1(package.scala:58)
+//│ 	at: scala.collection.Iterator$$anon$9.next(Iterator.scala:584)
+//│ 	at: scala.collection.immutable.List.prependedAll(List.scala:153)
+//│ 	at: scala.collection.IterableOnceOps.toList(IterableOnce.scala:1446)
+//│ 	at: scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1446)
+//│ 	at: scala.collection.AbstractIterator.toList(Iterator.scala:1303)
+//│ 	at: mlscript.utils.package$PairIterableOps$.mapValues$extension(package.scala:57)
 
 // ------------- OCaml's type -------------
 // val eval_lambda :
@@ -216,21 +219,30 @@ rec def eval_expr eval_rec subst v =
               }
     | Num -> vv // _ -> vv
     }
-//│ eval_expr: ('a -> 'lhs -> ('lhs0 & (Num | Object & ~#Num))) -> ('a & 'b) -> (#Add & {lhs: 'lhs, rhs: 'lhs} | #Mul & {lhs: 'lhs, rhs: 'lhs} | 'result & (#Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Var & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num})) -> (Add['lhs0] | Mul['lhs0] | Num | 'result)
-//│   where
-//│     'b <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'b} | Nil
-//│          = <no result>
-//│            eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 rec def eval2 subst = eval_expr eval2 subst
-//│ eval2: 'a -> 'b -> 'result
-//│   where
-//│     'b <: #Add & {lhs: 'b, rhs: 'b} | #Mul & {lhs: 'b, rhs: 'b} | 'result & (#Num | #Var)
-//│     'a <: #Cons & {head: (string, 'result,), tail: 'a} | Nil
-//│     'result :> Mul['result] | Add['result] | Num
-//│             <: (Num & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num} & ~#Num) & (Num & {name: string} | Object & {name: string} & ~#Num) & (Num | Object & ~#Num)
-//│      = <no result>
-//│        eval_expr, eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 
 // ------------- OCaml's type -------------
@@ -265,22 +277,23 @@ def eval_lexpr eval_rec subst v = case v of {
   | Lambda -> eval_lambda eval_rec subst v
   | Expr -> eval_expr eval_rec subst v
   }
-//│ eval_lexpr: ((Cons[('a, Var | 'lhs,) | 'A] & {head: ('a, Var | 'lhs,), tail: Nil | 'tail} | 'tail) -> 'lhs0 -> ('lhs & 'result & (#Abs & {body: 'lhs0, lhs: Num | Object & ~#Num, name: string & 'a, rhs: Num | Object & ~#Num} | 'lhs1 & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & ~#Abs & ~#Num)))) -> ('b & List['A] & 'tail) -> (#Abs & {body: 'lhs0, name: 'a} | #Add & {lhs: 'lhs0, rhs: 'lhs0} | #App & {lhs: 'lhs0, rhs: 'lhs0} | #Mul & {lhs: 'lhs0, rhs: 'lhs0} | 'result & (#Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Var & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num})) -> (Abs['lhs] | Add['lhs] | App['lhs] & {lhs: 'lhs1, rhs: 'lhs} | Mul['lhs] | Num | 'result)
-//│   where
-//│     'b <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'b} | Nil
-//│           = <no result>
-//│             eval_lambda, eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 rec def eval3 subst = eval_lexpr eval3 subst
-//│ eval3: (List[?] & 'tail) -> 'a -> 'result
-//│   where
-//│     'tail <: #Cons & {head: (string, 'result,), tail: 'tail} | Nil
-//│     'result :> Add['result] & {lhs: 'result, rhs: 'result} | Var | Num | Abs['result] | App['lhs] & {rhs: 'result} | Mul['result] & {lhs: 'result, rhs: 'result}
-//│             <: 'a & (#Abs & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num} & 'b | 'lhs & (Num & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num} & ~#Abs & ~#Num)) & (#Abs & {name: string} & 'b | 'lhs & (Num & {name: string} | Object & {name: string} & ~#Abs & ~#Num)) & (#Abs & 'b | 'lhs & (Num | Object & ~#Abs & ~#Num))
-//│     'lhs :> Add['result] & {lhs: 'result, rhs: 'result} | App['lhs] & {rhs: 'result} | Mul['result] & {lhs: 'result, rhs: 'result} | Num | Var | 'result
-//│          <: 'a
-//│     'a <: #Abs & 'b | #Add & {lhs: 'a, rhs: 'a} | #App & {lhs: 'a, rhs: 'a} | #Mul & {lhs: 'a, rhs: 'a} | #Num & 'result & (#Add | #Mul | #Num | #Var) | #Var & 'result
-//│     'b <: {body: 'a, name: string}
+//│ ╔══[ERROR] identifier not found: eval_lexpr
+//│ ║  l.292: 	rec def eval3 subst = eval_lexpr eval3 subst
+//│ ╙──       	                      ^^^^^^^^^^
+//│ eval3: anything -> error
 //│      = <no result>
 //│        eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
@@ -317,12 +330,7 @@ rec def eval3 subst = eval_lexpr eval3 subst
 // ************************** Tests *******************************
 
 eval3 Nil (Var { name = "s" })
-//│ res: 'result
-//│   where
-//│     'result :> Abs['result] | App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'a :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'result | 'b
-//│     'lhs :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'b :> Mul['result] | Add['result]
+//│ res: error
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 // ------------- OCaml's type -------------
@@ -336,49 +344,35 @@ eval3 Nil (Var { name = "s" })
 
 
 eval3 Nil (Abs { name = "s"; body = Var { name = "s" } })
-//│ res: 'result
-//│   where
-//│     'result :> Abs['result] | App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'a :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'result | 'b
-//│     'lhs :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'b :> Mul['result] | Add['result]
+//│ res: error
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
 eval2 Nil (Num { num = 1 })
-//│ res: 'rhs
-//│   where
-//│     'rhs :> Mul['rhs] | Add['rhs] | Num
-//│    = <no result>
-//│      eval2, eval_expr, eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.ConstraintSolver.extrude(ConstraintSolver.scala:503)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$extrude$2(ConstraintSolver.scala:508)
+//│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$extrude$1(ConstraintSolver.scala:508)
+//│ 	at: mlscript.utils.package$PairIterableOps$.$anonfun$mapValuesIter$1(package.scala:58)
+//│ 	at: scala.collection.Iterator$$anon$9.next(Iterator.scala:584)
+//│ 	at: scala.collection.immutable.List.prependedAll(List.scala:153)
+//│ 	at: scala.collection.IterableOnceOps.toList(IterableOnce.scala:1446)
+//│ 	at: scala.collection.IterableOnceOps.toList$(IterableOnce.scala:1446)
+//│ 	at: scala.collection.AbstractIterator.toList(Iterator.scala:1303)
 
 eval3 Nil (Num { num = 1 })
-//│ res: 'result
-//│   where
-//│     'result :> Abs['result] | App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'a :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'result | 'b
-//│     'lhs :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'b :> Mul['result] | Add['result]
+//│ res: error
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
 eval3 Nil (App { lhs = Num {num = 0}; rhs = Num {num = 0}})
-//│ res: 'result
-//│   where
-//│     'result :> Abs['result] | App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'a :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'result | 'b
-//│     'lhs :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'b :> Mul['result] | Add['result]
+//│ res: error
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
 eval3 Nil (Abs { name = "s"; body = Add { lhs = Var { name = "s" }; rhs = Num { num = 1 } } })
-//│ res: 'result
-//│   where
-//│     'result :> Abs['result] | App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'a :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'result | 'b
-//│     'lhs :> App['a] & {lhs: 'lhs, rhs: 'result} | Num | Var | 'b
-//│     'b :> Mul['result] | Add['result]
+//│ res: error
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
@@ -393,10 +387,15 @@ def eval_lexpr' eval_rec subst v = case v of {
   | Add -> eval_expr eval_rec subst v
   | Mul -> eval_expr eval_rec subst v
   }
-//│ eval_lexpr': ((Cons[('a, Var | 'lhs,) | 'A] & {head: ('a, Var | 'lhs,), tail: Nil | 'tail} | 'tail) -> 'lhs0 -> ('lhs & 'result & (#Abs & {body: 'lhs0, lhs: Num | Object & ~#Num, name: string & 'a, rhs: Num | Object & ~#Num} | 'lhs1 & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & ~#Abs & ~#Num))) & 'b) -> (Var & 'c -> ({lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result) & List['A] & 'd & 'tail) -> (#Abs & {body: 'lhs0, name: 'a} | #Add & {lhs: 'lhs0, rhs: 'lhs0} | #App & {lhs: 'lhs0, rhs: 'lhs0} | #Mul & {lhs: 'lhs0, rhs: 'lhs0} | #Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result | #Var & 'c) -> (Abs['lhs] | Add['lhs] | App['lhs] & {lhs: 'lhs1, rhs: 'lhs} | Mul['lhs] | Num | 'result)
-//│   where
-//│     'd <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'd} | Nil
-//│     'b <: #Cons & {head: (string, 'c -> ({lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result),), tail: 'b} | Nil
-//│            = <no result>
-//│              eval_var, list_assoc and eq are not implemented
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 

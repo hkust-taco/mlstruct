@@ -40,7 +40,17 @@ impossible: T0['a]
 //│     'a <: int | string
 
 impossible: T0['a] | 'b
-//│ res: C0 & {T0#A :> int | string <: nothing} & #T0 & ~{T0#A = 'a} | T0['a]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(#int<number,Object>{} | #string<Object>{}) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:582)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 T0.Id
 //│ res: T0['A] -> 'A -> 'A
@@ -101,7 +111,7 @@ impossible = d
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	impossible = d
 //│ ║        	^^^^^^^^^^^^^^
-//│ ╟── type `string` is not an instance of type `int`
+//│ ╟── type `string` does not match type `int`
 //│ ║  l.28: 	def impossible: C0 & T0[string]
 //│ ║        	                        ^^^^^^
 //│ ╟── Note: constraint arises from type reference:
@@ -110,7 +120,7 @@ impossible = d
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	impossible = d
 //│ ║        	^^^^^^^^^^^^^^
-//│ ╟── type `int` is not an instance of type `string`
+//│ ╟── type `int` does not match type `string`
 //│ ║  l.8: 	class C0: T0[int]
 //│ ║       	             ^^^
 //│ ╟── Note: constraint arises from type reference:

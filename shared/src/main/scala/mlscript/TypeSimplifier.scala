@@ -89,7 +89,7 @@ trait TypeSimplifier { self: Typer =>
   
   /** Transform the type recursively, putting everything in Disjunctive Normal Forms and reconstructing class types
     * from their structural components. */
-  def normalizeTypes_!(st: SimpleType, pol: Opt[Bool] = S(true))(implicit ctx: Ctx): SimpleType =
+  def normalizeTypes_!(st: SimpleType, pol: Opt[Bool] = S(true))(implicit ctx: Ctx): SyntacticType =
   {
     
     val allVarPols = st.getVarsPol(pol)
@@ -97,7 +97,7 @@ trait TypeSimplifier { self: Typer =>
     
     val processed = MutSet.empty[TV]
     
-    def helper(dnf: DNF, pol: Opt[Bool]): ST =
+    def helper(dnf: DNF, pol: Opt[Bool]): SyntacticType =
     {
       println(s"DNF: $dnf")
       
@@ -115,7 +115,7 @@ trait TypeSimplifier { self: Typer =>
       // *  where `T` is `A & B & C`.
       // * It is fine to call `go` because we made sure A, B, C, etc. do not themsleves have any negative components.
       val csNegs2 = if (csNegs.isEmpty) BotType
-        else go(csNegs.foldLeft(TopType: ST)(_ & _.toType().neg()), pol.map(!_)).neg()
+        else go(csNegs.foldLeft(TopType: SyntacticType)(_ inter _.toType().nega()), pol.map(!_)).nega()
       
       val otherCs2 = otherCs.sorted.map { c =>
         c.vars.foreach(processVar)
@@ -284,20 +284,20 @@ trait TypeSimplifier { self: Typer =>
               case v @ S(L(bty)) => go(bty, pol)
               case N => BotType
             }
-            trs.iterator.map(go(_, pol)).foldLeft(BotType: ST)(_ | _) |
-            ots.sorted.foldLeft(r)(_ | _)
+            trs.iterator.map(go(_, pol)).foldLeft(BotType: SyntacticType)(_ union _) union
+            ots.sorted.foldLeft(r)(_ union _)
         }, sort = true)
-      }.foldLeft(BotType: ST)(_ | _) |> factorize(ctx)
-      otherCs2 | csNegs2
+      }.foldLeft(BotType: SyntacticType)(_ union _) |> factorize(ctx) |> (_.syntax)
+      otherCs2 union csNegs2
     }
     
-    def go(ty: ST, pol: Opt[Bool]): ST = trace(s"norm[${printPol(pol)}] $ty") {
+    def go(ty: ST, pol: Opt[Bool]): SyntacticType = trace(s"norm[${printPol(pol)}] $ty") {
       pol match {
         case S(p) => helper(DNF.mk(ty, p)(ctx, ptr = true), pol)
         case N =>
           val dnf1 = DNF.mk(ty, false)(ctx, ptr = true)
           val dnf2 = DNF.mk(ty, true)(ctx, ptr = true)
-          TypeRange.mk(helper(dnf1, S(false)), helper(dnf2, S(true)))
+          TypeRange.mk(helper(dnf1, S(false)), helper(dnf2, S(true))).syntax
       }
     }(r => s"~> $r")
     

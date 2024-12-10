@@ -58,8 +58,17 @@ cmi = ComplexMonoid IntMonoid
 //│    = ComplexMonoid { base: IntMonoid {} }
 
 cmi.Empty
-//│ res: Complex[int]
-//│    = Complex { real: 0, imaginary: 0 }
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A364) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 cmi.Empty.real
 //│ res: int
@@ -77,8 +86,17 @@ if true then c12 else c34
 //│    = Complex { real: 1, imaginary: 2 }
 
 cmi.Add (Complex 1 2) (Complex 3 4)
-//│ res: Complex[1 | 2 | 3 | 4] & {imaginary: 2 | 4, real: 1 | 3} | Complex[int]
-//│    = Complex { real: 4, imaginary: 6 }
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A422) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:578)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 
 
@@ -170,9 +188,17 @@ class ComplexMonoid_bad_0[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ╟── from inherited method declaration:
 //│ ║  l.3: 	  method Empty: A
 //│ ╙──     	         ^^^^^^^^
-//│ Defined class ComplexMonoid_bad_0[=A]
-//│ Defined ComplexMonoid_bad_0.Empty: ComplexMonoid_bad_0['A] -> 'imaginary -> (Complex['imaginary | {real: Monoid['A]}] & {real: {real: Monoid['A]}})
-//│ Defined ComplexMonoid_bad_0.Add: ComplexMonoid_bad_0['A] -> anything -> anything -> nothing
+//│ /!!!\ Uncaught error: scala.MatchError: DNF({}∧#A) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$3(TypeDefs.scala:594)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeDefs.updateVariance$1(TypeDefs.scala:593)
+//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13(TypeDefs.scala:630)
+//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13$adapted(TypeDefs.scala:629)
+//│ 	at: scala.Option.foreach(Option.scala:437)
+//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11(TypeDefs.scala:629)
+//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11$adapted(TypeDefs.scala:628)
+//│ 	at: scala.collection.immutable.List.foreach(List.scala:334)
 
 
 class ComplexMonoid_bad_1[A]: Monoid[Complex[A]] & { base: Monoid[A] }

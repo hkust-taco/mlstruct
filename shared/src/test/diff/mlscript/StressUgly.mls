@@ -258,6 +258,6 @@ eval1_ty = eval1_ty_ugly
 //│           eval1_ty_ugly is not implemented
 //│ constrain calls  : 349
 //│ annoying  calls  : 153
-//│ subtyping calls  : 2031
+//│ subtyping calls  : 1931
 //│ mkDeep calls     : 189
 

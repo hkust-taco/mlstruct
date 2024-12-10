@@ -151,7 +151,17 @@ def test: Foo[int] & ~Foo[Id[int]]
 //│ Defined type alias Id[+A]
 //│ test: Foo[int] & ~Foo[Id[int]]
 test: nothing
-//│ res: nothing
+//│ /!!!\ Uncaught error: scala.MatchError: (List(),List(DNF(#int<number,Object>{}))) (of class scala.Tuple2)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$constrain$16(ConstraintSolver.scala:112)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.ConstraintSolver.annoyingImpl$1(ConstraintSolver.scala:103)
+//│ 	at: mlscript.ConstraintSolver.annoying$1(ConstraintSolver.scala:99)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$constrain$16(ConstraintSolver.scala:166)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.ConstraintSolver.annoyingImpl$1(ConstraintSolver.scala:103)
+//│ 	at: mlscript.ConstraintSolver.annoying$1(ConstraintSolver.scala:99)
 
 // * Note: this one would only reduce to nothing if `int <: string`
 def test: Foo[int] & ~Foo[string]
@@ -159,13 +169,13 @@ def test: Foo[int] & ~Foo[string]
 :e
 test: nothing
 //│ ╔══[ERROR] Type mismatch in type ascription:
-//│ ║  l.160: 	test: nothing
+//│ ║  l.170: 	test: nothing
 //│ ║         	^^^^
-//│ ╟── type `int` is not an instance of type `string`
-//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
+//│ ╟── type `int` does not match type `string`
+//│ ║  l.167: 	def test: Foo[int] & ~Foo[string]
 //│ ║         	              ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.157: 	def test: Foo[int] & ~Foo[string]
+//│ ║  l.167: 	def test: Foo[int] & ~Foo[string]
 //│ ╙──       	                          ^^^^^^
 //│ res: nothing
 
@@ -188,7 +198,17 @@ class Ber[A]: Foo[(A, A)] & { x: (int, int); z: A -> A }
 //│ Defined class Ber[=A]
 
 fun (x: Ber['A]) -> (x.x, x.y, x.z)
-//│ res: Ber['A] -> ((int & 'A, int & 'A,), ('A, 'A,), 'A -> 'A,)
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(#int<number,Object>{}∧'A164) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$5(TyperHelpers.scala:572)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$5$adapted(TyperHelpers.scala:572)
+//│ 	at: scala.collection.immutable.List.foreach(List.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:572)
 
 def b: Ber[int] & Foo[123]
 //│ b: Ber[int] & Foo[123]

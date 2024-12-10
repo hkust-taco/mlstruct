@@ -30,8 +30,12 @@ class ConstraintSolver extends NormalForms { self: Typer =>
     }
     
     /* To solve constraints that are more tricky. */
-    def goToWork(lhs: ST, rhs: ST)(implicit cctx: ConCtx): Unit =
-      constrainDNF(DNF.mkDeep(lhs, true), DNF.mkDeep(rhs, false), rhs)
+    def goToWork(lhs: ST, rhs: ST)(implicit cctx: ConCtx): Unit = (lhs, rhs) match {
+      case (lhs: DNF, rhs: DNF) => constrainDNF(lhs, rhs, rhs)
+      case (lhs: DNF, _) => constrainDNF(lhs, DNF.mkDeep(rhs, false), rhs)
+      case (_, rhs: DNF) => constrainDNF(DNF.mkDeep(lhs, true), rhs, rhs)
+      case _ => constrainDNF(DNF.mkDeep(lhs, true), DNF.mkDeep(rhs, false), rhs)
+    }
     
     def constrainDNF(lhs: DNF, rhs: DNF, oldRhs: ST)(implicit cctx: ConCtx): Unit =
     trace(s"CONS.DNF  $lhs  <!  $rhs") {
@@ -245,6 +249,8 @@ class ConstraintSolver extends NormalForms { self: Typer =>
             cache += lhs_rhs
         }
         lhs_rhs match {
+          case (lhs: DNF, rhs: DNF) => constrainDNF(lhs, rhs, rhs)
+          case (_: DNF, _) | (_, _: DNF) => goToWork(lhs, rhs)
           case (ExtrType(true), _) => ()
           case (_, ExtrType(false) | RecordType(Nil)) => ()
           case (TypeRange(lb, ub), _) => rec(ub, rhs, true)

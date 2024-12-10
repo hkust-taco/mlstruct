@@ -9,10 +9,10 @@ type T2 = { x: T2 }
 :stats
 error : T1 : T2
 //│ res: T2
-//│ constrain calls  : 9
-//│ annoying  calls  : 4
-//│ subtyping calls  : 10
-//│ mkDeep calls     : 3
+//│ constrain calls  : 19
+//│ annoying  calls  : 31
+//│ subtyping calls  : 53
+//│ mkDeep calls     : 13
 
 type T3 = { x: T2 & { x: T3 } | T3 & { x: T2 } }
 //│ Defined type alias T3
@@ -20,18 +20,18 @@ type T3 = { x: T2 & { x: T3 } | T3 & { x: T2 } }
 :stats
 error : T1 : T3
 //│ res: T3
-//│ constrain calls  : 12
-//│ annoying  calls  : 12
-//│ subtyping calls  : 397
-//│ mkDeep calls     : 9
+//│ constrain calls  : 72
+//│ annoying  calls  : 262
+//│ subtyping calls  : 1986
+//│ mkDeep calls     : 52
 
 :stats
 error : T2 : T3
 //│ res: T3
-//│ constrain calls  : 15
-//│ annoying  calls  : 12
-//│ subtyping calls  : 370
-//│ mkDeep calls     : 9
+//│ constrain calls  : 56
+//│ annoying  calls  : 160
+//│ subtyping calls  : 2009
+//│ mkDeep calls     : 44
 
 def f: T3 & { x: T1 & 'a } as 'a
 //│ f: 'a
@@ -40,13 +40,17 @@ def f: T3 & { x: T1 & 'a } as 'a
 
 :stats
 f.x
-//│ res: 'a & (T3 & T1 & {x: T2} | T2 & T1 & {x: T3})
-//│   where
-//│     'a :> T3 & {x: T1 & 'a}
-//│ constrain calls  : 6
-//│ annoying  calls  : 4
-//│ subtyping calls  : 119
-//│ mkDeep calls     : 3
+//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:582)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 g = error : T1 & { x: T2 | 'a } as 'a
 //│ g: 'a
@@ -55,13 +59,17 @@ g = error : T1 & { x: T2 | 'a } as 'a
 
 :stats
 g.x
-//│ res: T1 & {x: T1} & 'a | T1 & T2 & {x: T1}
-//│   where
-//│     'a :> T1 & {x: 'a | T2}
-//│ constrain calls  : 6
-//│ annoying  calls  : 4
-//│ subtyping calls  : 66
-//│ mkDeep calls     : 3
+//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:582)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 :stats
 f = g
@@ -72,9 +80,16 @@ f = g
 //│ 'a
 //│   where
 //│     'a :> T3 & {x: T1 & 'a}
-//│ constrain calls  : 43
-//│ annoying  calls  : 63
-//│ subtyping calls  : 3669
-//│ mkDeep calls     : 41
+//│ /!!!\ Uncaught error: scala.MatchError: ({x: T1},DNF({}∧T3)) (of class scala.Tuple2)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less(TyperHelpers.scala:326)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less$(TyperHelpers.scala:321)
+//│ 	at: mlscript.TyperDatatypes$SimpleType.$less$colon$less(TyperDatatypes.scala:79)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less(TyperHelpers.scala:338)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less$(TyperHelpers.scala:321)
+//│ 	at: mlscript.TyperDatatypes$SimpleType.$less$colon$less(TyperDatatypes.scala:79)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less(TyperHelpers.scala:338)
+//│ 	at: mlscript.TyperHelpers$SimpleTypeImpl.$less$colon$less$(TyperHelpers.scala:321)
+//│ 	at: mlscript.TyperDatatypes$SimpleType.$less$colon$less(TyperDatatypes.scala:79)
+//│ 	at: mlscript.TyperDatatypes$FieldType.$less$colon$less(TyperDatatypes.scala:298)
 
 

@@ -60,10 +60,10 @@ ty3A = ty3A
 //│ 'a
 //│   where
 //│     'a := MyArray['a]
-//│ constrain calls  : 58
-//│ annoying  calls  : 45
-//│ subtyping calls  : 109
-//│ mkDeep calls     : 18
+//│ constrain calls  : 68
+//│ annoying  calls  : 69
+//│ subtyping calls  : 94
+//│ mkDeep calls     : 24
 
 def ty3B: MyArray[MyArray['a]] as 'a
 //│ ty3B: 'a
@@ -79,10 +79,10 @@ ty3B = ty3A
 //│ 'a
 //│   where
 //│     'a := MyArray[MyArray['a]]
-//│ constrain calls  : 132
-//│ annoying  calls  : 87
-//│ subtyping calls  : 190
-//│ mkDeep calls     : 27
+//│ constrain calls  : 157
+//│ annoying  calls  : 139
+//│ subtyping calls  : 149
+//│ mkDeep calls     : 43
 
 :stats
 ty3A = ty3B
@@ -93,10 +93,10 @@ ty3A = ty3B
 //│ 'a
 //│   where
 //│     'a := MyArray['a]
-//│ constrain calls  : 132
-//│ annoying  calls  : 87
-//│ subtyping calls  : 178
-//│ mkDeep calls     : 27
+//│ constrain calls  : 280
+//│ annoying  calls  : 259
+//│ subtyping calls  : 269
+//│ mkDeep calls     : 86
 
 def ty4B: MyArray[MyArray[MyArray['a]]] as 'a
 //│ ty4B: 'a
@@ -112,10 +112,10 @@ ty4B = ty4B
 //│ 'a
 //│   where
 //│     'a := MyArray[MyArray[MyArray['a]]]
-//│ constrain calls  : 68
-//│ annoying  calls  : 49
-//│ subtyping calls  : 106
-//│ mkDeep calls     : 18
+//│ constrain calls  : 124
+//│ annoying  calls  : 209
+//│ subtyping calls  : 122
+//│ mkDeep calls     : 28
 
 
 
@@ -173,7 +173,7 @@ ty2A = ty2B
 //│ ║  l.+1: 	ty2A = ty2B
 //│ ║        	^^^^^^^^^^^
 //│ ╟── type `MyArray[?a]` is not an instance of type `'a`
-//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ║  l.36: 	def ty2B: MyArray[MyArray['a]]
 //│ ║        	                  ^^^^^^^^^^^
 //│ ╟── Note: constraint arises from type variable:
 //│ ║  l.23: 	def ty2A: MyArray['a]
@@ -185,7 +185,7 @@ ty2A = ty2B
 //│ ║  l.23: 	def ty2A: MyArray['a]
 //│ ║        	                  ^^
 //│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ║  l.36: 	def ty2B: MyArray[MyArray['a]]
 //│ ╙──      	                  ^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	ty2A = ty2B
@@ -194,7 +194,7 @@ ty2A = ty2B
 //│ ║  l.23: 	def ty2A: MyArray['a]
 //│ ║        	                  ^^
 //│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ║  l.36: 	def ty2B: MyArray[MyArray['a]]
 //│ ╙──      	                  ^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	ty2A = ty2B
@@ -206,7 +206,7 @@ ty2A = ty2B
 //│ ║  l.4: 	class MyArray[A]: { size: int; set: (int, A) -> (); get: int -> A }
 //│ ║       	                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── from applied type reference:
-//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ║  l.36: 	def ty2B: MyArray[MyArray['a]]
 //│ ╙──      	                  ^^^^^^^^^^^
 //│ ╔══[ERROR] Type mismatch in def definition:
 //│ ║  l.+1: 	ty2A = ty2B
@@ -215,11 +215,11 @@ ty2A = ty2B
 //│ ║  l.23: 	def ty2A: MyArray['a]
 //│ ║        	                  ^^
 //│ ╟── Note: constraint arises from applied type reference:
-//│ ║  l.35: 	def ty2B: MyArray[MyArray['a]]
+//│ ║  l.36: 	def ty2B: MyArray[MyArray['a]]
 //│ ╙──      	                  ^^^^^^^^^^^
 //│ constrain calls  : 14
 //│ annoying  calls  : 4
-//│ subtyping calls  : 26
+//│ subtyping calls  : 25
 //│ mkDeep calls     : 3
 
 

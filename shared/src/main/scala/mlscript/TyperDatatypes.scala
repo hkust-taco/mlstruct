@@ -77,7 +77,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   
   /** A type without universally quantified type variables. */
   sealed abstract class SimpleType extends TypeScheme with SimpleTypeImpl {
-    def syntax: SyntacticType = ???
+    def syntax: SyntacticType
     val prov: TypeProvenance
     def level: Int
     def uninstantiatedBody: SimpleType = this
@@ -86,12 +86,12 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   }
   type ST = SimpleType
   
-  abstract class SyntacticType extends SimpleType {
-    override def syntax: SyntacticType = this
+  sealed abstract class SyntacticType extends SimpleType with SyntacticTypeImpl {
+    def syntax: SyntacticType = this
   }
   
   abstract class NormalType extends SimpleType {
-    override lazy val syntax: SyntacticType = ???
+    def syntax: SyntacticType
     def level: Int = syntax.level
     val prov: TypeProvenance = syntax.prov
   }
@@ -172,6 +172,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
   sealed abstract class ProxyType extends SimpleType {
     def level: Int = underlying.level
     def underlying: SimpleType
+    lazy val syntax: SyntacticType = underlying.syntax
     override def toString = s"[$underlying]"
   }
   object ProxyType {
@@ -312,7 +313,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
       var lowerBounds: List[SimpleType],
       var upperBounds: List[SimpleType],
       val nameHint: Opt[Str] = N
-  )(val prov: TypeProvenance) extends SimpleType with CompactTypeOrVariable with Ordered[TypeVariable] with Factorizable {
+  )(val prov: TypeProvenance) extends SyntacticType with CompactTypeOrVariable with Ordered[TypeVariable] with Factorizable {
     private[mlscript] val uid: Int = { freshCount += 1; freshCount - 1 }
     lazy val asTypeVar = new TypeVar(L(uid), nameHint)
     def compare(that: TV): Int = this.uid compare that.uid

@@ -23,9 +23,9 @@ b = B { fB = "test" }
 foo b
 //│ res: "test"
 //│    = 'test'
-//│ constrain calls  : 22
-//│ annoying  calls  : 10
-//│ subtyping calls  : 25
+//│ constrain calls  : 23
+//│ annoying  calls  : 11
+//│ subtyping calls  : 14
 //│ mkDeep calls     : 6
 
 
@@ -38,10 +38,10 @@ foo arg
 //│ res: bool | int | string
 //│    = <no result>
 //│      arg is not implemented
-//│ constrain calls  : 41
-//│ annoying  calls  : 30
-//│ subtyping calls  : 90
-//│ mkDeep calls     : 18
+//│ constrain calls  : 44
+//│ annoying  calls  : 36
+//│ subtyping calls  : 60
+//│ mkDeep calls     : 21
 
 def foo x = case x of {
   | A -> add x.fA x.payload
@@ -55,25 +55,25 @@ def foo x = case x of {
 :stats
 foo arg
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.54: 	foo arg
+//│ ║  l.56: 	foo arg
 //│ ║        	^^^^^^^
 //│ ╟── type `A` does not have field 'payload'
-//│ ║  l.31: 	def arg: A | B | C
+//│ ║  l.32: 	def arg: A | B | C
 //│ ║        	         ^
 //│ ╟── but it flows into reference with expected type `{payload: ?payload}`
-//│ ║  l.54: 	foo arg
+//│ ║  l.56: 	foo arg
 //│ ║        	    ^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.45: 	  | A -> add x.fA x.payload
+//│ ║  l.47: 	  | A -> add x.fA x.payload
 //│ ║        	                  ^^^^^^^^^
 //│ ╟── from reference:
-//│ ║  l.44: 	def foo x = case x of {
+//│ ║  l.46: 	def foo x = case x of {
 //│ ╙──      	                 ^
 //│ res: error | int | string | {l: bool, r: nothing}
 //│    = <no result>
 //│      arg is not implemented
-//│ constrain calls  : 53
-//│ annoying  calls  : 40
-//│ subtyping calls  : 120
-//│ mkDeep calls     : 24
+//│ constrain calls  : 56
+//│ annoying  calls  : 46
+//│ subtyping calls  : 88
+//│ mkDeep calls     : 27
 

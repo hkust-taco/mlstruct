@@ -47,14 +47,17 @@ class LinkedList[T]: { head: T; tail: Option[LinkedList[T]] }
   method Append elem = LinkedList { head = elem; tail = Some { value = this } }
 def None = None {}
 def Some v = Some { value = v }
-//│ Defined class None
-//│ Defined class Some[+T]
-//│ Defined type alias Option[+T]
-//│ Defined class LinkedList[=T]
-//│ Declared LinkedList.Append: LinkedList['T] -> 'T -> LinkedList['T]
-//│ Defined LinkedList.Append: (LinkedList['T] & 'this) -> ('T & 'head) -> (LinkedList['T] & {head: 'head, tail: Some[LinkedList['T]] & {value: LinkedList['T] & 'this}})
-//│ None: None
-//│ Some: 'value -> Some['value]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(T193') (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: scala.collection.immutable.List.map(List.scala:247)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
 
 // :ts
 trait A: { x: int }
@@ -95,16 +98,16 @@ class Arg[T]: (T, T)
 class Prog[T]
   method Run: Arg[T] -> number
 //│ ╔══[ERROR] cannot inherit from a tuple type
-//│ ║  l.94: 	class Arg[T]: (T, T)
+//│ ║  l.97: 	class Arg[T]: (T, T)
 //│ ╙──      	      ^^^^^^^^^^^^^^
 //│ ╔══[ERROR] type identifier not found: Arg
-//│ ║  l.96: 	  method Run: Arg[T] -> number
+//│ ║  l.99: 	  method Run: Arg[T] -> number
 //│ ╙──      	              ^^^^^^
 //│ Defined class Prog[±T]
 //│ Declared Prog.Run: Prog[?] -> error -> number
 //│ ╔══[WARNING] Type definition Prog has bivariant type parameters:
-//│ ║  l.95: 	class Prog[T]
+//│ ║  l.98: 	class Prog[T]
 //│ ║        	      ^^^^
 //│ ╟── T is irrelevant and may be removed
-//│ ║  l.95: 	class Prog[T]
+//│ ║  l.98: 	class Prog[T]
 //│ ╙──      	           ^

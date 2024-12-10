@@ -35,8 +35,8 @@ flatMap3 (fun x -> add x.value x.payload) arg
 //│ res: None | error | int
 //│    = NaN
 //│ constrain calls  : 88
-//│ annoying  calls  : 23
-//│ subtyping calls  : 60
+//│ annoying  calls  : 24
+//│ subtyping calls  : 41
 //│ mkDeep calls     : 12
 
 
@@ -64,10 +64,10 @@ foo 1
 :e
 def fn = foo None
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.64: 	def fn = foo None
+//│ ║  l.65: 	def fn = foo None
 //│ ║        	         ^^^^^^^^
 //│ ╟── reference of type `anything -> None` does not match type `Object & ?a & ~#Some | #Some & ?b`
-//│ ║  l.64: 	def fn = foo None
+//│ ║  l.65: 	def fn = foo None
 //│ ║        	             ^^^^
 //│ ╟── Note: constraint arises from reference:
 //│ ║  l.8: 	def flatMap3 = fun f -> fun opt -> case opt of { Some -> f opt | _ -> opt }
@@ -75,12 +75,24 @@ def fn = foo None
 //│ ╟── Note: class constructor None is defined at:
 //│ ║  l.2: 	class None: {}
 //│ ╙──     	      ^^^^
-//│ fn: error | anything -> None & ~#Some | anything -> None & ~{value: 'a} | 'a
-//│   = [Function (anonymous)]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF((DNF(),){}) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:569)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
 
 // :d
 fn{} // foo None {}
-//│ res: None | error
+//│ ╔══[ERROR] identifier not found: fn
+//│ ║  l.91: 	fn{} // foo None {}
+//│ ╙──      	^^
+//│ res: error
 //│    = None {}
 
 // :d
@@ -90,8 +102,17 @@ foo (None{})
 
 
 fun f -> flatMap3 f arg
-//│ res: (Some[42] -> 'a) -> (None | 'a)
-//│    = [Function: res]
+//│ /!!!\ Uncaught error: scala.MatchError: DNF(A176) (of class mlscript.NormalForms$DNF)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:565)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
+//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
+//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:590)
+//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:588)
 
 
 
@@ -122,13 +143,13 @@ simpler (fun x -> x.value)
 :e
 res 1
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.122: 	res 1
+//│ ║  l.144: 	res 1
 //│ ║         	^^^^^
 //│ ╟── integer literal of type `1` does not match type `None & ?a | #Some & ?b`
-//│ ║  l.122: 	res 1
+//│ ║  l.144: 	res 1
 //│ ║         	    ^
 //│ ╟── Note: constraint arises from reference:
-//│ ║  l.113: 	def simpler = fun f -> fun opt -> case opt of { Some -> f opt | None -> opt }
+//│ ║  l.135: 	def simpler = fun f -> fun opt -> case opt of { Some -> f opt | None -> opt }
 //│ ╙──       	                                       ^^^
 //│ res: error
 //│ Runtime error:

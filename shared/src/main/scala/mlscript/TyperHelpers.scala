@@ -172,6 +172,9 @@ abstract class TyperHelpers { Typer: Typer =>
     case ArrayType(inner) => ArrayType(f(pol, inner))(bt.prov)
     case _: ObjectTag => bt
   }
+
+  def mapPol(dnf: DNF, pol: Opt[Bool], smart: Bool = false)(f: (Opt[Bool], SimpleType) => SimpleType)
+      (implicit ctx: Ctx): DNF = dnf.cs.map(_.mapPol(pol, smart)(f)).foldLeft(DNF.extr(false))(_ | _)
   
   
   
@@ -221,6 +224,9 @@ abstract class TyperHelpers { Typer: Typer =>
     // }(r => s"= $r")
     
     def map(f: SimpleType => SimpleType): SimpleType = this match {
+      case DNF(cs) =>
+        // cs.map(_.map(f)).foldLeft(DNF.extr(false))(_ | _)
+        DNF(cs.map(_.map(f)))
       case TypeRange(lb, ub) => TypeRange(f(lb), f(ub))(prov)
       case FunctionType(lhs, rhs) => FunctionType(f(lhs), f(rhs))(prov)
       case RecordType(fields) => RecordType(fields.mapValues(_.update(f, f)))(prov)
@@ -235,6 +241,7 @@ abstract class TyperHelpers { Typer: Typer =>
     }
     def mapPol(pol: Opt[Bool], smart: Bool = false)(f: (Opt[Bool], SimpleType) => SimpleType)
           (implicit ctx: Ctx): SimpleType = this match {
+      case dnf: DNF => Typer.mapPol(dnf, pol, smart)(f)
       case TypeRange(lb, ub) if smart && pol.isDefined =>
         if (pol.getOrElse(die)) f(S(true), ub) else f(S(false), lb)
       case TypeRange(lb, ub) => TypeRange(f(S(false), lb), f(S(true), ub))(prov)
@@ -317,6 +324,7 @@ abstract class TyperHelpers { Typer: Typer =>
       subtypingCalls += 1
       def assume[R](k: MutMap[ST -> ST, Bool] => R): R = k(cache.map(kv => kv._1 -> true))
       (this === that) || ((this, that) match {
+        case (DNF(cs1), DNF(cs2)) => cs1.forall(c1 => cs2.exists(c1 <:< _))
         case (RecordType(Nil), _) => TopType <:< that
         case (_, RecordType(Nil)) => this <:< TopType
         case (pt1 @ ClassTag(id1, ps1), pt2 @ ClassTag(id2, ps2)) => (id1 === id2) || pt1.parentsST(id2)
@@ -420,6 +428,7 @@ abstract class TyperHelpers { Typer: Typer =>
       def childrenPolField(fld: FieldType): List[Opt[Bool] -> SimpleType] =
         pol.map(!_) -> fld.lb :: pol -> fld.ub :: Nil
       this match {
+        case nt: NormalType => nt.syntax.childrenPol(pol)
         case tv: TypeVariable =>
           (if (pol =/= S(false)) tv.lowerBounds.map(S(true) -> _) else Nil) :::
           (if (pol =/= S(true)) tv.upperBounds.map(S(false) -> _) else Nil)
@@ -465,6 +474,7 @@ abstract class TyperHelpers { Typer: Typer =>
     }
     
     def children(includeBounds: Bool): List[SimpleType] = this match {
+      case nt: NormalType => nt.syntax.children(includeBounds)
       case tv: TypeVariable => if (includeBounds) tv.lowerBounds ::: tv.upperBounds else Nil
       case FunctionType(l, r) => l :: r :: Nil
       case ComposedType(_, l, r) => l :: r :: Nil
@@ -511,6 +521,33 @@ abstract class TyperHelpers { Typer: Typer =>
       |> (expandType(_, stopAtTyVars = true))
     )
     
+  }
+  
+  trait SyntacticTypeImpl { self: SyntacticType =>
+    // def union(that: SyntacticType, prov: TypeProvenance = noProv, swapped: Bool = false): SyntacticType = (this, that) match {
+    //   case (TopType, _) => TopType
+    //   case (BotType, _) => that
+      
+    //   // These were wrong! During constraint solving it's important to keep them!
+    //   // case (_: RecordType, _: PrimType | _: FunctionType) => TopType
+    //   // case (_: FunctionType, _: PrimType | _: RecordType) => TopType
+      
+    //   case (_: RecordType, _: FunctionType) => TopType
+    //   case (RecordType(fs1), RecordType(fs2)) =>
+    //     RecordType(recordUnion(fs1, fs2))(prov)
+    //   case (t0 @ TupleType(fs0), t1 @ TupleType(fs1))
+    //     // If the sizes are different, to merge these we'd have to return
+    //     //  the awkward `t0.toArray & t0.toRecord | t1.toArray & t1.toRecord`
+    //   if fs0.sizeCompare(fs1) === 0 =>
+    //     TupleType(tupleUnion(fs0, fs1))(t0.prov)
+    //   case _ if !swapped => that union (this, prov, swapped = true)
+    //   case (`that`, _) => this
+    //   case (NegType(`that`), _) => TopType
+    //   case _ => ComposedType(true, that, this)(prov)
+    // }
+    def union(that: SyntacticType, prov: TypeProvenance = noProv, swapped: Bool = false): SyntacticType = (this | (that, prov, swapped)).asInstanceOf[SyntacticType]
+    def inter(that: SyntacticType, prov: TypeProvenance = noProv, swapped: Bool = false): SyntacticType = (this & (that, prov, swapped)).asInstanceOf[SyntacticType]
+    def nega(prov: TypeProvenance = noProv, force: Bool = false): SyntacticType = this.neg(prov, force).asInstanceOf[SyntacticType]
   }
   
   
