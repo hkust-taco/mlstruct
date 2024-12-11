@@ -72,7 +72,7 @@ Cons.HeadOption l0
 //│ res: Some[1]
 //│ constrain calls  : 50
 //│ annoying  calls  : 29
-//│ subtyping calls  : 55
+//│ subtyping calls  : 58
 //│ mkDeep calls     : 27
 
 :stats
@@ -88,7 +88,7 @@ Cons.HeadOption l1
 //│ res: Some[1]
 //│ constrain calls  : 50
 //│ annoying  calls  : 29
-//│ subtyping calls  : 55
+//│ subtyping calls  : 58
 //│ mkDeep calls     : 27
 
 :stats
@@ -104,7 +104,7 @@ Cons.HeadOption l2
 //│ res: Some[0]
 //│ constrain calls  : 51
 //│ annoying  calls  : 29
-//│ subtyping calls  : 55
+//│ subtyping calls  : 58
 //│ mkDeep calls     : 27
 
 :stats
@@ -120,7 +120,7 @@ Cons.HeadOption l3
 //│ res: Some[int]
 //│ constrain calls  : 57
 //│ annoying  calls  : 29
-//│ subtyping calls  : 55
+//│ subtyping calls  : 58
 //│ mkDeep calls     : 27
 
 
@@ -139,7 +139,7 @@ Cons.HeadOption lr1
 //│ res: Some[0]
 //│ constrain calls  : 46
 //│ annoying  calls  : 26
-//│ subtyping calls  : 43
+//│ subtyping calls  : 46
 //│ mkDeep calls     : 18
 
 :stats
@@ -157,7 +157,7 @@ Cons.HeadOption lr2
 //│ res: Some[0]
 //│ constrain calls  : 51
 //│ annoying  calls  : 29
-//│ subtyping calls  : 55
+//│ subtyping calls  : 58
 //│ mkDeep calls     : 27
 
 

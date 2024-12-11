@@ -75,7 +75,7 @@ l.Map (fun x -> mul x 2)
 //│    = Cons { head: 0, tail: Cons { head: 2, tail: Nil {} } }
 //│ constrain calls  : 87
 //│ annoying  calls  : 8
-//│ subtyping calls  : 14
+//│ subtyping calls  : 15
 //│ mkDeep calls     : 9
 
 l0 = Cons { head = 0; tail = Nil {} }
@@ -88,9 +88,9 @@ Cons.HeadOption l0
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 55
-//│ annoying  calls  : 38
-//│ subtyping calls  : 49
+//│ constrain calls  : 53
+//│ annoying  calls  : 33
+//│ subtyping calls  : 71
 //│ mkDeep calls     : 27
 
 
@@ -104,9 +104,9 @@ Cons.HeadOption l1
 //│ res: Some[0]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 55
-//│ annoying  calls  : 38
-//│ subtyping calls  : 49
+//│ constrain calls  : 53
+//│ annoying  calls  : 33
+//│ subtyping calls  : 71
 //│ mkDeep calls     : 27
 
 :re
@@ -115,18 +115,18 @@ Cons.HeadOption l
 //│ res: Some[0 | 1]
 //│ Runtime error:
 //│   TypeError: (intermediate value).HeadOption is not a function
-//│ constrain calls  : 66
-//│ annoying  calls  : 38
-//│ subtyping calls  : 65
+//│ constrain calls  : 64
+//│ annoying  calls  : 33
+//│ subtyping calls  : 97
 //│ mkDeep calls     : 27
 
 :stats
 o = l.(Cons.HeadOption)
 //│ o: Some[0 | 1]
 //│  = undefined
-//│ constrain calls  : 64
-//│ annoying  calls  : 38
-//│ subtyping calls  : 65
+//│ constrain calls  : 62
+//│ annoying  calls  : 33
+//│ subtyping calls  : 97
 //│ mkDeep calls     : 27
 
 o = l.(Cons.HeadOption)

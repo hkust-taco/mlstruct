@@ -65,7 +65,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 40
 //│ annoying  calls  : 24
-//│ subtyping calls  : 55
+//│ subtyping calls  : 131
 //│ mkDeep calls     : 14
 
 
@@ -84,7 +84,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 55
 //│ annoying  calls  : 36
-//│ subtyping calls  : 125
+//│ subtyping calls  : 653
 //│ mkDeep calls     : 21
 
 
@@ -104,7 +104,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 70
 //│ annoying  calls  : 48
-//│ subtyping calls  : 238
+//│ subtyping calls  : 2154
 //│ mkDeep calls     : 28
 
 
@@ -125,7 +125,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 85
 //│ annoying  calls  : 60
-//│ subtyping calls  : 405
+//│ subtyping calls  : 5493
 //│ mkDeep calls     : 35
 
 
@@ -147,7 +147,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 100
 //│ annoying  calls  : 72
-//│ subtyping calls  : 637
+//│ subtyping calls  : 11849
 //│ mkDeep calls     : 42
 
 
@@ -170,7 +170,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 115
 //│ annoying  calls  : 84
-//│ subtyping calls  : 945
+//│ subtyping calls  : 22753
 //│ mkDeep calls     : 49
 
 
@@ -194,7 +194,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 130
 //│ annoying  calls  : 96
-//│ subtyping calls  : 1340
+//│ subtyping calls  : 40120
 //│ mkDeep calls     : 56
 
 

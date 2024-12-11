@@ -25,7 +25,7 @@ foo b
 //│    = 'test'
 //│ constrain calls  : 23
 //│ annoying  calls  : 11
-//│ subtyping calls  : 14
+//│ subtyping calls  : 80
 //│ mkDeep calls     : 6
 
 
@@ -40,7 +40,7 @@ foo arg
 //│      arg is not implemented
 //│ constrain calls  : 44
 //│ annoying  calls  : 36
-//│ subtyping calls  : 60
+//│ subtyping calls  : 588
 //│ mkDeep calls     : 21
 
 def foo x = case x of {
@@ -74,6 +74,6 @@ foo arg
 //│      arg is not implemented
 //│ constrain calls  : 56
 //│ annoying  calls  : 46
-//│ subtyping calls  : 88
+//│ subtyping calls  : 916
 //│ mkDeep calls     : 27
 

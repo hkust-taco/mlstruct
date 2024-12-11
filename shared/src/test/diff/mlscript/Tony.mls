@@ -36,7 +36,7 @@ flatMap3 (fun x -> add x.value x.payload) arg
 //│    = NaN
 //│ constrain calls  : 88
 //│ annoying  calls  : 24
-//│ subtyping calls  : 41
+//│ subtyping calls  : 67
 //│ mkDeep calls     : 12
 
 

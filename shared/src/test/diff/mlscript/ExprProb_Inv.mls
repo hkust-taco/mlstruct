@@ -198,7 +198,7 @@ def eval1_ty_ugly = eval1
 //│              = [Function: eval1]
 //│ constrain calls  : 139
 //│ annoying  calls  : 154
-//│ subtyping calls  : 6883
+//│ subtyping calls  : 9158
 //│ mkDeep calls     : 78
 
 :ns
@@ -227,7 +227,7 @@ def eval1_ty = eval1
 //│         = [Function: eval1]
 //│ constrain calls  : 82
 //│ annoying  calls  : 43
-//│ subtyping calls  : 263
+//│ subtyping calls  : 348
 //│ mkDeep calls     : 18
 
 // FIXME
@@ -248,10 +248,10 @@ eval1_ty = eval1_ty_ugly
 //│   where
 //│     'b := Add['b] | Lit | Object & 'a & ~#Add & ~#Lit
 //│         = [Function: eval1]
-//│ constrain calls  : 5356
-//│ annoying  calls  : 2974
-//│ subtyping calls  : 120538
-//│ mkDeep calls     : 1934
+//│ constrain calls  : 5141
+//│ annoying  calls  : 2883
+//│ subtyping calls  : 115578
+//│ mkDeep calls     : 1769
 
 
 // Workaround:
@@ -277,7 +277,7 @@ def eval1_ty = eval1
 //│         = [Function: eval1]
 //│ constrain calls  : 96
 //│ annoying  calls  : 67
-//│ subtyping calls  : 186
+//│ subtyping calls  : 1694
 //│ mkDeep calls     : 30
 
 
@@ -348,7 +348,7 @@ rec def prettier12 k ev e = case e of {
 //│           = [Function: prettier12]
 //│ constrain calls  : 165
 //│ annoying  calls  : 0
-//│ subtyping calls  : 223
+//│ subtyping calls  : 247
 //│ mkDeep calls     : 0
 
 
@@ -379,7 +379,7 @@ prettier12 done (eval1 done) e1
 //│    = '123'
 //│ constrain calls  : 1413
 //│ annoying  calls  : 551
-//│ subtyping calls  : 745
+//│ subtyping calls  : 12662
 //│ mkDeep calls     : 294
 
 
@@ -456,7 +456,7 @@ rec def prettier22 k ev = prettier12 (fun x -> case x of {
 //│           = [Function: prettier22]
 //│ constrain calls  : 166
 //│ annoying  calls  : 0
-//│ subtyping calls  : 255
+//│ subtyping calls  : 297
 //│ mkDeep calls     : 0
 
 
@@ -467,7 +467,7 @@ eval2 done e1
 //│    = 6
 //│ constrain calls  : 187
 //│ annoying  calls  : 67
-//│ subtyping calls  : 89
+//│ subtyping calls  : 3476
 //│ mkDeep calls     : 36
 
 e2 = add (lit 1) (nega e1)
@@ -487,7 +487,7 @@ eval2 done e2
 //│    = -5
 //│ constrain calls  : 262
 //│ annoying  calls  : 117
-//│ subtyping calls  : 130
+//│ subtyping calls  : 9530
 //│ mkDeep calls     : 60
 
 d2 = nega (add (lit 1) (nega (lit 1)))
@@ -502,7 +502,7 @@ eval2 done d2
 //│    = 0
 //│ constrain calls  : 164
 //│ annoying  calls  : 83
-//│ subtyping calls  : 77
+//│ subtyping calls  : 3568
 //│ mkDeep calls     : 39
 
 
@@ -579,7 +579,7 @@ prettier22 done (eval2 done) d2
 //│    = '-1'
 //│ constrain calls  : 964
 //│ annoying  calls  : 383
-//│ subtyping calls  : 724
+//│ subtyping calls  : 21065
 //│ mkDeep calls     : 192
 
 
@@ -615,7 +615,7 @@ prettier2 done eval1 e1
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	prettier2 done eval1 e1
 //│ ║        	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── function of type `?a -> (?b | ?c)` is not an instance of type `int`
+//│ ╟── function of type `?a -> ?b` is not an instance of type `int`
 //│ ║  l.73: 	rec def eval1 k e = case e of {
 //│ ║        	                ^^^^^^^^^^^^^^^
 //│ ║  l.74: 	  | Lit -> e.val
@@ -663,10 +663,10 @@ prettier2 done (eval1 done) e2
 //│ res: error | string
 //│ Runtime error:
 //│   Error: non-exhaustive case expression
-//│ constrain calls  : 865
-//│ annoying  calls  : 608
-//│ subtyping calls  : 2518
-//│ mkDeep calls     : 395
+//│ constrain calls  : 617
+//│ annoying  calls  : 283
+//│ subtyping calls  : 21839
+//│ mkDeep calls     : 150
 
 :e
 :stats
@@ -694,7 +694,7 @@ prettier2 done eval2
 //│    = [Function (anonymous)]
 //│ constrain calls  : 65
 //│ annoying  calls  : 0
-//│ subtyping calls  : 169
+//│ subtyping calls  : 236
 //│ mkDeep calls     : 0
 
 :e
@@ -731,10 +731,10 @@ prettier2 done eval2 e1
 //│ ╙──       	                 ^^^^^
 //│ res: error
 //│    = '123'
-//│ constrain calls  : 396
-//│ annoying  calls  : 219
-//│ subtyping calls  : 1240
-//│ mkDeep calls     : 145
+//│ constrain calls  : 343
+//│ annoying  calls  : 142
+//│ subtyping calls  : 8681
+//│ mkDeep calls     : 93
 
 :e
 :stats
@@ -770,10 +770,10 @@ prettier2 done eval2 e2
 //│ ╙──       	                 ^^^^^
 //│ res: error
 //│    = '1-123'
-//│ constrain calls  : 441
-//│ annoying  calls  : 247
-//│ subtyping calls  : 1536
-//│ mkDeep calls     : 160
+//│ constrain calls  : 388
+//│ annoying  calls  : 170
+//│ subtyping calls  : 17345
+//│ mkDeep calls     : 108
 
 :e
 :stats
@@ -809,10 +809,10 @@ prettier2 done eval2 d2
 //│ ╙──       	                 ^^^^^
 //│ res: error | string
 //│    = '-1-1'
-//│ constrain calls  : 285
-//│ annoying  calls  : 156
-//│ subtyping calls  : 930
-//│ mkDeep calls     : 83
+//│ constrain calls  : 268
+//│ annoying  calls  : 132
+//│ subtyping calls  : 12065
+//│ mkDeep calls     : 66
 
 :e
 :stats
@@ -820,7 +820,7 @@ prettier2 done eval1 e2
 //│ ╔══[ERROR] Type mismatch in application:
 //│ ║  l.+1: 	prettier2 done eval1 e2
 //│ ║        	^^^^^^^^^^^^^^^^^^^^
-//│ ╟── function of type `?a -> (?b | ?c)` is not an instance of type `int`
+//│ ╟── function of type `?a -> ?b` is not an instance of type `int`
 //│ ║  l.73: 	rec def eval1 k e = case e of {
 //│ ║        	                ^^^^^^^^^^^^^^^
 //│ ║  l.74: 	  | Lit -> e.val
@@ -848,8 +848,8 @@ prettier2 done eval1 e2
 //│ ╙──       	                 ^^^^^
 //│ res: error
 //│    = '1-123'
-//│ constrain calls  : 435
-//│ annoying  calls  : 247
-//│ subtyping calls  : 1517
-//│ mkDeep calls     : 160
+//│ constrain calls  : 382
+//│ annoying  calls  : 170
+//│ subtyping calls  : 17304
+//│ mkDeep calls     : 108
 

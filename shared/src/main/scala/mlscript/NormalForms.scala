@@ -325,10 +325,10 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     }
     def <:< (that: Conjunct)(implicit ctx: Ctx = Ctx.empty, cache: MutMap[ST -> ST, Bool] = MutMap.empty): Bool =
       // trace(s"?? $this <:< $that") {
-      that.vars.forall(vars) &&
+      that.vars.forall(v2 => vars(v2) || vars.exists(_ <:< v2)) &&
         lnf <:< that.lnf &&
         that.rnf <:< rnf &&
-        that.nvars.forall(nvars)
+        that.nvars.forall(v2 => nvars(v2) || nvars.exists(v2 <:< _))
       // }(r => s"!! $r")
     def & (that: Conjunct)(implicit ctx: Ctx): Opt[Conjunct] =
       // trace(s"?? $this & $that ${lnf & that.lnf} ${rnf | that.rnf}") {
