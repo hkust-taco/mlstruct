@@ -34,7 +34,7 @@ B0 = A0
 //│ {x: T, y: S} | D & {x: T} | C & {y: S}
 //│ constrain calls  : 2
 //│ annoying  calls  : 81
-//│ subtyping calls  : 267
+//│ subtyping calls  : 279
 //│ mkDeep calls     : 6
 
 

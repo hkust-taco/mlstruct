@@ -250,7 +250,7 @@ eval1_ty = eval1_ty_ugly
 //│         = [Function: eval1]
 //│ constrain calls  : 5356
 //│ annoying  calls  : 2974
-//│ subtyping calls  : 120514
+//│ subtyping calls  : 120538
 //│ mkDeep calls     : 1934
 
 
@@ -665,7 +665,7 @@ prettier2 done (eval1 done) e2
 //│   Error: non-exhaustive case expression
 //│ constrain calls  : 865
 //│ annoying  calls  : 608
-//│ subtyping calls  : 2501
+//│ subtyping calls  : 2518
 //│ mkDeep calls     : 395
 
 :e

@@ -72,11 +72,11 @@ abstract class TyperHelpers { Typer: Typer =>
     fs1.flatMap { case (k, v) => fs2m.get(k).map(v2 => k -> (v || v2)) }
   }
   
-  def subst(ts: PolymorphicType, map: Map[SimpleType, SimpleType]): PolymorphicType = 
+  def subst(ts: PolymorphicType, map: Map[SimpleType, SimpleType])(implicit ctx: Ctx): PolymorphicType = 
     PolymorphicType(ts.level, subst(ts.body, map))
   
   def subst(st: SimpleType, map: Map[SimpleType, SimpleType], substInMap: Bool = false)
-        (implicit cache: MutMap[TypeVariable, SimpleType] = MutMap.empty): SimpleType =
+        (implicit ctx: Ctx, cache: MutMap[TypeVariable, SimpleType] = MutMap.empty): SimpleType =
             // trace(s"subst($st)") {
     map.get(st) match {
       case S(res) => if (substInMap) subst(res, map, substInMap) else res
@@ -223,10 +223,10 @@ abstract class TyperHelpers { Typer: Typer =>
     }
     // }(r => s"= $r")
     
-    def map(f: SimpleType => SimpleType): SimpleType = this match {
+    def map(f: SimpleType => SimpleType)(implicit ctx: Ctx): SimpleType = this match {
       case DNF(cs) =>
-        // cs.map(_.map(f)).foldLeft(DNF.extr(false))(_ | _)
-        DNF(cs.map(_.map(f)))
+        cs.map(_.map(f)).foldLeft(DNF.extr(false))(_ | _)
+        // DNF(cs.map(_.map(f)))
       case TypeRange(lb, ub) => TypeRange(f(lb), f(ub))(prov)
       case FunctionType(lhs, rhs) => FunctionType(f(lhs), f(rhs))(prov)
       case RecordType(fields) => RecordType(fields.mapValues(_.update(f, f)))(prov)
@@ -278,6 +278,7 @@ abstract class TyperHelpers { Typer: Typer =>
         //  the awkward `t0.toArray & t0.toRecord | t1.toArray & t1.toRecord`
       if fs0.sizeCompare(fs1) === 0 =>
         TupleType(tupleUnion(fs0, fs1))(t0.prov)
+      case (dnf1: DNF, dnf2: DNF) => dnf1.|(dnf2)(Ctx.empty)
       case _ if !swapped => that | (this, prov, swapped = true)
       case (`that`, _) => this
       case (NegType(`that`), _) => TopType
@@ -551,7 +552,7 @@ abstract class TyperHelpers { Typer: Typer =>
   }
   
   
-  def shallowCopy(st: ST)(implicit cache: MutMap[TV, TV] = MutMap.empty): ST = st match {
+  def shallowCopy(st: ST)(implicit ctx: Ctx, cache: MutMap[TV, TV] = MutMap.empty): ST = st match {
     case tv: TV => cache.getOrElseUpdate(tv, freshVar(tv.prov, tv.nameHint, Nil, Nil)(tv.level))
     case _ => st.map(shallowCopy)
   }
