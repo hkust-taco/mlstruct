@@ -162,16 +162,16 @@ def unzip_ty = unzip
 //│ 'a -> (List['a] & 'b) -> (Cons['a] & {tail: 'b})
 //│        = [Function: Cons1]
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A329') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
 
 
 

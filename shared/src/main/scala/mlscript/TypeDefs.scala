@@ -140,6 +140,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
       case RecordType(fs) => fs.toMap
       case p: ProxyType => fieldsOf(p.underlying, paramTags)
       case TypeRange(lb, ub) => fieldsOf(ub, paramTags)
+      case dnf: DNF => fieldsOf(dnf.syntax, paramTags)
       case _: ObjectTag | _: FunctionType | _: ArrayBase | _: TypeVariable
         | _: NegType | _: ExtrType | _: ComposedType => Map.empty
     }
@@ -215,6 +216,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case ComposedType(_, l, r) => checkCycle(l) && checkCycle(r)
           case NegType(u) => checkCycle(u)
           case p: ProxyType => checkCycle(p.underlying)
+          case d: DNF => checkCycle(d.syntax)
           case TypeRange(lb, ub) => checkCycle(lb) && checkCycle(ub)
           case tv: TypeVariable => travsersed(R(tv)) || {
             val t2 = travsersed + R(tv)
@@ -272,6 +274,7 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
                 false
               case _: RecordType | _: ExtrType => true
               case p: ProxyType => checkParents(p.underlying)
+              case d: DNF => checkParents(d.syntax)
             }
             lazy val checkAbstractAddCtors = {
               val (decls, defns) = gatherMthNames(td)
@@ -647,6 +650,8 @@ class TypeDefs extends ConstraintSolver { self: Typer =>
           case FunctionType(lhs, rhs) =>
             updateVariance(lhs, curVariance.flip)
             updateVariance(rhs, curVariance)
+          case d: DNF =>
+            updateVariance(d.syntax, curVariance)
         }
       }()
     }

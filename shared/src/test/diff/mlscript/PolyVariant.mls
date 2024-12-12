@@ -117,17 +117,10 @@ rec def map f l = case l of {
 //│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 map (fun x -> "lol") (Cons 2 (Cons 3 Nil))
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A236') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.extrude(ConstraintSolver.scala:503)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$extrude$8(ConstraintSolver.scala:534)
-//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
-//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
-//│ 	at: scala.collection.immutable.List.prependedAll(List.scala:153)
-//│ 	at: scala.collection.immutable.List$.from(List.scala:685)
-//│ 	at: scala.collection.immutable.List$.from(List.scala:682)
-//│ 	at: scala.collection.BuildFromLowPriority2$$anon$11.fromSpecific(BuildFrom.scala:115)
-//│ 	at: scala.collection.BuildFromLowPriority2$$anon$11.fromSpecific(BuildFrom.scala:112)
-//│ 	at: scala.collection.LazyZip2.map(LazyZipOps.scala:37)
+//│ res: 'tail
+//│   where
+//│     'tail :> Cons["lol"] & {tail: 'tail} | Nil
+//│    = Cons { head: 'lol', tail: Cons { head: 'lol', tail: Nil {} } }
 
 //************** EXAMPLE 3: ROUGH APPROXIMATIONS *************
 
@@ -153,13 +146,13 @@ def f = fun x -> case x._1 of {
 :e
 f ({ _1 = A{}; _2 = C{} })
 //│ ╔══[ERROR] Type mismatch in application:
-//│ ║  l.154: 	f ({ _1 = A{}; _2 = C{} })
+//│ ║  l.147: 	f ({ _1 = A{}; _2 = C{} })
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^^^^
 //│ ╟── application of type `C` does not match type `A | B`
-//│ ║  l.154: 	f ({ _1 = A{}; _2 = C{} })
+//│ ║  l.147: 	f ({ _1 = A{}; _2 = C{} })
 //│ ║         	                    ^^^
 //│ ╟── Note: constraint arises from field selection:
-//│ ║  l.145: 	  | _ -> case x._2 of {
+//│ ║  l.138: 	  | _ -> case x._2 of {
 //│ ║         	              ^^^^
 //│ ╟── Note: class C is defined at:
 //│ ║  l.22: 	class C
@@ -183,42 +176,42 @@ def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x
     }
   }
 //│ ╔══[ERROR] Type mismatch in `case` expression:
-//│ ║  l.180: 	  | _ -> case x._2 of {
+//│ ║  l.173: 	  | _ -> case x._2 of {
 //│ ║         	         ^^^^^^^^^^^^^^
-//│ ║  l.181: 	    | A -> 3
+//│ ║  l.174: 	    | A -> 3
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.182: 	    | B -> 4
+//│ ║  l.175: 	    | B -> 4
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.183: 	    }
+//│ ║  l.176: 	    }
 //│ ║         	^^^^^
 //│ ╟── type `anything` does not match type `A | B`
-//│ ║  l.177: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
+//│ ║  l.170: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
 //│ ║         	                                ^^^^^^^^
 //│ ╟── but it flows into field selection with expected type `A | B`
-//│ ║  l.180: 	  | _ -> case x._2 of {
+//│ ║  l.173: 	  | _ -> case x._2 of {
 //│ ╙──       	              ^^^^
 //│ ╔══[ERROR] Type mismatch in `case` expression:
-//│ ║  l.177: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
+//│ ║  l.170: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
 //│ ║         	                                                                          ^^^^^^^^^^^^^^
-//│ ║  l.178: 	  | A -> 1
+//│ ║  l.171: 	  | A -> 1
 //│ ║         	^^^^^^^^^^
-//│ ║  l.179: 	  | B -> 2
+//│ ║  l.172: 	  | B -> 2
 //│ ║         	^^^^^^^^^^
-//│ ║  l.180: 	  | _ -> case x._2 of {
+//│ ║  l.173: 	  | _ -> case x._2 of {
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.181: 	    | A -> 3
+//│ ║  l.174: 	    | A -> 3
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.182: 	    | B -> 4
+//│ ║  l.175: 	    | B -> 4
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.183: 	    }
+//│ ║  l.176: 	    }
 //│ ║         	^^^^^
-//│ ║  l.184: 	  }
+//│ ║  l.177: 	  }
 //│ ║         	^^^
 //│ ╟── type `anything` does not match type `A | B | Object & ?a & ~#A & ~#B`
-//│ ║  l.177: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
+//│ ║  l.170: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
 //│ ║         	                                                 ^^^^^^^^
 //│ ╟── but it flows into field selection with expected type `A | B | Object & ?a & ~#A & ~#B`
-//│ ║  l.177: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
+//│ ║  l.170: 	def f = fun (x: {_1: A | B; _2: anything} | {_1: anything; _2: A | B}) -> case x._1 of {
 //│ ╙──       	                                                                               ^^^^
 //│ f: {_1: anything, _2: anything} -> (1 | 2 | 3 | 4)
 //│  = [Function: f3]
@@ -262,36 +255,36 @@ def f = fun (x: L | R) -> case x._1 of {
     }
   }
 //│ ╔══[ERROR] Type mismatch in `case` expression:
-//│ ║  l.259: 	  | _ -> case x._2 of {
+//│ ║  l.252: 	  | _ -> case x._2 of {
 //│ ║         	         ^^^^^^^^^^^^^^
-//│ ║  l.260: 	    | A -> 3
+//│ ║  l.253: 	    | A -> 3
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.261: 	    | B -> 4
+//│ ║  l.254: 	    | B -> 4
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.262: 	    }
+//│ ║  l.255: 	    }
 //│ ║         	^^^^^
 //│ ╟── field selection of type `anything` does not match type `A | B`
-//│ ║  l.259: 	  | _ -> case x._2 of {
+//│ ║  l.252: 	  | _ -> case x._2 of {
 //│ ╙──       	              ^^^^
 //│ ╔══[ERROR] Type mismatch in `case` expression:
-//│ ║  l.256: 	def f = fun (x: L | R) -> case x._1 of {
+//│ ║  l.249: 	def f = fun (x: L | R) -> case x._1 of {
 //│ ║         	                          ^^^^^^^^^^^^^^
-//│ ║  l.257: 	  | A -> 1
+//│ ║  l.250: 	  | A -> 1
 //│ ║         	^^^^^^^^^^
-//│ ║  l.258: 	  | B -> 2
+//│ ║  l.251: 	  | B -> 2
 //│ ║         	^^^^^^^^^^
-//│ ║  l.259: 	  | _ -> case x._2 of {
+//│ ║  l.252: 	  | _ -> case x._2 of {
 //│ ║         	^^^^^^^^^^^^^^^^^^^^^^^
-//│ ║  l.260: 	    | A -> 3
+//│ ║  l.253: 	    | A -> 3
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.261: 	    | B -> 4
+//│ ║  l.254: 	    | B -> 4
 //│ ║         	^^^^^^^^^^^^
-//│ ║  l.262: 	    }
+//│ ║  l.255: 	    }
 //│ ║         	^^^^^
-//│ ║  l.263: 	  }
+//│ ║  l.256: 	  }
 //│ ║         	^^^
 //│ ╟── field selection of type `anything` does not match type `A | B | Object & ?a & ~#A & ~#B`
-//│ ║  l.256: 	def f = fun (x: L | R) -> case x._1 of {
+//│ ║  l.249: 	def f = fun (x: L | R) -> case x._1 of {
 //│ ╙──       	                               ^^^^
 //│ f: (L | R) -> (1 | 2 | 3 | 4)
 //│  = [Function: f4]

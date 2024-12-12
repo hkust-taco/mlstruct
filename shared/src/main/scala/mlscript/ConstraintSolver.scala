@@ -499,18 +499,21 @@ class ConstraintSolver extends NormalForms { self: Typer =>
   
   /** Copies a type up to its type variables of wrong level (and their extruded bounds). */
   def extrude(ty: SimpleType, lvl: Int, pol: Boolean)
-      (implicit ctx: Ctx, cache: MutMap[PolarVariable, TV] = MutMap.empty): SimpleType =
-    if (ty.level <= lvl) ty else ty match {
-      case t @ TypeRange(lb, ub) => if (pol) extrude(ub, lvl, true) else extrude(lb, lvl, false)
-      case t @ FunctionType(l, r) => FunctionType(extrude(l, lvl, !pol), extrude(r, lvl, pol))(t.prov)
-      case t @ ComposedType(p, l, r) => ComposedType(p, extrude(l, lvl, pol), extrude(r, lvl, pol))(t.prov)
-      case t @ RecordType(fs) =>
-        RecordType(fs.mapValues(_.update(extrude(_, lvl, !pol), extrude(_, lvl, pol))))(t.prov)
-      case t @ TupleType(fs) =>
-        TupleType(fs.mapValues(extrude(_, lvl, pol)))(t.prov)
-      case t @ ArrayType(ar) =>
-        ArrayType(extrude(ar, lvl, pol))(t.prov)
-      case tv: TypeVariable => cache.getOrElse(tv -> pol, {
+      (implicit ctx: Ctx, cache: MutMap[PolarVariable, TV] = MutMap.empty): SimpleType = {
+    def goFT(t: FunctionType): FunctionType = t match {
+      case FunctionType(l, r) => FunctionType(extrude(l, lvl, !pol), extrude(r, lvl, pol))(t.prov)
+    }
+    def goAB(t: ArrayBase): ArrayBase = t match {
+      case ArrayType(ar) => ArrayType(extrude(ar, lvl, pol))(t.prov)
+      case TupleType(fs) => TupleType(fs.mapValues(extrude(_, lvl, pol)))(t.prov)
+    }
+    def goRF(ty: FieldType): FieldType = ty.update(extrude(_, lvl, !pol), extrude(_, lvl, pol))
+    def goRT(t: RecordType): RecordType = t match {
+      case RecordType(fs) =>
+        RecordType(fs mapValues goRF)(t.prov)
+    }
+    def goTV(tv: TypeVariable): TypeVariable =
+      cache.getOrElse(tv -> pol, {
         val nv = freshVar(tv.prov, tv.nameHint)(lvl)
         cache += tv -> pol -> nv
         if (pol) {
@@ -522,18 +525,59 @@ class ConstraintSolver extends NormalForms { self: Typer =>
         }
         nv
       })
-      case n @ NegType(neg) => NegType(extrude(neg, lvl, pol))(n.prov)
-      case e @ ExtrType(_) => e
-      case p @ ProvType(und) => ProvType(extrude(und, lvl, pol))(p.prov)
-      case p @ ProxyType(und) => extrude(und, lvl, pol)
-      case _: ClassTag | _: TraitTag => ty
-      case tr @ TypeRef(d, ts) =>
+    def goTR(tr: TypeRef): TypeRef = tr match {
+      case TypeRef(d, ts) =>
         TypeRef(d, tr.mapTargs(S(pol)) {
           case (N, targ) =>
             TypeRange(extrude(targ, lvl, false), extrude(targ, lvl, true))(noProv)
           case (S(pol), targ) => extrude(targ, lvl, pol)
         })(tr.prov)
     }
+    if (ty.level <= lvl) ty else ty match {
+      case t @ TypeRange(lb, ub) => if (pol) extrude(ub, lvl, true) else extrude(lb, lvl, false)
+      case t: FunctionType => goFT(t)
+      case t @ ComposedType(p, l, r) => ComposedType(p, extrude(l, lvl, pol), extrude(r, lvl, pol))(t.prov)
+      case t: RecordType => goRT(t)
+      case t: ArrayBase => goAB(t)
+      case tv: TypeVariable => goTV(tv)
+      case n @ NegType(neg) => NegType(extrude(neg, lvl, pol))(n.prov)
+      case e @ ExtrType(_) => e
+      case p @ ProvType(und) => ProvType(extrude(und, lvl, pol))(p.prov)
+      case p @ ProxyType(und) => extrude(und, lvl, pol)
+      case d @ DNF(cs) => cs.map {
+        case Conjunct(lnf, vars, rnf, nvars) => Conjunct(
+          lnf match {
+            case LhsRefined(base, fun, arr, ttags, reft, trefs) => LhsRefined(
+              base,
+              fun map goFT,
+              arr map goAB,
+              ttags,
+              goRT(reft),
+              trefs map goTR
+            )
+            case LhsTop => LhsTop
+          },
+          vars map goTV,
+          rnf match {
+            case RhsBases(tags, rest, trefs) => RhsBases(
+              tags,
+              rest map {
+                case L(ft: FunctionType) => L(goFT(ft))
+                case L(ab: ArrayBase) => L(goAB(ab))
+                case R(RhsField(name, ty)) => R(RhsField(name, goRF(ty)))
+              },
+              trefs map goTR
+            )
+            case RhsBot => RhsBot
+            case RhsField(name, ty) => RhsField(name, goRF(ty))
+          },
+          nvars map goTV
+        )
+      }.foldLeft(DNF.extr(false))(_ | _)
+      case _: ClassTag | _: TraitTag => ty
+      case tr: TypeRef => goTR(tr)
+    }
+  }
   
   
   def err(msg: Message, loco: Opt[Loc])(implicit raise: Raise): SimpleType = {

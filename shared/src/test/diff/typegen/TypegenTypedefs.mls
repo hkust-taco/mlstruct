@@ -48,16 +48,16 @@ class LinkedList[T]: { head: T; tail: Option[LinkedList[T]] }
 def None = None {}
 def Some v = Some { value = v }
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(T193') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 
 // :ts
 trait A: { x: int }

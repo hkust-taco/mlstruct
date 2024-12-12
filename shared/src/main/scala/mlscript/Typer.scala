@@ -656,7 +656,7 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
     
     def go(st: SimpleType): Type =
             // trace(s"expand $st") {
-          st.syntax.unwrapProvs match {
+          st.syntax match {
         case tv: TypeVariable if stopAtTyVars => tv.asTypeVar
         case tv: TypeVariable =>
           val nv = tv.asTypeVar
@@ -677,7 +677,6 @@ class Typer(var dbg: Boolean, var verbose: Bool, var explainErrors: Bool)
         case NegType(t) => Neg(go(t))
         case ExtrType(true) => Bot
         case ExtrType(false) => Top
-        case ProxyType(und) => go(und)
         case tag: ObjectTag => tag.id match {
           case Var(n) =>
             if (primitiveTypes.contains(n) // primitives like `int` are internally maintained as class tags

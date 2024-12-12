@@ -188,17 +188,18 @@ class ComplexMonoid_bad_0[A]: Monoid[Complex[A]] & { base: Monoid[A] }
 //│ ╟── from inherited method declaration:
 //│ ║  l.3: 	  method Empty: A
 //│ ╙──     	         ^^^^^^^^
+//│ Defined class ComplexMonoid_bad_0[=A]
 //│ /!!!\ Uncaught error: scala.MatchError: DNF({}∧#A) (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$3(TypeDefs.scala:594)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
 //│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
 //│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeDefs.updateVariance$1(TypeDefs.scala:593)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13(TypeDefs.scala:630)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13$adapted(TypeDefs.scala:629)
-//│ 	at: scala.Option.foreach(Option.scala:437)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11(TypeDefs.scala:629)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11$adapted(TypeDefs.scala:628)
-//│ 	at: scala.collection.immutable.List.foreach(List.scala:334)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:579)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:579)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 
 class ComplexMonoid_bad_1[A]: Monoid[Complex[A]] & { base: Monoid[A] }

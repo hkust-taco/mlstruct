@@ -271,17 +271,21 @@ class Test1[A]: { x: A }
     method F: A
 class Test2[B]: Test1[Id[B]] & { x: B }
     method F = this.x
+//│ Defined type alias Id[+T]
+//│ Defined class Test1[+A]
+//│ Declared Test1.F: Test1['A] -> 'A
+//│ Defined class Test2[+B]
 //│ /!!!\ Uncaught error: scala.MatchError: DNF({}∧#B) (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$3(TypeDefs.scala:594)
+//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
 //│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
 //│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeDefs.updateVariance$1(TypeDefs.scala:593)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13(TypeDefs.scala:631)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$13$adapted(TypeDefs.scala:629)
-//│ 	at: scala.Option.foreach(Option.scala:437)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11(TypeDefs.scala:629)
-//│ 	at: mlscript.TypeDefs.$anonfun$computeVariances$11$adapted(TypeDefs.scala:628)
-//│ 	at: scala.collection.immutable.List.foreach(List.scala:334)
+//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7(TyperHelpers.scala:579)
+//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$7$adapted(TyperHelpers.scala:579)
+//│ 	at: mlscript.TyperDatatypes$TypeRef.$anonfun$mapTargs$4(TyperDatatypes.scala:235)
+//│ 	at: scala.collection.LazyZip2$$anon$1$$anon$2.next(LazyZipOps.scala:42)
 
 
 class Test3A: Test1['a -> 'a]
@@ -304,10 +308,10 @@ Test3B.F
 class Test4A[A]: { x: A }
     method Mth4A[A]: A
 //│ ╔══[WARNING] Method type parameter A
-//│ ║  l.304: 	class Test4A[A]: { x: A }
+//│ ║  l.308: 	class Test4A[A]: { x: A }
 //│ ║         	             ^
 //│ ╟── shadows class type parameter A
-//│ ║  l.305: 	    method Mth4A[A]: A
+//│ ║  l.309: 	    method Mth4A[A]: A
 //│ ╙──       	                 ^
 //│ Defined class Test4A[+A]
 //│ Declared Test4A.Mth4A: Test4A[?] -> nothing
@@ -359,13 +363,13 @@ Ber.F
 :e
 Ber
 //│ ╔══[ERROR] Instantiation of an abstract type is forbidden
-//│ ║  l.360: 	Ber
+//│ ║  l.364: 	Ber
 //│ ║         	^^^
 //│ ╟── Note that class Ber is abstract:
-//│ ║  l.352: 	class Ber: Fee & Fee2
+//│ ║  l.356: 	class Ber: Fee & Fee2
 //│ ║         	      ^^^^^^^^^^^^^^^
 //│ ╟── Hint: method F is abstract
-//│ ║  l.352: 	class Ber: Fee & Fee2
+//│ ║  l.356: 	class Ber: Fee & Fee2
 //│ ╙──       	      ^^^^^^^^^^^^^^^
 //│ res: error
 //│    = [Function: res]

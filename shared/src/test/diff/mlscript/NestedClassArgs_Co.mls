@@ -91,32 +91,32 @@ rec def c a = C3 { a = c a }
 //│   <:  c:
 //│ 'a -> C3['a]
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A128') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 //│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
 
 rec def c (a: 'X) = C3 { a = c a: 'X }: C3['X]
 //│ anything -> C3[nothing]
 //│   <:  c:
 //│ 'a -> C3['a]
 //│ /!!!\ Uncaught error: scala.MatchError: DNF('X154') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
 
 
 class C4[A]: { a: C[C4[A]] }
@@ -137,16 +137,16 @@ def c4 a = C4{ a = C{} }
 
 def c = c4
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A191') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$9(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$9(ConstraintSolver.scala:647)
 //│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
 
 
 class C5[A]: { a: C2[C5[A]] }
@@ -236,16 +236,16 @@ class L[T]: { h: T; t: O[L[T]] }
   method Append: T -> L[T]
   method Append elem = L { h = elem; t = S { v = this } }
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(T298') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 //│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
 
 // :ds
 // L.Append

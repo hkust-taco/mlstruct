@@ -261,12 +261,13 @@ class NormalForms extends TyperDatatypes { self: Typer =>
       case RhsField(name, ty) => RhsField(name, ty.update(f, f))
       case RhsBases(tags, rest, trefs) => RhsBases(
         tags,
-        rest.map(_ match {
+        rest map {
           case L(ft @ FunctionType(lhs, rhs)) => L(FunctionType(f(lhs), f(rhs))(ft.prov))
           case L(at @ ArrayType(inner)) => L(ArrayType(f(inner))(at.prov))
+          case L(tt @ TupleType(fields)) => L(TupleType(fields.map(fd => fd._1 -> f(fd._2)))(tt.prov))
           case R(RhsField(name, ty)) => R(RhsField(name, ty.update(f, f)))
-        }),
-        trefs.map { case tr @ TypeRef(defn, targs) => TypeRef(defn, targs.map(f(_)))(tr.prov) }
+        },
+        trefs map { case tr @ TypeRef(defn, targs) => TypeRef(defn, targs.map(f(_)))(tr.prov) }
       )
       case RhsBot => RhsBot
     }
@@ -275,12 +276,13 @@ class NormalForms extends TyperDatatypes { self: Typer =>
       case RhsField(name, ty) => RhsField(name, ty.update(f(pol.map(!_), _), f(pol, _)))
       case RhsBases(tags, rest, trefs) => RhsBases(
         tags,
-        rest.map(_ match {
+        rest map {
           case L(ft @ FunctionType(lhs, rhs)) => L(FunctionType(f(pol.map(!_), lhs), f(pol, rhs))(ft.prov))
           case L(at @ ArrayType(inner)) => L(ArrayType(f(pol, inner))(at.prov))
+          case L(tt @ TupleType(fields)) => L(TupleType(fields.map(fd => fd._1 -> f(pol, fd._2)))(tt.prov))
           case R(RhsField(name, ty)) => R(RhsField(name, ty.update(f(pol.map(!_), _), f(pol, _))))
-        }),
-        trefs.map { case tr @ TypeRef(defn, targs) => TypeRef(defn, tr.mapTargs(pol)(f))(tr.prov) }
+        },
+        trefs map { case tr @ TypeRef(defn, targs) => TypeRef(defn, tr.mapTargs(pol)(f))(tr.prov) }
       )
       case RhsBot => RhsBot
     }

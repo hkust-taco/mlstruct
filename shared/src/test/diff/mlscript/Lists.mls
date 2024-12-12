@@ -33,16 +33,16 @@ def d = Cons 1 c
 
 d.head
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A92') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 
 res: 1
 //│ ╔══[ERROR] Type mismatch in type ascription:
@@ -62,16 +62,16 @@ res: 1
 
 d.tail
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A92') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:611)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
 //│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:611)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:608)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:591)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
 //│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:591)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 
 Cons 1 res
 //│ ╔══[ERROR] Type mismatch in application:

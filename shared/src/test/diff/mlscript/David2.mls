@@ -74,10 +74,10 @@ m = addOne1 n
 
 m : Integer
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(addOne153') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:561)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
 //│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:603)
+//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
 //│ 	at: mlscript.utils.package$PairIterableOps$.$anonfun$mapValuesIter$1(package.scala:58)
 //│ 	at: scala.collection.Iterator$$anon$9.next(Iterator.scala:584)
 //│ 	at: scala.collection.immutable.List.prependedAll(List.scala:153)
