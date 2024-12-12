@@ -40,11 +40,13 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
     val out = new java.io.PrintWriter(strw) {
       override def println(): Unit = print('\n')
     }
+    var timing = false
     var stdout = false
     def output(str: String) =
       // out.println(outputMarker + str)
-      if (stdout) System.out.println(str) else
-      str.splitSane('\n').foreach(l => out.println(outputMarker + l))
+      if (!timing)
+        if (stdout) System.out.println(str) else
+        str.splitSane('\n').foreach(l => out.println(outputMarker + l))
     def outputSourceCode(code: SourceCode) = code.lines.foreach{line => out.println(outputMarker + line.toString())}
     val allStatements = mutable.Buffer.empty[DesugaredStatement]
     val typer = new Typer(dbg = false, verbose = false, explainErrors = false) {
@@ -69,6 +71,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
       dbgSimplif: Bool = false,
       fullExceptionStack: Bool = false,
       stats: Bool = false,
+      time: Bool = false,
       stdout: Bool = false,
       noExecution: Bool = false,
       noGeneration: Bool = false,
@@ -109,6 +112,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
           case "ex" | "explain" => mode.copy(expectTypeErrors = true, explainErrors = true)
           case "ns" | "no-simpl" => mode.copy(noSimplification = true)
           case "stats" => mode.copy(stats = true)
+          case "time" => mode.copy(time = true)
           case "stdout" => mode.copy(stdout = true)
           case "AllowTypeErrors" => allowTypeErrors = true; mode
           case "AllowRuntimeErrors" => allowRuntimeErrors = true; mode
@@ -159,12 +163,27 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
         rec(rest.tail, if (hasBlankLines) defaultMode else mode)
       // process block of text and show output - type, expressions, errors
       case l :: ls =>
+        val times = if (mode.time && !timing) {
+          val oldCtx = ctx
+          timing = true
+          (for { _ <- 0 until 100 } yield {
+            ctx = oldCtx
+            val beginTime = System.nanoTime()
+            rec(lines, mode)
+            val endTime = System.nanoTime()
+            (endTime - beginTime) / 1e6
+          }) |> { l => 
+            timing = false
+            ctx = oldCtx
+            l.drop(l.size / 2)
+          }
+        } else IndexedSeq.empty
         val block = (l :: ls.takeWhile(l => l.nonEmpty && !(
           l.startsWith(outputMarker)
           || l.startsWith(diffBegMarker)
           // || l.startsWith(oldOutputMarker)
         ))).toIndexedSeq
-        block.foreach(out.println)
+        if (!timing) block.foreach(out.println)
         val processedBlock = MLParser.addTopLevelSeparators(block)
         val processedBlockStr = processedBlock.mkString
         val fph = new FastParseHelpers(block)
@@ -178,7 +197,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
             val Failure(lbl, index, extra) = f
             val (lineNum, lineStr, col) = fph.getLineColAt(index)
             val globalLineNum = (allLines.size - lines.size) + lineNum
-            if (!mode.expectParseErrors && !mode.fixme)
+            if (!mode.expectParseErrors && !mode.fixme && !timing)
               failures += globalLineNum
             output("/!\\ Parse error: " + extra.trace().msg +
               s" at l.$globalLineNum:$col: $lineStr")
@@ -253,7 +272,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                   }
                 }
                 if (diag.allMsgs.isEmpty) output("╙──")
-                if (!allowTypeErrors && !mode.fixme && (
+                if (!allowTypeErrors && !mode.fixme && !timing && (
                     !mode.expectTypeErrors && diag.isInstanceOf[TypeError]
                   || !mode.expectWarnings && diag.isInstanceOf[Warning]
                 )) failures += globalLineNum
@@ -371,6 +390,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                       || mode.expectRuntimeErrors
                       || allowRuntimeErrors
                       || mode.fixme
+                      || timing
                   )) failures += blockLineNum
                   totalRuntimeErrors += 1
                   output("Runtime error:")
@@ -548,7 +568,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
             results match {
               case IllFormedCode(message) =>
                 totalCodeGenErrors += 1
-                if (!mode.expectCodeGenErrors && !mode.fixme)
+                if (!mode.expectCodeGenErrors && !mode.fixme && !timing)
                   failures += blockLineNum
                 output("Code generation encountered an error:")
                 output(s"  ${message}")
@@ -556,7 +576,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                 output("Unable to execute the code:")
                 output(s"  ${message}")
               case UnexpectedCrash(name, message) =>
-                if (!mode.fixme)
+                if (!mode.fixme && !timing)
                   failures += blockLineNum
                 output("Code generation crashed:")
                 output(s"  $name: $message")
@@ -570,18 +590,21 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
               output(s"subtyping calls  : " + su)
               // output(s"constructed types: " + ty)
             }
+
+            if (mode.time)
+              output(f"average time over ${times.size}%d runs: ${times.sum / times.size}%.1f ms")
             
-            if (mode.expectTypeErrors && totalTypeErrors =:= 0)
+            if (mode.expectTypeErrors && totalTypeErrors =:= 0 && !timing)
               failures += blockLineNum
-            if (mode.expectWarnings && totalWarnings =:= 0)
+            if (mode.expectWarnings && totalWarnings =:= 0 && !timing)
               failures += blockLineNum
-            if (mode.expectCodeGenErrors && totalCodeGenErrors =:= 0)
+            if (mode.expectCodeGenErrors && totalCodeGenErrors =:= 0 && !timing)
               failures += blockLineNum
-            if (mode.expectRuntimeErrors && totalRuntimeErrors =:= 0)
+            if (mode.expectRuntimeErrors && totalRuntimeErrors =:= 0 && !timing)
               failures += blockLineNum
         } catch {
           case err: Throwable =>
-            if (!mode.fixme)
+            if (!mode.fixme && !timing)
               failures += allLines.size - lines.size
             // err.printStackTrace(out)
             output("/!!!\\ Uncaught error: " + err +
@@ -594,7 +617,8 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
           typer.dbg = false
           typer.verbose = false
         }
-        rec(lines.drop(block.size), mode)
+        if (!timing)
+          rec(lines.drop(block.size), mode)
       case Nil =>
     }
     
