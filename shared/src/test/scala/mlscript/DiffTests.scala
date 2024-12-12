@@ -267,12 +267,12 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
                       val pre = s"$shownLineNum: "
                       val curLine = loc.origin.fph.lines(l - 1)
                       output(prepre + pre + "\t" + curLine)
-                      out.print(outputMarker
-                        + (if (isLast && l =:= endLineNum) "╙──" else prepre)
-                        + " " * pre.length + "\t" + " " * (c - 1))
+                      val buf = mutable.ArrayBuffer.empty[Char]
+                      buf ++= (if (isLast && l =:= endLineNum) "╙──" else prepre) +
+                        " " * pre.length + "\t" + " " * (c - 1)
                       val lastCol = if (l =:= endLineNum) endLineCol else curLine.length + 1
-                      while (c < lastCol) { out.print('^'); c += 1 }
-                      out.println
+                      while (c < lastCol) { buf += '^'; c += 1 }
+                      output(buf.mkString)
                       c = 1
                       l += 1
                     }
