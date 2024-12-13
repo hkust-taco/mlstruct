@@ -114,68 +114,25 @@ def d = Cons 2 c
 //│    }
 
 d.head
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A180') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ res: 2
+//│    = 2
 
 d.size
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A180') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ res: int
+//│    = 2
 
 d.tail
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A180') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ res: Cons[1] & {tail: Nil & {size: 0}}
+//│    = Cons { size: 1, head: 1, tail: Nil { size: 0 } }
 
 d.tail.size
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A180') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ res: int
+//│    = 1
 
 d.tail.head
 d.tail.tail
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A180') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ res: 1
+//│    = 1
+//│ res: Nil & {size: 0}
+//│    = Nil { size: 0 }
 

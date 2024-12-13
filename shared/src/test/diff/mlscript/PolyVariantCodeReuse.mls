@@ -342,6 +342,12 @@ rec def eval_expr eval_rec subst v =
               }
     | Num -> vv // _ -> vv
     }
+//│ eval_expr: ('a -> 'lhs -> (Num | Object & ~#Num)) -> ('a & 'b) -> (#Add & {lhs: 'lhs, rhs: 'lhs} | #Mul & {lhs: 'lhs, rhs: 'lhs} | 'result & (#Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Var & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num})) -> (Add[nothing] | Mul[nothing] | Num | 'result)
+//│   where
+//│     'b <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'b} | Nil
+//│          = <no result>
+//│            eval_var, list_assoc and eq are not implemented
+<<<<<<<
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
 //│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
 //│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
@@ -372,6 +378,19 @@ rec def eval2 subst = eval_expr eval2 subst
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
 //│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:562)
 >>>>>>>
+=======
+//│ /!\ Parse error: Expected end-of-input:1:1, found "=======;" at l.381:1: =======
+
+rec def eval2 subst = eval_expr eval2 subst
+//│ eval2: 'b -> 'c -> (Add['a] & {lhs: 'a, rhs: 'a} | Mul['a] & {lhs: 'a, rhs: 'a} | Num | 'result)
+//│   where
+//│     'a :> Num | Mul['a] & {Mul#a <: 'a, lhs: 'a, rhs: 'a} | Add['a] & {Add#a <: 'a, lhs: 'a, rhs: 'a}
+//│     'c <: #Add & {lhs: 'c, rhs: 'c} | #Mul & {lhs: 'c, rhs: 'c} | 'result & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Var & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num})
+//│     'b <: #Cons & {head: (string, 'result & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & ~#Num),), tail: 'b} | Nil
+//│      = <no result>
+//│        eval_expr, eval_var, list_assoc and eq are not implemented
+>>>>>>> ef454ad (Fix more match errors)
+//│ /!\ Parse error: Expected end-of-input:1:1, found ">>>>>>> ef" at l.392:1: >>>>>>> ef454ad (Fix more match errors)
 
 
 // ------------- OCaml's type -------------
@@ -406,23 +425,292 @@ def eval_lexpr eval_rec subst v = case v of {
   | Lambda -> eval_lambda eval_rec subst v
   | Expr -> eval_expr eval_rec subst v
   }
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:584)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ eval_lexpr: ((Cons[('a, Var | 'rhs,) | 'A] & {head: ('a, Var | 'rhs,), tail: Nil | 'tail} | 'tail) -> 'lhs -> ('result & 'rhs & (#Abs & {body: 'lhs, lhs: Num | Object & ~#Num, name: string & 'a, rhs: Num | Object & ~#Num} | 'lhs0 & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & ~#Abs & ~#Num)))) -> ('b & List['A] & 'tail) -> (#Abs & {body: 'lhs, name: 'a} | #Add & {lhs: 'lhs, rhs: 'lhs} | #App & {lhs: 'lhs, rhs: 'lhs} | #Mul & {lhs: 'lhs, rhs: 'lhs} | 'result & (#Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Var & {lhs: Num | Object & ~#Num, rhs: Num | Object & ~#Num})) -> (Abs['rhs] | Add[nothing] | App['rhs] & {lhs: 'lhs0, rhs: 'rhs} | Mul[nothing] | Num | 'result)
+//│   where
+//│     'b <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'b} | Nil
+//│           = <no result>
+//│             eval_lambda, eval_var, list_assoc and eq are not implemented
 
+:ns
 rec def eval3 subst = eval_lexpr eval3 subst
-//│ ╔══[ERROR] identifier not found: eval_lexpr
-//│ ║  l.421: 	rec def eval3 subst = eval_lexpr eval3 subst
-//│ ╙──       	                      ^^^^^^^^^^
-//│ eval3: anything -> error
+//│ eval3: 'eval3
+//│   where
+//│     'eval3 :> 'b -> 'c
+//│            <: 'd
+//│     'd :> 'b -> 'c
+//│        <: 'e & 'f
+//│     'f :> 'b -> 'c
+//│        <: 'g -> 'h & 'i -> 'j & 'k -> 'l & 'k -> 'm
+//│     'i :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A}
+//│        <: 'b
+//│     'g :> #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'b
+//│     'e :> 'b -> 'c
+//│        <: 'n -> 'o
+//│     'c :> 'p -> ('q | 'r)
+//│        <: 'm & 'l & 'j & 'h & 'o
+//│     'o :> 'p -> ('q | 'r)
+//│        <: 'lhs -> 's & 'rhs -> 't & 'lhs0 -> 'u & 'rhs0 -> 'v
+//│     'v :> 'q | 'r
+//│        <: 'rhs1
+//│     'u :> 'q | 'r
+//│        <: 'lhs1
+//│     't :> 'q | 'r
+//│        <: 'rhs2
+//│     's :> 'q | 'r
+//│        <: 'lhs2
+//│     'h :> 'p -> ('q | 'r)
+//│        <: 'body -> 'w
+//│     'w :> 'q | 'r
+//│        <: 'body0
+//│     'j :> 'p -> ('q | 'r)
+//│        <: 'body1 -> 'x
+//│     'l :> 'p -> ('q | 'r)
+//│        <: 'rhs3 -> 'y
+//│     'y :> 'q | 'r
+//│        <: #Abs & 'z | 'a1 & Object & ~#Abs
+//│     'rhs3 :> 'rhs4
+//│           <: 'p
+//│     'm :> 'p -> ('q | 'r)
+//│        <: 'lhs3 -> 'b1
+//│     'b1 :> 'q | 'r
+//│         <: 'rhs5 & 'c1
+//│     'lhs3 :> 'lhs4
+//│           <: 'p
+//│     'b :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'd1
+//│     'd1 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: 'n & 'k
+//│     'k :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'b & 'e1 & 'f1
+//│     'f1 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: #Cons & 'g1 | #Nil & 'h1 & ~#Cons
+//│     'e1 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: 'tail0
+//│     'n :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│        <: 'b & 'i1
+//│     'i1 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: #Cons & 'j1 | #Nil & 'k1 & ~#Cons
+//│     'tail :> #Nil
+//│           <: List['A0] & 'tail1 & 'tail2 & List['A]
+//│     'tail1 :> #Nil | #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│            <: 'l1
+//│     'l1 :> #Nil | #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: #Cons & 'g1 | #Nil & 'h1 & ~#Cons
+//│     'h1 :> #Nil
+//│     'g1 :> #Cons & {Cons#A = 'A, head: 'head, tail: 'tail} | #Cons & {Cons#A = 'A0, head: 'head0, tail: 'tail0}
+//│         <: {tail: 'tail1} & {head: 'head1} & {head: 'head2}
+//│     'tail0 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│            <: 'tail1 & List['A0] & 'tail2
+//│     'tail2 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Nil | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│            <: 'm1
+//│     'm1 :> #Cons & {head: 'head, tail: 'tail, Cons#A = 'A} | #Nil | #Cons & {head: 'head0, tail: 'tail0, Cons#A = 'A0}
+//│         <: #Cons & 'j1 | #Nil & 'k1 & ~#Cons
+//│     'k1 :> #Nil
+//│     'j1 :> #Cons & {Cons#A = 'A, head: 'head, tail: 'tail} | #Cons & {Cons#A = 'A0, head: 'head0, tail: 'tail0}
+//│         <: {tail: 'tail2} & {head: 'head3} & {head: 'head4}
+//│     'head0 :> ('n1, 'o1,)
+//│            <: 'head2 & 'head1 & 'A0 & 'head4 & 'head3
+//│     'head :> ('p1, 'c1,)
+//│           <: 'A0 & 'head2 & 'head1 & 'head4 & 'head3 & 'A
+//│     'A :> ('p1, 'c1,)
+//│        <: 'A0
+//│     'head3 :> ('p1, 'c1,) | ('n1, 'o1,)
+//│            <: ('q1, 'r1,)
+//│     'head4 :> ('p1, 'c1,) | ('n1, 'o1,)
+//│            <: ('s1, 't1,)
+//│     'head1 :> ('p1, 'c1,) | ('n1, 'o1,)
+//│            <: ('u1, 'v1,)
+//│     'head2 :> ('p1, 'c1,) | ('n1, 'o1,)
+//│            <: ('w1, 'x1,)
+//│     'A0 :> ('p1, 'c1,) | ('n1, 'o1,)
+//│     'o1 :> #Var & {name: 'name}
+//│         <: 'x1 & 'v1 & 't1 & 'r1
+//│     'c1 :> 'q | 'r
+//│         <: 'x1 & 'v1 & 't1 & 'r1
+//│     'r1 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'y1
+//│     'y1 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'z1
+//│     'z1 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'result
+//│     'result :> 'q | 'r | #Var & {name: 'name}
+//│             <: 'result0 & anything
+//│     't1 :> 'q | 'r | #Var & {name: 'name}
+//│     'v1 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'a2
+//│     'a2 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'b2
+//│     'b2 :> 'q | 'r | #Var & {name: 'name}
+//│         <: 'result1
+//│     'result1 :> 'q | 'r | #Var & {name: 'name}
+//│              <: 'result2 & anything
+//│     'x1 :> 'q | 'r | #Var & {name: 'name}
+//│     'q :> 'c2 | 'x | 'd2 | 'e2
+//│        <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'e2 :> #Abs & {name: 'name0, body: 'body0, Abs#a = 'a}
+//│         <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'd2 :> #App & {lhs: 'lhs5, rhs: 'rhs5, App#a = 'a0}
+//│         <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'x :> 'q | 'r
+//│        <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'c2 :> 'p2 | 'result2
+//│         <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'result2 :> 'q | 'r | #Var & {name: 'name}
+//│              <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'p2 :> #Var & {name: 'name}
+//│         <: anything & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num) & {name: 'name1}
+//│     'f2 :> #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name}
+//│         <: 'q2
+//│     'q2 :> #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name}
+//│         <: #Var & 'r2 | (#App & 's2 | #Abs & 't2 & ~#App) & ~#Var
+//│     't2 :> #Abs & {Abs#a = 'a, name: 'name0, body: 'body0}
+//│         <: {body: 'body} & {name: 'name2}
+//│     's2 :> #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│         <: {rhs: 'rhs4} & {lhs: 'lhs4}
+//│     'r2 :> #Var & {name: 'name}
+//│         <: 'u2
+//│     'u2 :> #Var & {name: 'name}
+//│         <: #Var & 'p2
+//│     'a :> 'q | 'r
+//│     'r :> 'v2 | 'w2 | 'x2 | 'y2 | 'z2 | 'a3
+//│        <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'y2 :> #Num & {num: 'num}
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'w2 :> #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'v2 :> 'b3 | 'result0
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'result0 :> 'q | 'r | #Var & {name: 'name}
+//│              <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'b3 <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num) & {name: 'name3}
+//│     'name3 <: string
+//│     'z :> #Abs & {Abs#a = 'a, name: 'name0, body: 'body0}
+//│        <: {body: 'body1} & {name: 'name4}
+//│     'body0 :> 'q | 'r
+//│            <: 'body & 'body1 & 'a
+//│     'body1 :> 'q | 'r
+//│            <: 'p
+//│     'body :> 'q | 'r
+//│           <: 'p
+//│     'p :> #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name} | #Num & {num: 'num0} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num} | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | 'q | 'r
+//│        <: #Lambda & 'f2 | #Expr & 'g2 & ~#Lambda
+//│     'g2 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0}
+//│         <: 'c3
+//│     'c3 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0}
+//│         <: #Var & 'd3 | (#Num & 'e3 | (#Add & 'f3 | #Mul & 'g3 & ~#Add) & ~#Num) & ~#Var
+//│     'g3 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7}
+//│         <: {rhs: 'rhs8} & {lhs: 'lhs8}
+//│     'f3 :> #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6}
+//│         <: {rhs: 'rhs9} & {lhs: 'lhs9}
+//│     'e3 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: #Var & 'h3 | (#Add & 'x2 | (#Mul & 'z2 | #Num & 'a3 & ~#Mul) & ~#Add) & ~#Var
+//│     'd3 <: #Var & 'h3 | (#Add & 'x2 | (#Mul & 'z2 | #Num & 'a3 & ~#Mul) & ~#Add) & ~#Var
+//│     'a3 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num)
+//│     'z2 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7}
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num) & {rhs: 'rhs10} & {lhs: 'lhs10}
+//│     'x2 :> #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6}
+//│         <: anything & (#Abs & 'z | 'a1 & Object & ~#Abs) & (#Lambda & 'f2 | #Expr & 'g2 & ~#Lambda) & (#Num & 'h2 | 'i2 & Object & ~#Num) & (#Num & 'j2 | 'k2 & Object & ~#Num) & (#Num & 'l2 | 'm2 & Object & ~#Num) & (#Num & 'n2 | 'o2 & Object & ~#Num) & {rhs: 'rhs11} & {lhs: 'lhs11}
+//│     'a1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name}
+//│         <: 'lhs5
+//│     'h3 <: 'i3
+//│     'i3 <: #Var & 'b3
+//│     'a0 :> 'q | 'r | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name}
+//│     'lhs7 :> 'lhs1
+//│           <: 'lhs8 & 'lhs10 & 'a2
+//│     'lhs1 :> 'q | 'r
+//│           <: 'lhs8 & 'lhs10 & 'a3
+//│     'lhs10 :> 'q | 'r
+//│            <: #Num & 'j2 | 'k2 & Object & ~#Num
+//│     'k2 :> #Var & {name: 'name} | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│     'rhs7 :> 'rhs1
+//│           <: 'rhs8 & 'rhs10 & 'a2
+//│     'rhs1 :> 'q | 'r
+//│           <: 'rhs8 & 'rhs10 & 'a4
+//│     'rhs10 :> 'q | 'r
+//│            <: #Num & 'h2 | 'i2 & Object & ~#Num
+//│     'i2 :> #Var & {name: 'name} | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│     'lhs6 :> 'lhs2
+//│           <: 'lhs9 & 'lhs11 & 'a1
+//│     'lhs2 :> 'q | 'r
+//│           <: 'lhs9 & 'lhs11 & 'a5
+//│     'lhs11 :> 'q | 'r
+//│            <: #Num & 'n2 | 'o2 & Object & ~#Num
+//│     'o2 :> #Var & {name: 'name} | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│     'rhs6 :> 'rhs2
+//│           <: 'rhs9 & 'rhs11 & 'a1
+//│     'rhs2 :> 'q | 'r
+//│           <: 'rhs9 & 'rhs11 & 'a6
+//│     'rhs11 :> 'q | 'r
+//│            <: #Num & 'l2 | 'm2 & Object & ~#Num
+//│     'm2 :> #Var & {name: 'name} | #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Abs & {Abs#a = 'a, name: 'name0, body: 'body0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│     'lhs5 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5} | #Var & {name: 'name}
+//│           <: 'lhs4 & 'a0
+//│     'lhs4 :> #Mul & {Mul#a = 'a2, lhs: 'lhs7, rhs: 'rhs7} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs6, rhs: 'rhs6} | #Num & {num: 'num0} | #Var & {name: 'name} | #App & {App#a = 'a0, lhs: 'lhs5, rhs: 'rhs5}
+//│           <: 'p
+//│     'rhs5 :> 'q | 'r
+//│           <: 'rhs4 & 'a0
+//│     'rhs4 :> 'q | 'r
+//│           <: 'p
+//│     'l2 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: {num: 'num1}
+//│     'rhs9 :> 'q | 'r
+//│           <: 'rhs
+//│     'rhs :> 'q | 'r
+//│          <: 'p
+//│     'n2 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: {num: 'num2}
+//│     'lhs9 :> 'q | 'r
+//│           <: 'lhs
+//│     'lhs :> 'q | 'r
+//│          <: 'p
+//│     'a1 :> 'a5 | 'a6
+//│     'a6 :> 'q | 'r
+//│     'a5 :> 'q | 'r
+//│     'h2 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: {num: 'num3}
+//│     'rhs8 :> 'q | 'r
+//│           <: 'rhs0
+//│     'rhs0 :> 'q | 'r
+//│           <: 'p
+//│     'j2 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: {num: 'num4}
+//│     'num0 :> int
+//│           <: 'num3 & 'num4 & 'num1 & 'num2 & int
+//│     'num2 := int
+//│     'num1 := int
+//│     'num4 := int
+//│     'num3 := int
+//│     'num := int
+//│     'lhs8 :> 'q | 'r
+//│           <: 'lhs0
+//│     'lhs0 :> 'q | 'r
+//│           <: 'p
+//│     'a2 :> 'a3 | 'a4
+//│     'a4 :> 'q | 'r
+//│     'a3 :> 'q | 'r
+//│     'name0 :> string
+//│            <: 'name4 & 'name2 & string
+//│     'name2 :> string
+//│            <: 'n1
+//│     'n1 :> string
+//│         <: 'w1 & 'u1 & 's1 & 'q1
+//│     'name4 :> string
+//│            <: 'p1
+//│     'name :> string
+//│           <: 'name1 & string
+//│     'name1 := string
+//│     'p1 :> string
+//│         <: 'w1 & 'u1 & 's1 & 'q1
+//│     'q1 :> string
+//│     's1 :> string
+//│         <: 'j3
+//│     'j3 := string
+//│     'u1 :> string
+//│     'w1 :> string
+//│         <: 'k3
+//│     'k3 := string
 //│      = <no result>
 //│        eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
@@ -458,8 +746,178 @@ rec def eval3 subst = eval_lexpr eval3 subst
 
 // ************************** Tests *******************************
 
+:ns
 eval3 Nil (Var { name = "s" })
-//│ res: error
+//│ res: 'b
+//│   where
+//│     'b :> 'c | 'd
+//│     'c :> 'e | 'f | 'g | 'h
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h :> #Abs & {name: 'name, body: 'body, Abs#a = 'a}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g :> #App & {lhs: 'lhs, rhs: 'rhs, App#a = 'a0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f :> 'c | 'd
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e :> 'u | 'result
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result :> 'c | 'd | #Var & {name: 'name0}
+//│             <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'u :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name2}
+//│     'i :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'v
+//│     'v :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: #Var & 'w | (#App & 'x | #Abs & 'y & ~#App) & ~#Var
+//│     'y :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body0} & {name: 'name3}
+//│     'x :> #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│        <: {rhs: 'rhs0} & {lhs: 'lhs0}
+//│     'w :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: 'z
+//│     'z :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: #Var & 'u
+//│     'a :> 'c | 'd
+//│     'd :> 'a1 | 'b1 | 'c1 | 'd1 | 'e1 | 'f1
+//│        <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'd1 :> #Num & {num: 'num}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'b1 :> #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'a1 :> 'g1 | 'result0
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result0 :> 'c | 'd | #Var & {name: 'name0}
+//│              <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g1 <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name4}
+//│     'name4 <: string
+//│     'k :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body1} & {name: 'name5}
+//│     'body :> 'c | 'd
+//│           <: 'body0 & 'body1 & 'a
+//│     'body1 :> 'c | 'd
+//│            <: 'h1
+//│     'body0 :> 'c | 'd
+//│            <: 'h1
+//│     'h1 :> #Var & {name: 'name1} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0} | #Num & {num: 'num0} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | 'c | 'd
+//│         <: #Lambda & 'i | #Expr & 'j & ~#Lambda
+//│     'j :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│        <: 'i1
+//│     'i1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│         <: #Var & 'j1 | (#Num & 'k1 | (#Add & 'l1 | #Mul & 'm1 & ~#Add) & ~#Num) & ~#Var
+//│     'm1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: {rhs: 'rhs3} & {lhs: 'lhs3}
+//│     'l1 :> #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: {rhs: 'rhs4} & {lhs: 'lhs4}
+//│     'k1 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: #Var & 'n1 | (#Add & 'c1 | (#Mul & 'e1 | #Num & 'f1 & ~#Mul) & ~#Add) & ~#Var
+//│     'j1 <: #Var & 'n1 | (#Add & 'c1 | (#Mul & 'e1 | #Num & 'f1 & ~#Mul) & ~#Add) & ~#Var
+//│     'f1 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs5} & {lhs: 'lhs5}
+//│     'c1 :> #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs6} & {lhs: 'lhs6}
+//│     'l :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'lhs
+//│     'n1 <: 'o1
+//│     'o1 <: #Var & 'g1
+//│     'a0 :> #Var & {name: 'name1} | 'c | 'd | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│     'lhs2 :> 'lhs7
+//│           <: 'lhs3 & 'lhs5 & 'a2
+//│     'lhs7 :> 'c | 'd
+//│           <: 'lhs3 & 'lhs5 & 'a3
+//│     'lhs5 :> 'c | 'd
+//│           <: #Num & 'o | 'p & Object & ~#Num
+//│     'p :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs2 :> 'rhs7
+//│           <: 'rhs3 & 'rhs5 & 'a2
+//│     'rhs7 :> 'c | 'd
+//│           <: 'rhs3 & 'rhs5 & 'a4
+//│     'rhs5 :> 'c | 'd
+//│           <: #Num & 'm | 'n & Object & ~#Num
+//│     'n :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs1 :> 'lhs8
+//│           <: 'lhs4 & 'lhs6 & 'a1
+//│     'lhs8 :> 'c | 'd
+//│           <: 'lhs4 & 'lhs6 & 'a5
+//│     'lhs6 :> 'c | 'd
+//│           <: #Num & 's | 't & Object & ~#Num
+//│     't :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs1 :> 'rhs8
+//│           <: 'rhs4 & 'rhs6 & 'a1
+//│     'rhs8 :> 'c | 'd
+//│           <: 'rhs4 & 'rhs6 & 'a6
+//│     'rhs6 :> 'c | 'd
+//│           <: #Num & 'q | 'r & Object & ~#Num
+//│     'r :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│          <: 'lhs0 & 'a0
+//│     'lhs0 :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #Var & {name: 'name0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│           <: 'h1
+//│     'rhs :> 'c | 'd
+//│          <: 'rhs0 & 'a0
+//│     'rhs0 :> 'c | 'd
+//│           <: 'h1
+//│     'q :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num1}
+//│     'rhs4 :> 'c | 'd
+//│           <: 'rhs9
+//│     'rhs9 :> 'c | 'd
+//│           <: 'h1
+//│     's :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num2}
+//│     'lhs4 :> 'c | 'd
+//│           <: 'lhs9
+//│     'lhs9 :> 'c | 'd
+//│           <: 'h1
+//│     'a1 :> 'a5 | 'a6
+//│     'a6 :> 'c | 'd
+//│     'a5 :> 'c | 'd
+//│     'm :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num3}
+//│     'rhs3 :> 'c | 'd
+//│           <: 'rhs10
+//│     'rhs10 :> 'c | 'd
+//│            <: 'h1
+//│     'o :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num4}
+//│     'num0 :> int
+//│           <: 'num3 & 'num4 & 'num1 & 'num2 & int
+//│     'num2 := int
+//│     'num1 := int
+//│     'num4 := int
+//│     'num3 := int
+//│     'num := int
+//│     'lhs3 :> 'c | 'd
+//│           <: 'lhs10
+//│     'lhs10 :> 'c | 'd
+//│            <: 'h1
+//│     'a2 :> 'a3 | 'a4
+//│     'a4 :> 'c | 'd
+//│     'a3 :> 'c | 'd
+//│     'name :> string
+//│           <: 'name5 & 'name3 & string
+//│     'name3 :> string
+//│            <: 'p1
+//│     'p1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     'name5 :> string
+//│            <: 'u1
+//│     'u1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     't1 :> string
+//│     's1 :> string
+//│         <: 'v1
+//│     'v1 := string
+//│     'r1 :> string
+//│     'q1 :> string
+//│         <: 'w1
+//│     'w1 := string
+//│     'name0 :> string
+//│            <: 'name2 & string
+//│     'name2 := string
+//│     'name1 :> "s"
+//│            <: string
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 // ------------- OCaml's type -------------
@@ -472,31 +930,740 @@ eval3 Nil (Var { name = "s" })
 // = `Var "s"
 
 
+:ns
 eval3 Nil (Abs { name = "s"; body = Var { name = "s" } })
-//│ res: error
+//│ res: 'b
+//│   where
+//│     'b :> 'c | 'd
+//│     'c :> 'e | 'f | 'g | 'h
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h :> #Abs & {name: 'name, body: 'body, Abs#a = 'a}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g :> #App & {lhs: 'lhs, rhs: 'rhs, App#a = 'a0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f :> 'c | 'd
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e :> 'u | 'result
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result :> 'c | 'd | #Var & {name: 'name0}
+//│             <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'u :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name2}
+//│     'i :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'v
+//│     'v :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: #Var & 'w | (#App & 'x | #Abs & 'y & ~#App) & ~#Var
+//│     'y :> #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body1} & {name: 'name4}
+//│     'x :> #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│        <: {rhs: 'rhs0} & {lhs: 'lhs0}
+//│     'w :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: 'z
+//│     'z :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: #Var & 'u
+//│     'body0 :> #Var & {name: 'name1}
+//│            <: 'body1 & 'a1
+//│     'body1 :> #Var & {name: 'name1} | 'c | 'd
+//│            <: 'a1
+//│     'd :> 'b1 | 'c1 | 'd1 | 'e1 | 'f1 | 'g1
+//│        <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e1 :> #Num & {num: 'num}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'c1 :> #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'b1 :> 'h1 | 'result0
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result0 :> 'c | 'd | #Var & {name: 'name0}
+//│              <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h1 <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name5}
+//│     'name5 <: string
+//│     'k :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body2} & {name: 'name6}
+//│     'body :> 'c | 'd
+//│           <: 'body1 & 'body2 & 'a
+//│     'body2 :> 'c | 'd
+//│            <: 'a1
+//│     'a1 :> #Var & {name: 'name1} | #Abs & {name: 'name3, body: 'body0, Abs#a = 'a1} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0} | #Num & {num: 'num0} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | 'c | 'd
+//│         <: #Lambda & 'i | #Expr & 'j & ~#Lambda
+//│     'j :> #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│        <: 'i1
+//│     'i1 :> #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│         <: #Var & 'j1 | (#Num & 'k1 | (#Add & 'l1 | #Mul & 'm1 & ~#Add) & ~#Num) & ~#Var
+//│     'm1 :> #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: {rhs: 'rhs3} & {lhs: 'lhs3}
+//│     'l1 :> #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: {rhs: 'rhs4} & {lhs: 'lhs4}
+//│     'k1 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'j1 <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'g1 :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f1 :> #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs5} & {lhs: 'lhs5}
+//│     'd1 :> #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs6} & {lhs: 'lhs6}
+//│     'l :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'lhs
+//│     'n1 <: 'o1
+//│     'o1 <: #Var & 'h1
+//│     'a0 :> #Var & {name: 'name1} | 'c | 'd | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│     'lhs2 :> 'lhs7
+//│           <: 'lhs3 & 'lhs5 & 'a3
+//│     'lhs7 :> 'c | 'd
+//│           <: 'lhs3 & 'lhs5 & 'a4
+//│     'lhs5 :> 'c | 'd
+//│           <: #Num & 'o | 'p & Object & ~#Num
+//│     'p :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs2 :> 'rhs7
+//│           <: 'rhs3 & 'rhs5 & 'a3
+//│     'rhs7 :> 'c | 'd
+//│           <: 'rhs3 & 'rhs5 & 'a5
+//│     'rhs5 :> 'c | 'd
+//│           <: #Num & 'm | 'n & Object & ~#Num
+//│     'n :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs1 :> 'lhs8
+//│           <: 'lhs4 & 'lhs6 & 'a2
+//│     'lhs8 :> 'c | 'd
+//│           <: 'lhs4 & 'lhs6 & 'a6
+//│     'lhs6 :> 'c | 'd
+//│           <: #Num & 's | 't & Object & ~#Num
+//│     't :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs1 :> 'rhs8
+//│           <: 'rhs4 & 'rhs6 & 'a2
+//│     'rhs8 :> 'c | 'd
+//│           <: 'rhs4 & 'rhs6 & 'a7
+//│     'rhs6 :> 'c | 'd
+//│           <: #Num & 'q | 'r & Object & ~#Num
+//│     'r :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│          <: 'lhs0 & 'a0
+//│     'lhs0 :> #Var & {name: 'name1} | #Mul & {Mul#a = 'a3, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #Var & {name: 'name0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│           <: 'a1
+//│     'rhs :> 'c | 'd
+//│          <: 'rhs0 & 'a0
+//│     'rhs0 :> 'c | 'd
+//│           <: 'a1
+//│     'q :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num1}
+//│     'rhs4 :> 'c | 'd
+//│           <: 'rhs9
+//│     'rhs9 :> 'c | 'd
+//│           <: 'a1
+//│     's :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num2}
+//│     'lhs4 :> 'c | 'd
+//│           <: 'lhs9
+//│     'lhs9 :> 'c | 'd
+//│           <: 'a1
+//│     'a2 :> 'a6 | 'a7
+//│     'a7 :> 'c | 'd
+//│     'a6 :> 'c | 'd
+//│     'm :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num3}
+//│     'rhs3 :> 'c | 'd
+//│           <: 'rhs10
+//│     'rhs10 :> 'c | 'd
+//│            <: 'a1
+//│     'o :> #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num4}
+//│     'num0 :> int
+//│           <: 'num3 & 'num4 & 'num1 & 'num2 & int
+//│     'num2 := int
+//│     'num1 := int
+//│     'num4 := int
+//│     'num3 := int
+//│     'num := int
+//│     'lhs3 :> 'c | 'd
+//│           <: 'lhs10
+//│     'lhs10 :> 'c | 'd
+//│            <: 'a1
+//│     'a3 :> 'a4 | 'a5
+//│     'a5 :> 'c | 'd
+//│     'a4 :> 'c | 'd
+//│     'name :> string
+//│           <: 'name6 & 'name4 & string
+//│     'name4 :> string
+//│            <: 'p1
+//│     'p1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     'name6 :> string
+//│            <: 'u1
+//│     'u1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     't1 :> string
+//│     's1 :> string
+//│         <: 'v1
+//│     'v1 := string
+//│     'r1 :> string
+//│     'q1 :> string
+//│         <: 'w1
+//│     'w1 := string
+//│     'a :> 'c | 'd
+//│     'name3 :> "s"
+//│            <: string
+//│     'a1 :> #Var & {name: 'name1}
+//│     'name0 :> string
+//│            <: 'name2 & string
+//│     'name2 := string
+//│     'name1 :> "s"
+//│            <: string
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
 eval2 Nil (Num { num = 1 })
-//│ ╔══[ERROR] identifier not found: eval2
-//│ ║  l.480: 	eval2 Nil (Num { num = 1 })
-//│ ╙──       	^^^^^
-//│ res: error
-//│ Code generation encountered an error:
-//│   unresolved symbol eval2
+//│ ╔══[ERROR] Type mismatch in application:
+//│ ║  l.1113: 	eval2 Nil (Num { num = 1 })
+//│ ║          	^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//│ ╟── application of type `Num & {num: ?num}` does not match type `nothing`
+//│ ║  l.1113: 	eval2 Nil (Num { num = 1 })
+//│ ╙──        	           ^^^^^^^^^^^^^^^
+//│ res: Add['a] & {lhs: 'a, rhs: 'a} | Mul['a] & {lhs: 'a, rhs: 'a} | Num | error
+//│   where
+//│     'a :> Num | Mul['a] & {Mul#a <: 'a, lhs: 'a, rhs: 'a} | Add['a] & {Add#a <: 'a, lhs: 'a, rhs: 'a}
+//│    = <no result>
+//│      eval2, eval_expr, eval_var, list_assoc and eq are not implemented
 
+:ns
 eval3 Nil (Num { num = 1 })
-//│ res: error
+//│ res: 'b
+//│   where
+//│     'b :> 'c | 'd
+//│     'c :> 'e | 'f | 'g | 'h
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h :> #Abs & {name: 'name, body: 'body, Abs#a = 'a}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g :> #App & {lhs: 'lhs, rhs: 'rhs, App#a = 'a0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f :> 'c | 'd
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e :> 'u | 'result
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result :> 'c | 'd | #Var & {name: 'name0}
+//│             <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'u :> #Var & {name: 'name0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name1}
+//│     'i :> #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'v
+//│     'v :> #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: #Var & 'w | (#App & 'x | #Abs & 'y & ~#App) & ~#Var
+//│     'y :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body0} & {name: 'name2}
+//│     'x :> #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│        <: {rhs: 'rhs0} & {lhs: 'lhs0}
+//│     'w :> #Var & {name: 'name0}
+//│        <: 'z
+//│     'z :> #Var & {name: 'name0}
+//│        <: #Var & 'u
+//│     'a :> 'c | 'd
+//│     'd :> 'a1 | 'b1 | 'c1 | 'd1 | 'e1 | 'f1
+//│        <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'd1 :> #Num & {num: 'num}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'b1 :> #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'a1 :> 'g1 | 'result0
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result0 :> 'c | 'd | #Var & {name: 'name0}
+//│              <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g1 <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name3}
+//│     'name3 <: string
+//│     'k :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body1} & {name: 'name4}
+//│     'body :> 'c | 'd
+//│           <: 'body0 & 'body1 & 'a
+//│     'body1 :> 'c | 'd
+//│            <: 'h1
+//│     'body0 :> 'c | 'd
+//│            <: 'h1
+//│     'h1 :> #Num & {num: 'num1} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0} | #Num & {num: 'num0} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | 'c | 'd
+//│         <: #Lambda & 'i | #Expr & 'j & ~#Lambda
+//│     'j :> #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│        <: 'i1
+//│     'i1 :> #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0}
+//│         <: #Var & 'j1 | (#Num & 'k1 | (#Add & 'l1 | #Mul & 'm1 & ~#Add) & ~#Num) & ~#Var
+//│     'm1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: {rhs: 'rhs3} & {lhs: 'lhs3}
+//│     'l1 :> #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: {rhs: 'rhs4} & {lhs: 'lhs4}
+//│     'k1 :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: #Var & 'n1 | (#Add & 'c1 | (#Mul & 'e1 | #Num & 'f1 & ~#Mul) & ~#Add) & ~#Var
+//│     'j1 <: #Var & 'n1 | (#Add & 'c1 | (#Mul & 'e1 | #Num & 'f1 & ~#Mul) & ~#Add) & ~#Var
+//│     'f1 :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs5} & {lhs: 'lhs5}
+//│     'c1 :> #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs6} & {lhs: 'lhs6}
+//│     'l :> #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'lhs
+//│     'n1 <: 'o1
+//│     'o1 <: #Var & 'g1
+//│     'a0 :> #Num & {num: 'num1} | 'c | 'd | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│     'lhs2 :> 'lhs7
+//│           <: 'lhs3 & 'lhs5 & 'a2
+//│     'lhs7 :> 'c | 'd
+//│           <: 'lhs3 & 'lhs5 & 'a3
+//│     'lhs5 :> 'c | 'd
+//│           <: #Num & 'o | 'p & Object & ~#Num
+//│     'p :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs2 :> 'rhs7
+//│           <: 'rhs3 & 'rhs5 & 'a2
+//│     'rhs7 :> 'c | 'd
+//│           <: 'rhs3 & 'rhs5 & 'a4
+//│     'rhs5 :> 'c | 'd
+//│           <: #Num & 'm | 'n & Object & ~#Num
+//│     'n :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs1 :> 'lhs8
+//│           <: 'lhs4 & 'lhs6 & 'a1
+//│     'lhs8 :> 'c | 'd
+//│           <: 'lhs4 & 'lhs6 & 'a5
+//│     'lhs6 :> 'c | 'd
+//│           <: #Num & 's | 't & Object & ~#Num
+//│     't :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs1 :> 'rhs8
+//│           <: 'rhs4 & 'rhs6 & 'a1
+//│     'rhs8 :> 'c | 'd
+//│           <: 'rhs4 & 'rhs6 & 'a6
+//│     'rhs6 :> 'c | 'd
+//│           <: #Num & 'q | 'r & Object & ~#Num
+//│     'r :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs :> #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│          <: 'lhs0 & 'a0
+//│     'lhs0 :> #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num} | #Add & {Add#a = 'a1, lhs: 'lhs1, rhs: 'rhs1} | #Num & {num: 'num0} | #Var & {name: 'name0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│           <: 'h1
+//│     'rhs :> 'c | 'd
+//│          <: 'rhs0 & 'a0
+//│     'rhs0 :> 'c | 'd
+//│           <: 'h1
+//│     'q :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num2}
+//│     'rhs4 :> 'c | 'd
+//│           <: 'rhs9
+//│     'rhs9 :> 'c | 'd
+//│           <: 'h1
+//│     's :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num3}
+//│     'lhs4 :> 'c | 'd
+//│           <: 'lhs9
+//│     'lhs9 :> 'c | 'd
+//│           <: 'h1
+//│     'a1 :> 'a5 | 'a6
+//│     'a6 :> 'c | 'd
+//│     'a5 :> 'c | 'd
+//│     'm :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num4}
+//│     'rhs3 :> 'c | 'd
+//│           <: 'rhs10
+//│     'rhs10 :> 'c | 'd
+//│            <: 'h1
+//│     'o :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num5}
+//│     'num0 :> int
+//│           <: 'num4 & 'num5 & 'num2 & 'num3 & int
+//│     'num3 := int
+//│     'num2 := int
+//│     'num5 := int
+//│     'num4 := int
+//│     'num := int
+//│     'lhs3 :> 'c | 'd
+//│           <: 'lhs10
+//│     'lhs10 :> 'c | 'd
+//│            <: 'h1
+//│     'a2 :> 'a3 | 'a4
+//│     'a4 :> 'c | 'd
+//│     'a3 :> 'c | 'd
+//│     'num1 :> 1
+//│           <: int
+//│     'name :> string
+//│           <: 'name4 & 'name2 & string
+//│     'name2 :> string
+//│            <: 'p1
+//│     'p1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     'name4 :> string
+//│            <: 'u1
+//│     'u1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     't1 :> string
+//│     's1 :> string
+//│         <: 'v1
+//│     'v1 := string
+//│     'r1 :> string
+//│     'q1 :> string
+//│         <: 'w1
+//│     'w1 := string
+//│     'name0 :> string
+//│            <: 'name1 & string
+//│     'name1 := string
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
+:ns
 eval3 Nil (App { lhs = Num {num = 0}; rhs = Num {num = 0}})
-//│ res: error
+//│ res: 'b
+//│   where
+//│     'b :> 'c | 'd
+//│     'c :> 'e | 'f | 'g | 'h
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h :> #Abs & {name: 'name, body: 'body, Abs#a = 'a}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g :> #App & {lhs: 'lhs, rhs: 'rhs, App#a = 'a0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f :> 'c | 'd
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e :> 'u | 'result
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result :> 'c | 'd | #Var & {name: 'name0}
+//│             <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'u :> #Var & {name: 'name0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name1}
+//│     'i :> #App & {App#a = 'a1, lhs: 'lhs0, rhs: 'rhs0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'v
+//│     'v :> #App & {App#a = 'a1, lhs: 'lhs0, rhs: 'rhs0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: #Var & 'w | (#App & 'x | #Abs & 'y & ~#App) & ~#Var
+//│     'y :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body0} & {name: 'name2}
+//│     'x :> #App & {App#a = 'a1, lhs: 'lhs0, rhs: 'rhs0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│        <: {rhs: 'rhs1} & {lhs: 'lhs1}
+//│     'w :> #Var & {name: 'name0}
+//│        <: 'z
+//│     'z :> #Var & {name: 'name0}
+//│        <: #Var & 'u
+//│     'lhs0 :> #Num & {num: 'num}
+//│           <: 'lhs1 & 'a1
+//│     'lhs1 :> #Num & {num: 'num} | #Num & {num: 'num0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2} | #Var & {name: 'name0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│           <: 'a1
+//│     'a2 :> 'a4 | 'a5
+//│     'a4 :> 'c | 'd
+//│     'd :> 'b1 | 'c1 | 'd1 | 'e1 | 'f1 | 'g1
+//│        <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e1 :> #Num & {num: 'num1}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'c1 :> #Num & {num: 'num2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'b1 :> 'h1 | 'result0
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result0 :> 'c | 'd | #Var & {name: 'name0}
+//│              <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h1 <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name3}
+//│     'name3 <: string
+//│     'k :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body1} & {name: 'name4}
+//│     'body :> 'c | 'd
+//│           <: 'body0 & 'body1 & 'a
+//│     'body1 :> 'c | 'd
+//│            <: 'a1
+//│     'body0 :> 'c | 'd
+//│            <: 'a1
+//│     'a1 :> #Num & {num: 'num} | #Num & {num: 'num0} | #App & {lhs: 'lhs0, rhs: 'rhs0, App#a = 'a1} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0} | #Num & {num: 'num2} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num1} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | 'c | 'd
+//│         <: #Lambda & 'i | #Expr & 'j & ~#Lambda
+//│     'j :> #Num & {num: 'num} | #Num & {num: 'num0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2}
+//│        <: 'i1
+//│     'i1 :> #Num & {num: 'num} | #Num & {num: 'num0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2}
+//│         <: #Var & 'j1 | (#Num & 'k1 | (#Add & 'l1 | #Mul & 'm1 & ~#Add) & ~#Num) & ~#Var
+//│     'm1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: {rhs: 'rhs4} & {lhs: 'lhs4}
+//│     'l1 :> #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3}
+//│         <: {rhs: 'rhs5} & {lhs: 'lhs5}
+//│     'k1 :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│         <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'j1 <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'g1 :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f1 :> #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs6} & {lhs: 'lhs6}
+//│     'd1 :> #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs7} & {lhs: 'lhs7}
+//│     'l :> #Num & {num: 'num} | #Num & {num: 'num0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'lhs
+//│     'n1 <: 'o1
+//│     'o1 <: #Var & 'h1
+//│     'a0 :> #Num & {num: 'num} | #Num & {num: 'num0} | 'c | 'd | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│     'lhs2 :> 'lhs8
+//│           <: 'lhs4 & 'lhs6 & 'a2
+//│     'lhs8 :> 'c | 'd
+//│           <: 'lhs4 & 'lhs6 & 'a4
+//│     'lhs6 :> 'c | 'd
+//│           <: #Num & 'o | 'p & Object & ~#Num
+//│     'p :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs2 :> 'rhs8
+//│           <: 'rhs4 & 'rhs6 & 'a2
+//│     'rhs8 :> 'c | 'd
+//│           <: 'rhs4 & 'rhs6 & 'a5
+//│     'a5 :> 'c | 'd
+//│     'rhs6 :> 'c | 'd
+//│           <: #Num & 'm | 'n & Object & ~#Num
+//│     'n :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs3 :> 'lhs9
+//│           <: 'lhs5 & 'lhs7 & 'a3
+//│     'lhs9 :> 'c | 'd
+//│           <: 'lhs5 & 'lhs7 & 'a6
+//│     'lhs7 :> 'c | 'd
+//│           <: #Num & 's | 't & Object & ~#Num
+//│     't :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs3 :> 'rhs9
+//│           <: 'rhs5 & 'rhs7 & 'a3
+//│     'rhs9 :> 'c | 'd
+//│           <: 'rhs5 & 'rhs7 & 'a7
+//│     'rhs7 :> 'c | 'd
+//│           <: #Num & 'q | 'r & Object & ~#Num
+//│     'r :> #Var & {name: 'name0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs :> #Num & {num: 'num} | #Num & {num: 'num0} | #Mul & {Mul#a = 'a2, lhs: 'lhs2, rhs: 'rhs2} | #Num & {num: 'num1} | #Add & {Add#a = 'a3, lhs: 'lhs3, rhs: 'rhs3} | #Num & {num: 'num2} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│          <: 'lhs1 & 'a0
+//│     'rhs :> 'c | 'd
+//│          <: 'rhs1 & 'a0
+//│     'q :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│        <: {num: 'num3}
+//│     'rhs5 :> 'c | 'd
+//│           <: 'rhs10
+//│     'rhs10 :> 'c | 'd
+//│            <: 'a1
+//│     's :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│        <: {num: 'num4}
+//│     'lhs5 :> 'c | 'd
+//│           <: 'lhs10
+//│     'lhs10 :> 'c | 'd
+//│            <: 'a1
+//│     'a3 :> 'a6 | 'a7
+//│     'a7 :> 'c | 'd
+//│     'a6 :> 'c | 'd
+//│     'm :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│        <: {num: 'num5}
+//│     'rhs4 :> 'c | 'd
+//│           <: 'rhs11
+//│     'rhs11 :> 'c | 'd
+//│            <: 'a1
+//│     'o :> #Num & {num: 'num} | #Num & {num: 'num0} | #Num & {num: 'num1} | #Num & {num: 'num2}
+//│        <: {num: 'num6}
+//│     'num2 :> int
+//│           <: 'num5 & 'num6 & 'num3 & 'num4 & int
+//│     'num4 := int
+//│     'num3 := int
+//│     'num6 := int
+//│     'num5 := int
+//│     'num1 := int
+//│     'lhs4 :> 'c | 'd
+//│           <: 'lhs11
+//│     'lhs11 :> 'c | 'd
+//│            <: 'a1
+//│     'rhs0 :> #Num & {num: 'num0}
+//│           <: 'rhs1 & 'a1
+//│     'rhs1 :> #Num & {num: 'num0} | 'c | 'd
+//│           <: 'a1
+//│     'name :> string
+//│           <: 'name4 & 'name2 & string
+//│     'name2 :> string
+//│            <: 'p1
+//│     'p1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     'name4 :> string
+//│            <: 'u1
+//│     'u1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     't1 :> string
+//│     's1 :> string
+//│         <: 'v1
+//│     'v1 := string
+//│     'r1 :> string
+//│     'q1 :> string
+//│         <: 'w1
+//│     'w1 := string
+//│     'a :> 'c | 'd
+//│     'a1 :> #Num & {num: 'num0} | #Num & {num: 'num}
+//│     'num :> 0
+//│          <: int
+//│     'num0 :> 0
+//│           <: int
+//│     'name0 :> string
+//│            <: 'name1 & string
+//│     'name1 := string
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
+:ns
 eval3 Nil (Abs { name = "s"; body = Add { lhs = Var { name = "s" }; rhs = Num { num = 1 } } })
-//│ res: error
+//│ res: 'b
+//│   where
+//│     'b :> 'c | 'd
+//│     'c :> 'e | 'f | 'g | 'h
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h :> #Abs & {name: 'name, body: 'body, Abs#a = 'a}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'g :> #App & {lhs: 'lhs, rhs: 'rhs, App#a = 'a0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f :> 'c | 'd
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e :> 'u | 'result
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result :> 'c | 'd | #Var & {name: 'name0}
+//│             <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'u :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: anything & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Abs & 'k | 'l & Object & ~#Abs) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name2}
+//│     'i :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'v
+//│     'v :> #Var & {name: 'name1} | #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: #Var & 'w | (#App & 'x | #Abs & 'y & ~#App) & ~#Var
+//│     'y :> #Abs & {Abs#a = 'a1, name: 'name3, body: 'body0} | #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body1} & {name: 'name4}
+//│     'x :> #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│        <: {rhs: 'rhs0} & {lhs: 'lhs0}
+//│     'w :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: 'z
+//│     'z :> #Var & {name: 'name1} | #Var & {name: 'name0}
+//│        <: #Var & 'u
+//│     'a1 :> #Add & {lhs: 'lhs1, rhs: 'rhs1, Add#a = 'a2}
+//│     'lhs1 :> #Var & {name: 'name1}
+//│           <: 'lhs2 & 'a2
+//│     'lhs2 :> #Var & {name: 'name1} | 'c | 'd
+//│           <: 'lhs3
+//│     'lhs3 :> #Var & {name: 'name1} | 'c | 'd
+//│           <: 'a1
+//│     'd :> 'b1 | 'c1 | 'd1 | 'e1 | 'f1 | 'g1
+//│        <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'e1 :> #Num & {num: 'num}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'c1 :> #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'b1 :> 'h1 | 'result0
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'result0 :> 'c | 'd | #Var & {name: 'name0}
+//│              <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'h1 <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {name: 'name5}
+//│     'name5 <: string
+//│     'k :> #Abs & {Abs#a = 'a, name: 'name, body: 'body}
+//│        <: {body: 'body2} & {name: 'name6}
+//│     'body :> 'c | 'd
+//│           <: 'body1 & 'body2 & 'a
+//│     'body2 :> 'c | 'd
+//│            <: 'a1
+//│     'body1 :> #Add & {lhs: 'lhs1, rhs: 'rhs1, Add#a = 'a2} | 'c | 'd
+//│            <: 'a1
+//│     'rhs1 :> #Num & {num: 'num1}
+//│           <: 'rhs2 & 'a2
+//│     'rhs2 :> #Num & {num: 'num1} | 'c | 'd
+//│           <: 'rhs3
+//│     'rhs3 :> #Num & {num: 'num1} | 'c | 'd
+//│           <: 'a1
+//│     'a1 :> #Var & {name: 'name1} | #Num & {num: 'num1} | #Add & {lhs: 'lhs1, rhs: 'rhs1, Add#a = 'a2} | #Abs & {name: 'name3, body: 'body0, Abs#a = 'a1} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0} | #Num & {num: 'num0} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | 'c | 'd
+//│         <: #Lambda & 'i | #Expr & 'j & ~#Lambda
+//│     'j :> #Num & {num: 'num1} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0}
+//│        <: 'i1
+//│     'i1 :> #Num & {num: 'num1} | #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0}
+//│         <: #Var & 'j1 | (#Num & 'k1 | (#Add & 'l1 | #Mul & 'm1 & ~#Add) & ~#Num) & ~#Var
+//│     'm1 :> #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5}
+//│         <: {rhs: 'rhs6} & {lhs: 'lhs6}
+//│     'l1 :> #Add & {Add#a = 'a2, lhs: 'lhs1, rhs: 'rhs1} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4}
+//│         <: {rhs: 'rhs2} & {lhs: 'lhs2}
+//│     'k1 :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'j1 <: #Var & 'n1 | (#Add & 'd1 | (#Mul & 'f1 | #Num & 'g1 & ~#Mul) & ~#Add) & ~#Var
+//│     'g1 :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num)
+//│     'f1 :> #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs7} & {lhs: 'lhs7}
+//│     'd1 :> #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4}
+//│         <: anything & (#Abs & 'k | 'l & Object & ~#Abs) & (#Lambda & 'i | #Expr & 'j & ~#Lambda) & (#Num & 'm | 'n & Object & ~#Num) & (#Num & 'o | 'p & Object & ~#Num) & (#Num & 'q | 'r & Object & ~#Num) & (#Num & 's | 't & Object & ~#Num) & {rhs: 'rhs8} & {lhs: 'lhs8}
+//│     'l :> #Var & {name: 'name1} | #Num & {num: 'num1} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│        <: 'lhs
+//│     'n1 <: 'o1
+//│     'o1 <: #Var & 'h1
+//│     'a0 :> #Var & {name: 'name1} | #Num & {num: 'num1} | 'c | 'd | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│     'lhs5 :> 'lhs9
+//│           <: 'lhs6 & 'lhs7 & 'a4
+//│     'lhs9 :> 'c | 'd
+//│           <: 'lhs6 & 'lhs7 & 'a5
+//│     'lhs7 :> 'c | 'd
+//│           <: #Num & 'o | 'p & Object & ~#Num
+//│     'p :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs5 :> 'rhs9
+//│           <: 'rhs6 & 'rhs7 & 'a4
+//│     'rhs9 :> 'c | 'd
+//│           <: 'rhs6 & 'rhs7 & 'a6
+//│     'rhs7 :> 'c | 'd
+//│           <: #Num & 'm | 'n & Object & ~#Num
+//│     'n :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs4 :> 'lhs10
+//│           <: 'lhs2 & 'lhs8 & 'a3
+//│     'lhs10 :> 'c | 'd
+//│            <: 'lhs2 & 'lhs8 & 'a7
+//│     'lhs8 :> 'c | 'd
+//│           <: #Num & 's | 't & Object & ~#Num
+//│     't :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'rhs4 :> 'rhs10
+//│           <: 'rhs2 & 'rhs8 & 'a3
+//│     'rhs10 :> 'c | 'd
+//│            <: 'rhs2 & 'rhs8 & 'a8
+//│     'rhs8 :> 'c | 'd
+//│           <: #Num & 'q | 'r & Object & ~#Num
+//│     'r :> #Var & {name: 'name1} | #Var & {name: 'name0} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Abs & {Abs#a = 'a, name: 'name, body: 'body} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│     'lhs :> #Var & {name: 'name1} | #Num & {num: 'num1} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs} | #Var & {name: 'name0}
+//│          <: 'lhs0 & 'a0
+//│     'lhs0 :> #Var & {name: 'name1} | #Num & {num: 'num1} | #Mul & {Mul#a = 'a4, lhs: 'lhs5, rhs: 'rhs5} | #Num & {num: 'num} | #Add & {Add#a = 'a3, lhs: 'lhs4, rhs: 'rhs4} | #Num & {num: 'num0} | #Var & {name: 'name0} | #App & {App#a = 'a0, lhs: 'lhs, rhs: 'rhs}
+//│           <: 'a1
+//│     'rhs :> 'c | 'd
+//│          <: 'rhs0 & 'a0
+//│     'rhs0 :> 'c | 'd
+//│           <: 'a1
+//│     'q :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num2}
+//│     's :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num3}
+//│     'a3 :> 'a7 | 'a8
+//│     'a8 :> 'c | 'd
+//│     'a7 :> 'c | 'd
+//│     'm :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num4}
+//│     'rhs6 :> 'c | 'd
+//│           <: 'rhs11
+//│     'rhs11 :> 'c | 'd
+//│            <: 'a1
+//│     'o :> #Num & {num: 'num1} | #Num & {num: 'num} | #Num & {num: 'num0}
+//│        <: {num: 'num5}
+//│     'num0 :> int
+//│           <: 'num4 & 'num5 & 'num2 & 'num3 & int
+//│     'num3 := int
+//│     'num2 := int
+//│     'num5 := int
+//│     'num4 := int
+//│     'num := int
+//│     'lhs6 :> 'c | 'd
+//│           <: 'lhs11
+//│     'lhs11 :> 'c | 'd
+//│            <: 'a1
+//│     'a4 :> 'a5 | 'a6
+//│     'a6 :> 'c | 'd
+//│     'a5 :> 'c | 'd
+//│     'body0 :> #Add & {lhs: 'lhs1, rhs: 'rhs1, Add#a = 'a2}
+//│            <: 'body1 & 'a1
+//│     'name3 :> "s"
+//│            <: string
+//│     'a2 :> #Num & {num: 'num1} | #Var & {name: 'name1}
+//│     'num1 :> 1
+//│           <: int
+//│     'name :> string
+//│           <: 'name6 & 'name4 & string
+//│     'name4 :> string
+//│            <: 'p1
+//│     'p1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     'name6 :> string
+//│            <: 'u1
+//│     'u1 :> string
+//│         <: 'q1 & 'r1 & 's1 & 't1
+//│     't1 :> string
+//│     's1 :> string
+//│         <: 'v1
+//│     'v1 := string
+//│     'r1 :> string
+//│     'q1 :> string
+//│         <: 'w1
+//│     'w1 := string
+//│     'a :> 'c | 'd
+//│     'name0 :> string
+//│            <: 'name2 & string
+//│     'name2 := string
+//│     'name1 :> "s"
+//│            <: string
 //│    = <no result>
 //│      eval3, eval_lexpr, eval_lambda, eval_var, list_assoc and eq are not implemented
 
@@ -511,15 +1678,10 @@ def eval_lexpr' eval_rec subst v = case v of {
   | Add -> eval_expr eval_rec subst v
   | Mul -> eval_expr eval_rec subst v
   }
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(a645') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:584)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ eval_lexpr': ((Cons[('a, Var | 'rhs,) | 'A] & {head: ('a, Var | 'rhs,), tail: Nil | 'tail} | 'tail) -> 'lhs -> ('rhs & 'result & (#Abs & {body: 'lhs, lhs: Num | Object & ~#Num, name: string & 'a, rhs: Num | Object & ~#Num} | 'lhs0 & (Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} | Object & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & ~#Abs & ~#Num))) & 'b) -> (Var & 'c -> ({lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result) & 'd & List['A] & 'tail) -> (#Abs & {body: 'lhs, name: 'a} | #Add & {lhs: 'lhs, rhs: 'lhs} | #App & {lhs: 'lhs, rhs: 'lhs} | #Mul & {lhs: 'lhs, rhs: 'lhs} | #Num & {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result | #Var & 'c) -> (Abs['rhs] | Add[nothing] | App['rhs] & {lhs: 'lhs0, rhs: 'rhs} | Mul[nothing] | Num | 'result)
+//│   where
+//│     'd <: #Cons & {head: (string, {lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result,), tail: 'd} | Nil
+//│     'b <: #Cons & {head: (string, 'c -> ({lhs: Num | Object & ~#Num, name: string, rhs: Num | Object & ~#Num} & 'result),), tail: 'b} | Nil
+//│            = <no result>
+//│              eval_var, list_assoc and eq are not implemented
 

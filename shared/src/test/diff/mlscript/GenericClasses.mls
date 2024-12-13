@@ -139,17 +139,8 @@ error: (Foo2[?] & 'a) -> 'a
 //│   Error: unexpected runtime error
 
 f: (Foo2[?] & 'a) -> 'a
-//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ res: (Foo2[?] & 'a) -> 'a
+//│    = [Function: f]
 
 :ns
 f: (Foo2[?] & 'a) -> 'a
@@ -179,25 +170,25 @@ mrg = Foo2{}
 //│   <:  mrg:
 //│ Foo2[int] & Foo2[string]
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.177: 	mrg = Foo2{}
+//│ ║  l.168: 	mrg = Foo2{}
 //│ ║         	^^^^^^^^^^^^
 //│ ╟── type `string` is not an instance of type `int`
-//│ ║  l.167: 	def mrg: Foo2[int] & Foo2[string]
+//│ ║  l.158: 	def mrg: Foo2[int] & Foo2[string]
 //│ ║         	                          ^^^^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.167: 	def mrg: Foo2[int] & Foo2[string]
+//│ ║  l.158: 	def mrg: Foo2[int] & Foo2[string]
 //│ ║         	              ^^^
 //│ ╟── Note: class type parameter A is defined at:
 //│ ║  l.110: 	class Foo2[A]
 //│ ╙──       	           ^
 //│ ╔══[ERROR] Type mismatch in def definition:
-//│ ║  l.177: 	mrg = Foo2{}
+//│ ║  l.168: 	mrg = Foo2{}
 //│ ║         	^^^^^^^^^^^^
 //│ ╟── type `int` is not an instance of type `string`
-//│ ║  l.167: 	def mrg: Foo2[int] & Foo2[string]
+//│ ║  l.158: 	def mrg: Foo2[int] & Foo2[string]
 //│ ║         	              ^^^
 //│ ╟── Note: constraint arises from type reference:
-//│ ║  l.167: 	def mrg: Foo2[int] & Foo2[string]
+//│ ║  l.158: 	def mrg: Foo2[int] & Foo2[string]
 //│ ╙──       	                          ^^^^^^
 //│    = Foo2 {}
 
@@ -239,17 +230,8 @@ error: (Foo2_Co[?] & 'a) -> 'a
 //│   Error: unexpected runtime error
 
 f: (Foo2_Co[?] & 'a) -> 'a
-//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:584)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ res: (Foo2_Co[nothing] & 'a) -> 'a
+//│    = [Function: f1]
 
 :ns
 f: (Foo2_Co[?] & 'a) -> 'a
@@ -289,10 +271,10 @@ def mrg: Foo2_Co[int] | Foo2_Co[string]
 class Foo2_Bi[A]
 //│ Defined class Foo2_Bi[±A]
 //│ ╔══[WARNING] Type definition Foo2_Bi has bivariant type parameters:
-//│ ║  l.289: 	class Foo2_Bi[A]
+//│ ║  l.271: 	class Foo2_Bi[A]
 //│ ║         	      ^^^^^^^
 //│ ╟── A is irrelevant and may be removed
-//│ ║  l.289: 	class Foo2_Bi[A]
+//│ ║  l.271: 	class Foo2_Bi[A]
 //│ ╙──       	              ^
 
 Foo2_Bi

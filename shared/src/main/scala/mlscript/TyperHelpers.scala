@@ -578,6 +578,7 @@ abstract class TyperHelpers { Typer: Typer =>
       case _: ObjectTag => ()
       case tr: TypeRef => tr.mapTargs(pol)(apply(_)(_)); ()
       case TypeRange(lb, ub) => apply(S(false))(lb); apply(S(true))(ub)
+      case dnf: DNF => apply(pol)(dnf.syntax)
     }
     def applyField(pol: Opt[Bool])(fld: FieldType): Unit = {
       apply(pol.map(!_))(fld.lb)

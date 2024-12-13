@@ -90,33 +90,11 @@ rec def c a = C3 { a = c a }
 //│     'a :> C3[nothing] & {a: 'a}
 //│   <:  c:
 //│ 'a -> C3['a]
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A128') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
-//│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
 
 rec def c (a: 'X) = C3 { a = c a: 'X }: C3['X]
 //│ anything -> C3[nothing]
 //│   <:  c:
 //│ 'a -> C3['a]
-//│ /!!!\ Uncaught error: scala.MatchError: DNF('X154') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
 
 
 class C4[A]: { a: C[C4[A]] }
@@ -136,17 +114,9 @@ def c4 a = C4{ a = C{} }
 //│ c4: anything -> (C4[nothing] & {a: C[nothing]})
 
 def c = c4
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(A191') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$9(ConstraintSolver.scala:647)
-//│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
+//│ anything -> (C4[nothing] & {a: C[nothing]})
+//│   <:  c:
+//│ 'a -> C4['a]
 
 
 class C5[A]: { a: C2[C5[A]] }
@@ -160,6 +130,10 @@ def c: 'a -> C5['a]
 //│ c: 'a -> C5['a]
 
 rec def c5 a = C5{ a = C2 { a = c5 a } }
+//│ c5: anything -> 'A
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+<<<<<<<
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(A221') (of class mlscript.NormalForms$DNF)
 //│ 	at: mlscript.TypeSimplifier.$anonfun$simplifyType$50(TypeSimplifier.scala:586)
 //│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
@@ -184,6 +158,18 @@ c = c5
 //│ 	at: scala.collection.immutable.List$.from(List.scala:685)
 //│ 	at: scala.collection.immutable.List$.from(List.scala:682)
 //│ 	at: scala.collection.BuildFromLowPriority2$$anon$11.fromSpecific(BuildFrom.scala:115)
+=======
+//│ c5: anything -> 'A
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+
+c = c5
+//│ anything -> 'A
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+//│   <:  c:
+//│ 'a -> C5['a]
+>>>>>>>
 
 
 class C6[A]: { a: C5[C6[A]] }
@@ -201,6 +187,10 @@ def c: 'a -> C6['a]
 // rec def c a = C6{ a = c5 (c a) }
 
 rec def c6 a = C6{ a = c5 (c6 a) }
+//│ c6: anything -> (C6[nothing] & {a: 'A})
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+<<<<<<<
 //│ /!!!\ Uncaught error: scala.MatchError: DNF(#C6<Object>{}∧C6[DNF(A260')]) (of class mlscript.NormalForms$DNF)
 //│ 	at: mlscript.TypeSimplifier.$anonfun$simplifyType$50(TypeSimplifier.scala:586)
 //│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
@@ -225,6 +215,18 @@ c = c6
 //│ 	at: scala.collection.immutable.List$.from(List.scala:685)
 //│ 	at: scala.collection.immutable.List$.from(List.scala:682)
 //│ 	at: scala.collection.BuildFromLowPriority2$$anon$11.fromSpecific(BuildFrom.scala:115)
+=======
+//│ c6: anything -> (C6[nothing] & {a: 'A})
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+
+c = c6
+//│ anything -> (C6[nothing] & {a: 'A})
+//│   where
+//│     'A :> C5[nothing] & {a: C2['A]}
+//│   <:  c:
+//│ 'a -> C6['a]
+>>>>>>>
 
 
 
@@ -235,17 +237,14 @@ type O[T] = S[T] | N
 class L[T]: { h: T; t: O[L[T]] }
   method Append: T -> L[T]
   method Append elem = L { h = elem; t = S { v = this } }
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(T298') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
-//│ 	at: mlscript.TyperDatatypes$FieldType.update(TyperDatatypes.scala:304)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$8(ConstraintSolver.scala:647)
+//│ Defined class N
+//│ Defined class S[+T]
+//│ Defined type alias O[+T]
+//│ Defined class L[=T]
+//│ Declared L.Append: L['T] -> 'T -> L['T]
+//│ Defined L.Append: (L['T] & 'this) -> ('T & 'h) -> (L['T] & {h: 'h, t: S[L['T] & 'this | L['T0]] & {v: L['T] & 'this}})
+//│   where
+//│     'T0 := #T
 
 // :ds
 // L.Append
@@ -254,43 +253,22 @@ class L[T]: { h: T; t: O[L[T]] }
 //  Defined L.Append: L['T] -> ('T & 'a & 'b) -> (L['T & 'b .. 'T | 'b] with {h: 'a, t: S[L['T & 'b .. 'T | 'b] & 'c .. L['T & 'b .. 'T | 'b] | L['T] | 'c] with {v: L['T]}})
 
 L.Append
-//│ ╔══[ERROR] Method Append not found
-//│ ║  l.256: 	L.Append
-//│ ╙──       	^^^^^^^^
-//│ res: error
+//│ res: L['T] -> 'T -> L['T]
 
 
 def append ls elem = L { h = elem; t = S { v = ls } }
-//│ ╔══[ERROR] identifier not found: L
-//│ ║  l.263: 	def append ls elem = L { h = elem; t = S { v = ls } }
-//│ ╙──       	                     ^
-//│ ╔══[ERROR] identifier not found: S
-//│ ║  l.263: 	def append ls elem = L { h = elem; t = S { v = ls } }
-//│ ╙──       	                                       ^
-//│ append: anything -> anything -> error
+//│ append: (L['T] & 'v) -> ('h & 'T0) -> (L['T0] & {h: 'h, t: S['v]})
 
 def append0 ls = L { h = 0; t = S { v = ls } }
-//│ ╔══[ERROR] identifier not found: L
-//│ ║  l.272: 	def append0 ls = L { h = 0; t = S { v = ls } }
-//│ ╙──       	                 ^
-//│ ╔══[ERROR] identifier not found: S
-//│ ║  l.272: 	def append0 ls = L { h = 0; t = S { v = ls } }
-//│ ╙──       	                                ^
-//│ append0: anything -> error
+//│ append0: (L['T] & 'v) -> (L['T0] & {h: 0, t: S['v]})
+//│   where
+//│     'T0 :> 0
+//│     'T :> 0
 
 def appendNil elem = L { h = elem; t = N{} }
-//│ ╔══[ERROR] identifier not found: L
-//│ ║  l.281: 	def appendNil elem = L { h = elem; t = N{} }
-//│ ╙──       	                     ^
-//│ ╔══[ERROR] identifier not found: N
-//│ ║  l.281: 	def appendNil elem = L { h = elem; t = N{} }
-//│ ╙──       	                                       ^
-//│ appendNil: anything -> error
+//│ appendNil: ('h & 'T) -> (L['T] & {h: 'h, t: N})
 
 
 S{v=1}
-//│ ╔══[ERROR] identifier not found: S
-//│ ║  l.291: 	S{v=1}
-//│ ╙──       	^
-//│ res: error
+//│ res: S[1]
 

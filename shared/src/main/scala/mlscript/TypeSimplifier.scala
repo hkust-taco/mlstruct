@@ -389,6 +389,7 @@ trait TypeSimplifier { self: Typer =>
         }
       case TypeRange(lb, ub) =>
         if (pol) analyze2(ub, true) else analyze2(lb, false)
+      case dnf: DNF => analyze2(dnf.syntax, pol)
     }
     }
     }()
@@ -657,6 +658,7 @@ trait TypeSimplifier { self: Typer =>
       case tb @ TypeRange(lb, ub) =>
         pol.fold[ST](TypeRange.mk(transform(lb, S(false), parent), transform(ub, S(true), parent), noProv))(pol =>
           if (pol) transform(ub, S(true), parent) else transform(lb, S(false), parent))
+      case dnf: DNF => transform(dnf.syntax, pol, parent)
     }
     }(r => s"~> $r")
     

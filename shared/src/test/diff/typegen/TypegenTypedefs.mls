@@ -47,17 +47,16 @@ class LinkedList[T]: { head: T; tail: Option[LinkedList[T]] }
   method Append elem = LinkedList { head = elem; tail = Some { value = this } }
 def None = None {}
 def Some v = Some { value = v }
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(T193') (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:605)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$12(ConstraintSolver.scala:655)
-//│ 	at: scala.collection.immutable.List.map(List.scala:247)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:655)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:652)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$7(ConstraintSolver.scala:635)
-//│ 	at: scala.collection.immutable.List.mapConserve(List.scala:473)
-//│ 	at: mlscript.ConstraintSolver.freshen$1(ConstraintSolver.scala:635)
-//│ 	at: mlscript.ConstraintSolver.$anonfun$freshenAbove$10(ConstraintSolver.scala:647)
+//│ Defined class None
+//│ Defined class Some[+T]
+//│ Defined type alias Option[+T]
+//│ Defined class LinkedList[=T]
+//│ Declared LinkedList.Append: LinkedList['T] -> 'T -> LinkedList['T]
+//│ Defined LinkedList.Append: (LinkedList['T] & 'this) -> ('T & 'head) -> (LinkedList['T] & {head: 'head, tail: Some[LinkedList['T] & 'this | LinkedList['T0]] & {value: LinkedList['T] & 'this}})
+//│   where
+//│     'T0 := #T
+//│ None: None
+//│ Some: 'value -> Some['value]
 
 // :ts
 trait A: { x: int }
@@ -98,16 +97,16 @@ class Arg[T]: (T, T)
 class Prog[T]
   method Run: Arg[T] -> number
 //│ ╔══[ERROR] cannot inherit from a tuple type
-//│ ║  l.97: 	class Arg[T]: (T, T)
+//│ ║  l.96: 	class Arg[T]: (T, T)
 //│ ╙──      	      ^^^^^^^^^^^^^^
 //│ ╔══[ERROR] type identifier not found: Arg
-//│ ║  l.99: 	  method Run: Arg[T] -> number
+//│ ║  l.98: 	  method Run: Arg[T] -> number
 //│ ╙──      	              ^^^^^^
 //│ Defined class Prog[±T]
 //│ Declared Prog.Run: Prog[?] -> error -> number
 //│ ╔══[WARNING] Type definition Prog has bivariant type parameters:
-//│ ║  l.98: 	class Prog[T]
+//│ ║  l.97: 	class Prog[T]
 //│ ║        	      ^^^^
 //│ ╟── T is irrelevant and may be removed
-//│ ║  l.98: 	class Prog[T]
+//│ ║  l.97: 	class Prog[T]
 //│ ╙──      	           ^

@@ -198,17 +198,7 @@ class Ber[A]: Foo[(A, A)] & { x: (int, int); z: A -> A }
 //│ Defined class Ber[=A]
 
 fun (x: Ber['A]) -> (x.x, x.y, x.z)
-//│ /!!!\ Uncaught error: scala.MatchError: DNF(#int<number,Object>{}∧'A164) (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$5(TyperHelpers.scala:573)
-//│ 	at: mlscript.TyperHelpers$Traverser.$anonfun$apply$5$adapted(TyperHelpers.scala:573)
-//│ 	at: scala.collection.immutable.List.foreach(List.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:573)
+//│ res: Ber['A] -> ((int & 'A0, int & 'A0,), ('A0, 'A0,), 'A0 -> 'A0,)
 
 def b: Ber[int] & Foo[123]
 //│ b: Ber[int] & Foo[123]

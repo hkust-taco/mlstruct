@@ -40,17 +40,13 @@ def f: T3 & { x: T1 & 'a } as 'a
 
 :stats
 f.x
-//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ res: {x: T2 & T1 & {x: T3 & T1} & 'a}
+//│   where
+//│     'a :> T3 & {x: T1 & 'a}
+//│ constrain calls  : 12
+//│ annoying  calls  : 9
+//│ subtyping calls  : 1044
+//│ mkDeep calls     : 9
 
 g = error : T1 & { x: T2 | 'a } as 'a
 //│ g: 'a
@@ -59,17 +55,13 @@ g = error : T1 & { x: T2 | 'a } as 'a
 
 :stats
 g.x
-//│ /!!!\ Uncaught error: scala.MatchError: DNF() (of class mlscript.NormalForms$DNF)
-//│ 	at: mlscript.TyperHelpers$Traverser.apply(TyperHelpers.scala:566)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.super$apply(TypeSimplifier.scala:348)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.$anonfun$apply$2(TypeSimplifier.scala:348)
-//│ 	at: scala.runtime.java8.JFunction0$mcV$sp.apply(JFunction0$mcV$sp.scala:18)
-//│ 	at: mlscript.TyperHelpers.trace(TyperHelpers.scala:34)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.apply(TypeSimplifier.scala:335)
-//│ 	at: mlscript.TyperHelpers$Traverser.applyField(TyperHelpers.scala:583)
-//│ 	at: mlscript.TypeSimplifier$Analyze1$1$.mlscript$TyperHelpers$Traverser$InvariantFields$$super$applyField(TypeSimplifier.scala:334)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField(TyperHelpers.scala:591)
-//│ 	at: mlscript.TyperHelpers$Traverser$InvariantFields.applyField$(TyperHelpers.scala:589)
+//│ res: {x: T1 & {x: T1} & 'a | T1 & T2 & {x: T1}} | T1 & T2 & {x: T1}
+//│   where
+//│     'a :> T1 & {x: 'a | T2}
+//│ constrain calls  : 10
+//│ annoying  calls  : 8
+//│ subtyping calls  : 196
+//│ mkDeep calls     : 7
 
 :stats
 f = g

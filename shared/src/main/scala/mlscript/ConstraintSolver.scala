@@ -597,44 +597,13 @@ class ConstraintSolver extends NormalForms { self: Typer =>
   
   
   def freshenAbove(lim: Int, ty: SimpleType, rigidify: Bool = false)(implicit lvl: Int): SimpleType = {
-    val freshened = MutMap.empty[TV, SimpleType]
+    val freshened = MutMap.empty[TV, TypeVariable \/ TraitTag]
     def freshen(ty: SimpleType): SimpleType =
       if (!rigidify // Rigidification now also substitutes TypeBound-s with fresh vars;
                     // since these have the level of their bounds, when rigidifying
                     // we need to make sure to copy the whole type regardless of level...
         && ty.level <= lim) ty else ty match {
-      case tv: TypeVariable => freshened.get(tv) match {
-        case Some(tv) => tv
-        case None if rigidify =>
-          val rv = TraitTag( // Rigid type variables (ie, skolems) are encoded as TraitTag-s
-            Var(tv.nameHint.getOrElse("_"+freshVar(noProv).toString)))(tv.prov)
-          if (tv.lowerBounds.nonEmpty || tv.upperBounds.nonEmpty) {
-            // The bounds of `tv` may be recursive (refer to `tv` itself),
-            //    so here we create a fresh variabe that will be able to tie the presumed recursive knot
-            //    (if there is no recursion, it will just be a useless type variable)
-            val tv2 = freshVar(tv.prov, tv.nameHint)
-            freshened += tv -> tv2
-            // Assuming there were no recursive bounds, given L <: tv <: U,
-            //    we essentially need to turn tv's occurrence into the type-bounds (rv | L)..(rv & U),
-            //    meaning all negative occurrences should be interpreted as rv | L
-            //    and all positive occurrences should be interpreted as rv & U
-            //    where rv is the rigidified variables.
-            // Now, since there may be recursive bounds, we do the same
-            //    but through the indirection of a type variable tv2:
-            tv2.lowerBounds ::= tv.lowerBounds.map(freshen).foldLeft(rv: ST)(_ & _)
-            tv2.upperBounds ::= tv.upperBounds.map(freshen).foldLeft(rv: ST)(_ | _)
-            tv2
-          } else {
-            freshened += tv -> rv
-            rv
-          }
-        case None =>
-          val v = freshVar(tv.prov, tv.nameHint)
-          freshened += tv -> v
-          v.lowerBounds = tv.lowerBounds.mapConserve(freshen)
-          v.upperBounds = tv.upperBounds.mapConserve(freshen)
-          v
-      }
+      case tv: TypeVariable => freshenTV(tv).merge
       case t @ TypeRange(lb, ub) =>
         if (rigidify) {
           val tv = freshVar(t.prov)
@@ -642,17 +611,96 @@ class ConstraintSolver extends NormalForms { self: Typer =>
           tv.upperBounds ::= freshen(ub)
           tv
         } else TypeRange(freshen(lb), freshen(ub))(t.prov)
-      case t @ FunctionType(l, r) => FunctionType(freshen(l), freshen(r))(t.prov)
+      case DNF(cs) => DNF(cs.map { case Conjunct(lnf, vars, rnf, nvars) =>
+        val (vars_freshened_l, vars_freshened_r) = vars partitionMap freshenTV
+        val (nvars_freshened_l, nvars_freshened_r) = nvars partitionMap freshenTV
+        Conjunct(
+          lnf match {
+            case LhsRefined(base, fun, arr, ttags, reft, trefs) => LhsRefined(
+              base,
+              fun map freshenFT,
+              arr map freshenAB,
+              ttags ++ vars_freshened_r,
+              RecordType(reft.fields.mapValues(_.update(freshen, freshen)))(reft.prov),
+              trefs.map { case tr @ TypeRef(d, ts) => TypeRef(d, ts.map(freshen(_)))(tr.prov) }
+            )
+            case LhsTop if vars_freshened_r.isEmpty => LhsTop
+            case LhsTop => LhsRefined(N, N, N, vars_freshened_r.to(SortedSet), RecordType.empty, lsEmpty)
+          },
+          vars_freshened_l.to(SortedSet),
+          rnf match {
+            case RhsBases(tags, rest, trefs) => RhsBases(
+              tags :++ nvars_freshened_r,
+              rest map {
+                case L(t: FunctionType) => L(freshenFT(t))
+                case L(t: ArrayBase) => L(freshenAB(t))
+                case R(RhsField(name, ty)) => R(RhsField(name, freshenRF(ty)))
+              },
+              trefs map freshenTR
+            )
+            case RhsBot if nvars_freshened_r.isEmpty => RhsBot
+            case RhsBot => RhsBases(nvars_freshened_r.toList, N, lsEmpty)
+            case RhsField(name, ty) => RhsField(name, freshenRF(ty))
+          },
+          nvars_freshened_l.to(SortedSet)
+        )
+      })
+      case t: FunctionType => freshenFT(t)
       case t @ ComposedType(p, l, r) => ComposedType(p, freshen(l), freshen(r))(t.prov)
-      case t @ RecordType(fs) => RecordType(fs.mapValues(_.update(freshen, freshen)))(t.prov)
-      case t @ TupleType(fs) => TupleType(fs.mapValues(freshen))(t.prov)
-      case t @ ArrayType(ar) => ArrayType(freshen(ar))(t.prov)
+      case t: RecordType => freshenRT(t)
+      case t: ArrayBase => freshenAB(t)
       case n @ NegType(neg) => NegType(freshen(neg))(n.prov)
       case e @ ExtrType(_) => e
       case p @ ProvType(und) => ProvType(freshen(und))(p.prov)
       case p @ ProxyType(und) => freshen(und)
       case _: ClassTag | _: TraitTag => ty
-      case tr @ TypeRef(d, ts) => TypeRef(d, ts.map(freshen(_)))(tr.prov)
+      case tr: TypeRef => freshenTR(tr)
+    }
+    def freshenFT(t: FunctionType): FunctionType = t match {
+      case FunctionType(l, r) => FunctionType(freshen(l), freshen(r))(t.prov)
+    }
+    def freshenAB(t: ArrayBase): ArrayBase = t match {
+      case TupleType(fs) => TupleType(fs.mapValues(freshen))(t.prov)
+      case ArrayType(ar) => ArrayType(freshen(ar))(t.prov)
+    }
+    def freshenRF(ty: FieldType): FieldType = ty.update(freshen, freshen)
+    def freshenRT(t: RecordType): RecordType = t match {
+      case RecordType(fs) => RecordType(fs mapValues freshenRF)(t.prov)
+    }
+    def freshenTR(tr: TypeRef): TypeRef = tr match {
+      case TypeRef(d, ts) => TypeRef(d, ts.map(freshen(_)))(tr.prov)
+    }
+    def freshenTV(tv: TypeVariable): TypeVariable \/ TraitTag = freshened.get(tv) match {
+      case Some(t) => t
+      case None if rigidify =>
+        val rv = TraitTag( // Rigid type variables (ie, skolems) are encoded as TraitTag-s
+          Var(tv.nameHint.getOrElse("_"+freshVar(noProv).toString)))(tv.prov)
+        if (tv.lowerBounds.nonEmpty || tv.upperBounds.nonEmpty) {
+          // The bounds of `tv` may be recursive (refer to `tv` itself),
+          //    so here we create a fresh variabe that will be able to tie the presumed recursive knot
+          //    (if there is no recursion, it will just be a useless type variable)
+          val tv2 = freshVar(tv.prov, tv.nameHint)
+          freshened += tv -> L(tv2)
+          // Assuming there were no recursive bounds, given L <: tv <: U,
+          //    we essentially need to turn tv's occurrence into the type-bounds (rv | L)..(rv & U),
+          //    meaning all negative occurrences should be interpreted as rv | L
+          //    and all positive occurrences should be interpreted as rv & U
+          //    where rv is the rigidified variables.
+          // Now, since there may be recursive bounds, we do the same
+          //    but through the indirection of a type variable tv2:
+          tv2.lowerBounds ::= tv.lowerBounds.map(freshen).foldLeft(rv: ST)(_ & _)
+          tv2.upperBounds ::= tv.upperBounds.map(freshen).foldLeft(rv: ST)(_ | _)
+          L(tv2)
+        } else {
+          freshened += tv -> R(rv)
+          R(rv)
+        }
+      case None =>
+        val v = freshVar(tv.prov, tv.nameHint)
+        freshened += tv -> L(v)
+        v.lowerBounds = tv.lowerBounds.mapConserve(freshen)
+        v.upperBounds = tv.upperBounds.mapConserve(freshen)
+        L(v)
     }
     freshen(ty)
   }
