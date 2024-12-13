@@ -305,10 +305,10 @@ eval1_ty = eval1_ty_ugly
 //│   where
 //│     'b := Add['b] | Lit | Object & 'a & ~#Add & ~#Lit
 //│         = [Function: eval1]
-//│ constrain calls  : 5141
+//│ constrain calls  : 5142
 //│ annoying  calls  : 2883
-//│ subtyping calls  : 115578
-//│ mkDeep calls     : 1769
+//│ subtyping calls  : 120062
+//│ mkDeep calls     : 1767
 
 
 // Workaround:

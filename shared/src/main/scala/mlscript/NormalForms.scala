@@ -390,7 +390,7 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     }
     def map(f: SimpleType => SimpleType): Conjunct = Conjunct(lnf.map(f), vars, rnf.map(f), nvars)
     def mapPol(pol: Opt[Bool], smart: Bool = false)(f: (Opt[Bool], SimpleType) => SimpleType)
-          (implicit ctx: Ctx): Conjunct = Conjunct(lnf.mapPol(pol, smart)(f), vars, rnf.mapPol(pol, smart)(f), nvars)
+          (implicit ctx: Ctx): Conjunct = Conjunct(lnf.mapPol(pol, smart)(f), vars, rnf.mapPol(pol.map(!_), smart)(f), nvars)
     override def toString: Str =
       (Iterator(lnf).filter(_ =/= LhsTop) ++ vars
         ++ (Iterator(rnf).filter(_ =/= RhsBot) ++ nvars).map("~("+_+")")) |> (i => if (i.isEmpty) "⊤" else i.mkString("∧"))
