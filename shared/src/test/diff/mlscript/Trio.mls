@@ -74,6 +74,6 @@ foo arg
 //│      arg is not implemented
 //│ constrain calls  : 56
 //│ annoying  calls  : 46
-//│ subtyping calls  : 916
+//│ subtyping calls  : 920
 //│ mkDeep calls     : 27
 

@@ -79,7 +79,7 @@ rec def eval1 k e = case e of {
 //│      = [Function: eval1]
 //│ constrain calls  : 79
 //│ annoying  calls  : 0
-//│ subtyping calls  : 66
+//│ subtyping calls  : 72
 //│ mkDeep calls     : 0
 
 :ns
@@ -196,7 +196,7 @@ def eval1_ty_ugly = eval1
 //│              = [Function: eval1]
 //│ constrain calls  : 139
 //│ annoying  calls  : 154
-//│ subtyping calls  : 9087
+//│ subtyping calls  : 9105
 //│ mkDeep calls     : 78
 
 :ns
@@ -225,7 +225,7 @@ def eval1_ty = eval1
 //│         = [Function: eval1]
 //│ constrain calls  : 82
 //│ annoying  calls  : 43
-//│ subtyping calls  : 317
+//│ subtyping calls  : 323
 //│ mkDeep calls     : 18
 
 :e
@@ -331,7 +331,7 @@ def eval1_ty = eval1
 //│         = [Function: eval1]
 //│ constrain calls  : 96
 //│ annoying  calls  : 67
-//│ subtyping calls  : 1692
+//│ subtyping calls  : 1698
 //│ mkDeep calls     : 30
 
 
@@ -347,7 +347,7 @@ rec def pretty1 k e = case e of {
 //│        = [Function: pretty1]
 //│ constrain calls  : 90
 //│ annoying  calls  : 0
-//│ subtyping calls  : 70
+//│ subtyping calls  : 76
 //│ mkDeep calls     : 0
 
 
@@ -366,7 +366,7 @@ rec def prettier1 k ev e = case e of {
 //│          = [Function: prettier1]
 //│ constrain calls  : 297
 //│ annoying  calls  : 0
-//│ subtyping calls  : 83
+//│ subtyping calls  : 89
 //│ mkDeep calls     : 0
 
 :stats
@@ -384,7 +384,7 @@ rec def prettier11 k ev e = case e of {
 //│           = [Function: prettier11]
 //│ constrain calls  : 192
 //│ annoying  calls  : 0
-//│ subtyping calls  : 158
+//│ subtyping calls  : 170
 //│ mkDeep calls     : 0
 
 // Doesn't make much sense, but generates very ugly type unless aggressively simplified:
@@ -402,7 +402,7 @@ rec def prettier12 k ev e = case e of {
 //│           = [Function: prettier12]
 //│ constrain calls  : 165
 //│ annoying  calls  : 0
-//│ subtyping calls  : 241
+//│ subtyping calls  : 259
 //│ mkDeep calls     : 0
 
 
@@ -430,7 +430,7 @@ prettier12 done (eval1 done) e1
 //│    = '123'
 //│ constrain calls  : 1413
 //│ annoying  calls  : 551
-//│ subtyping calls  : 12800
+//│ subtyping calls  : 12808
 //│ mkDeep calls     : 294
 
 
@@ -487,7 +487,7 @@ rec def prettier2 k ev = prettier1 (fun x -> case x of {
 //│          = [Function: prettier2]
 //│ constrain calls  : 118
 //│ annoying  calls  : 0
-//│ subtyping calls  : 161
+//│ subtyping calls  : 171
 //│ mkDeep calls     : 0
 
 :stats
@@ -504,7 +504,7 @@ rec def prettier22 k ev = prettier12 (fun x -> case x of {
 //│           = [Function: prettier22]
 //│ constrain calls  : 166
 //│ annoying  calls  : 0
-//│ subtyping calls  : 291
+//│ subtyping calls  : 306
 //│ mkDeep calls     : 0
 
 
@@ -572,7 +572,7 @@ prettier2 done (eval1 done)
 //│    = [Function (anonymous)]
 //│ constrain calls  : 82
 //│ annoying  calls  : 0
-//│ subtyping calls  : 144
+//│ subtyping calls  : 155
 //│ mkDeep calls     : 0
 
 
@@ -594,7 +594,7 @@ prettier2 done (eval2 done)
 //│    = [Function (anonymous)]
 //│ constrain calls  : 93
 //│ annoying  calls  : 0
-//│ subtyping calls  : 189
+//│ subtyping calls  : 205
 //│ mkDeep calls     : 0
 
 prettier2 done (eval2 done) e2
@@ -621,7 +621,7 @@ prettier22 done (eval2 done) d2
 //│    = '-1'
 //│ constrain calls  : 964
 //│ annoying  calls  : 383
-//│ subtyping calls  : 21057
+//│ subtyping calls  : 21083
 //│ mkDeep calls     : 192
 
 
@@ -736,7 +736,7 @@ prettier2 done eval2
 //│    = [Function (anonymous)]
 //│ constrain calls  : 65
 //│ annoying  calls  : 0
-//│ subtyping calls  : 232
+//│ subtyping calls  : 240
 //│ mkDeep calls     : 0
 
 :e

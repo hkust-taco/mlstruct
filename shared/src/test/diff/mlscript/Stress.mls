@@ -31,7 +31,7 @@ def foo x = case x of {
 //│ foo: (#A & {fA: 'fA} | #B & {fB: 'fA} | #C & {fC: 'fA} | #D & {fD: 'fA} | #E & {fE: 'fA} | #F & {fF: 'fA} | #G & {fG: 'fA} | #H & {fH: 'fA}) -> 'fA
 //│ constrain calls  : 26
 //│ annoying  calls  : 0
-//│ subtyping calls  : 802
+//│ subtyping calls  : 816
 //│ mkDeep calls     : 0
 
 
@@ -65,7 +65,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 40
 //│ annoying  calls  : 24
-//│ subtyping calls  : 131
+//│ subtyping calls  : 133
 //│ mkDeep calls     : 14
 
 
@@ -84,7 +84,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 55
 //│ annoying  calls  : 36
-//│ subtyping calls  : 653
+//│ subtyping calls  : 657
 //│ mkDeep calls     : 21
 
 
@@ -104,7 +104,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 70
 //│ annoying  calls  : 48
-//│ subtyping calls  : 2154
+//│ subtyping calls  : 2160
 //│ mkDeep calls     : 28
 
 
@@ -125,7 +125,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 85
 //│ annoying  calls  : 60
-//│ subtyping calls  : 5493
+//│ subtyping calls  : 5501
 //│ mkDeep calls     : 35
 
 
@@ -147,7 +147,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 100
 //│ annoying  calls  : 72
-//│ subtyping calls  : 11849
+//│ subtyping calls  : 11859
 //│ mkDeep calls     : 42
 
 
@@ -170,7 +170,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 115
 //│ annoying  calls  : 84
-//│ subtyping calls  : 22753
+//│ subtyping calls  : 22765
 //│ mkDeep calls     : 49
 
 
@@ -194,7 +194,7 @@ foo arg
 //│ res: int
 //│ constrain calls  : 130
 //│ annoying  calls  : 96
-//│ subtyping calls  : 40120
+//│ subtyping calls  : 40134
 //│ mkDeep calls     : 56
 
 

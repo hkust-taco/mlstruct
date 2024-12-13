@@ -23,7 +23,7 @@ def eval1 eval1 e = case e of {
 //│      = [Function: eval1]
 //│ constrain calls  : 36
 //│ annoying  calls  : 0
-//│ subtyping calls  : 38
+//│ subtyping calls  : 41
 //│ mkDeep calls     : 0
 
 :stats
@@ -35,7 +35,7 @@ def eval1f eval1 e = case e of {
 //│       = [Function: eval1f]
 //│ constrain calls  : 32
 //│ annoying  calls  : 0
-//│ subtyping calls  : 30
+//│ subtyping calls  : 33
 //│ mkDeep calls     : 0
 
 

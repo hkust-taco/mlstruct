@@ -303,7 +303,7 @@ abstract class TyperDatatypes extends TyperHelpers { self: Typer =>
     def update(lb: SimpleType => SimpleType, ub: SimpleType => SimpleType): FieldType =
       FieldType(lb(this.lb), ub(this.ub))(prov)
     override def toString =
-      if (lb === BotType) s"$ub" else s"$lb..$ub"
+      if (lb.isBot) s"$ub" else s"$lb..$ub"
   }
   
   /** A type variable living at a certain polymorphism level `level`, with mutable bounds.

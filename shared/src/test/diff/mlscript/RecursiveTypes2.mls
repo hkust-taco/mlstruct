@@ -45,7 +45,7 @@ f.x
 //│     'a :> T3 & {x: T1 & 'a}
 //│ constrain calls  : 12
 //│ annoying  calls  : 9
-//│ subtyping calls  : 1044
+//│ subtyping calls  : 1046
 //│ mkDeep calls     : 9
 
 g = error : T1 & { x: T2 | 'a } as 'a
@@ -60,7 +60,7 @@ g.x
 //│     'a :> T1 & {x: 'a | T2}
 //│ constrain calls  : 10
 //│ annoying  calls  : 8
-//│ subtyping calls  : 196
+//│ subtyping calls  : 203
 //│ mkDeep calls     : 7
 
 :stats

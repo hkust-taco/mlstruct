@@ -31,7 +31,7 @@ def foo x = case x of {
 //│ foo: ({fA: 'fA} & #A | ~#A & ({fB: 'fA} & #B | ~#B & ({fC: 'fA} & #C | ~#C & ({fD: 'fA} & #D | ~#D & ({fE: 'fA} & #E | ~#E & ({fF: 'fA} & #F | ~#F & ({fG: 'fA} & #G | {fH: 'fA} & #H & ~#G))))))) -> 'fA
 //│ constrain calls  : 26
 //│ annoying  calls  : 0
-//│ subtyping calls  : 550
+//│ subtyping calls  : 564
 //│ mkDeep calls     : 0
 
 
@@ -136,7 +136,7 @@ foo arg
 //│ res: error | int
 //│ constrain calls  : 53
 //│ annoying  calls  : 39
-//│ subtyping calls  : 298
+//│ subtyping calls  : 300
 //│ mkDeep calls     : 22
 
 
@@ -166,7 +166,7 @@ foo arg
 //│ res: error | int
 //│ constrain calls  : 110
 //│ annoying  calls  : 108
-//│ subtyping calls  : 3071
+//│ subtyping calls  : 3075
 //│ mkDeep calls     : 60
 
 
@@ -197,7 +197,7 @@ foo arg
 //│ res: error
 //│ constrain calls  : 130
 //│ annoying  calls  : 149
-//│ subtyping calls  : 6543
+//│ subtyping calls  : 6549
 //│ mkDeep calls     : 70
 
 
@@ -229,7 +229,7 @@ foo arg
 //│ res: error
 //│ constrain calls  : 134
 //│ annoying  calls  : 149
-//│ subtyping calls  : 8583
+//│ subtyping calls  : 8591
 //│ mkDeep calls     : 70
 
 
@@ -262,7 +262,7 @@ foo arg
 //│ res: error
 //│ constrain calls  : 138
 //│ annoying  calls  : 149
-//│ subtyping calls  : 11008
+//│ subtyping calls  : 11018
 //│ mkDeep calls     : 70
 
 
@@ -296,7 +296,7 @@ foo arg
 //│ res: error
 //│ constrain calls  : 142
 //│ annoying  calls  : 149
-//│ subtyping calls  : 13887
+//│ subtyping calls  : 13899
 //│ mkDeep calls     : 70
 
 def foo_manual: ({fA: 'a} & #A | {fB: 'a} & #B & ~#A | {fC: 'a} & #C & ~#A & ~#B | {fD: 'a} & #D & ~#A & ~#B & ~#C | {fE: 'a} & #E & ~#A & ~#B & ~#C & ~#D | {fF: 'a} & #F & ~#A & ~#B & ~#C & ~#D & ~#E | {fG: 'a} & #G & ~#A & ~#B & ~#C & ~#D & ~#E & ~#F) -> 'a
@@ -320,7 +320,7 @@ foo_manual arg
 //│ res: error
 //│ constrain calls  : 25
 //│ annoying  calls  : 77
-//│ subtyping calls  : 3064
+//│ subtyping calls  : 3160
 //│ mkDeep calls     : 13
 
 :stats
@@ -330,7 +330,7 @@ foo_manual = foo
 //│ ({fA: 'a} & #A | ~#A & ({fB: 'a} & #B | ~#B & ({fC: 'a} & #C | ~#C & ({fD: 'a} & #D | ~#D & ({fE: 'a} & #E | ~#E & ({fF: 'a} & #F | {fG: 'a} & #G & ~#F)))))) -> 'a
 //│ constrain calls  : 102
 //│ annoying  calls  : 197
-//│ subtyping calls  : 17065
+//│ subtyping calls  : 17089
 //│ mkDeep calls     : 56
 
 
@@ -365,7 +365,7 @@ foo arg
 //│ res: error
 //│ constrain calls  : 146
 //│ annoying  calls  : 149
-//│ subtyping calls  : 17289
+//│ subtyping calls  : 17303
 //│ mkDeep calls     : 70
 
 
