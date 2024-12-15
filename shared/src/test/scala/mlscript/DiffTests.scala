@@ -7,6 +7,7 @@ import sourcecode.Line
 import scala.collection.mutable
 import scala.collection.mutable.{Map => MutMap}
 import scala.collection.immutable
+import scala.util.chaining._
 import mlscript.utils._, shorthands._
 import mlscript.JSTestBackend.IllFormedCode
 import mlscript.JSTestBackend.Unimplemented
@@ -41,6 +42,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
       override def println(): Unit = print('\n')
     }
     var timing = false
+    var warm = false
     var stdout = false
     def output(str: String) =
       // out.println(outputMarker + str)
@@ -165,17 +167,22 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
       case l :: ls =>
         val times = if (mode.time && !timing) {
           val oldCtx = ctx
-          timing = true
-          (for { _ <- 0 until 100 } yield {
+          def go: Double = {
             ctx = oldCtx
             val beginTime = System.nanoTime()
             rec(lines, mode)
             val endTime = System.nanoTime()
             (endTime - beginTime) / 1e6
-          }) |> { l => 
+          }
+          timing = true
+          val beginTime = System.nanoTime()
+          if (!warm) {
+            while (System.nanoTime() - beginTime < 5000000000L) go
+            warm = true
+          }
+          (for { _ <- 0 until 50 } yield go) tap { _ => 
             timing = false
             ctx = oldCtx
-            l.drop(l.size / 2)
           }
         } else IndexedSeq.empty
         val block = (l :: ls.takeWhile(l => l.nonEmpty && !(
