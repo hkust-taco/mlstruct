@@ -22,6 +22,7 @@ ty0 = ty0
 //│ constrain calls  : 99
 //│ annoying  calls  : 45
 //│ subtyping calls  : 650
+//│ mkDeep calls     : 45
 
 def ty1: ('a & A | 'b & B | 'c & C | 'd & D | 'e & E) -> ('a, 'b, 'c, 'd, 'e, 'f)
 //│ ty1: (A & 'a | B & 'b | C & 'c | D & 'd | E & 'e) -> ('a, 'b, 'c, 'd, 'e, nothing,)
@@ -34,6 +35,7 @@ ty0 = ty1
 //│ constrain calls  : 65
 //│ annoying  calls  : 30
 //│ subtyping calls  : 420
+//│ mkDeep calls     : 30
 
 :stats
 :e
@@ -89,5 +91,6 @@ ty1 = ty0
 //│ constrain calls  : 99
 //│ annoying  calls  : 60
 //│ subtyping calls  : 510
+//│ mkDeep calls     : 45
 
 

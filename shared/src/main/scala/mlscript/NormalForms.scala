@@ -414,12 +414,20 @@ class NormalForms extends TyperDatatypes { self: Typer =>
     
     def mkDeep(ty: SimpleType, pol: Bool)
           (implicit ctx: Ctx, ptr: PreserveTypeRefs = false): DNF = {
-      mk(mkDeepST(ty, pol), pol)
+      mkDeepCount += 1
+      if (mkDeepTime >= 0) {
+        mkDeepTime -= System.nanoTime()
+        val res = mk(mkDeepST(ty, pol), pol)
+        mkDeepTime += System.nanoTime()
+        res
+      } else
+        mk(mkDeepST(ty, pol), pol)
     }
     def mkDeepST(ty: SimpleType, pol: Bool)
           (implicit ctx: Ctx, ptr: PreserveTypeRefs = false): ST =
         // trace(s"deepDNF[$pol,$ptr,$etf](${ty})") {
         ty match {
+      case dnf: DNF => dnf
       case ProvType(und) =>
         mkDeepST(und, pol).withProv(ty.prov)
       case TypeRange(lb, ub) => mkDeepST(if (pol) ub else lb, pol).withProv(ty.prov)

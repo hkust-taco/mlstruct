@@ -32,6 +32,7 @@ def foo x = case x of {
 //│ constrain calls  : 26
 //│ annoying  calls  : 0
 //│ subtyping calls  : 802
+//│ mkDeep calls     : 0
 
 
 // ====== 1 & all ====== //
@@ -65,6 +66,7 @@ foo arg
 //│ constrain calls  : 38
 //│ annoying  calls  : 20
 //│ subtyping calls  : 67
+//│ mkDeep calls     : 12
 
 
 // ====== 3 ====== //
@@ -83,6 +85,7 @@ foo arg
 //│ constrain calls  : 52
 //│ annoying  calls  : 30
 //│ subtyping calls  : 155
+//│ mkDeep calls     : 18
 
 
 // ====== 4 ====== //
@@ -102,6 +105,7 @@ foo arg
 //│ constrain calls  : 66
 //│ annoying  calls  : 40
 //│ subtyping calls  : 298
+//│ mkDeep calls     : 24
 
 
 // ====== 5 ====== //
@@ -122,6 +126,7 @@ foo arg
 //│ constrain calls  : 80
 //│ annoying  calls  : 50
 //│ subtyping calls  : 510
+//│ mkDeep calls     : 30
 
 
 // ====== 6 ====== //
@@ -143,6 +148,7 @@ foo arg
 //│ constrain calls  : 94
 //│ annoying  calls  : 60
 //│ subtyping calls  : 805
+//│ mkDeep calls     : 36
 
 
 // ====== 7 ====== //
@@ -165,6 +171,7 @@ foo arg
 //│ constrain calls  : 108
 //│ annoying  calls  : 70
 //│ subtyping calls  : 1197
+//│ mkDeep calls     : 42
 
 
 // ====== 8 ====== //
@@ -188,5 +195,6 @@ foo arg
 //│ constrain calls  : 122
 //│ annoying  calls  : 80
 //│ subtyping calls  : 1700
+//│ mkDeep calls     : 48
 
 

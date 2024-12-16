@@ -65,6 +65,7 @@ l0 = Cons { head = 1; tail = Nil {} }
 //│ constrain calls  : 27
 //│ annoying  calls  : 3
 //│ subtyping calls  : 46
+//│ mkDeep calls     : 9
 
 :stats
 Cons.HeadOption l0
@@ -72,6 +73,7 @@ Cons.HeadOption l0
 //│ constrain calls  : 47
 //│ annoying  calls  : 25
 //│ subtyping calls  : 68
+//│ mkDeep calls     : 27
 
 :stats
 l1 = Cons { head = 1; tail = Cons { head = 2; tail = Cons { head = 3; tail = Nil {} } } }
@@ -79,6 +81,7 @@ l1 = Cons { head = 1; tail = Cons { head = 2; tail = Cons { head = 3; tail = Nil
 //│ constrain calls  : 71
 //│ annoying  calls  : 9
 //│ subtyping calls  : 116
+//│ mkDeep calls     : 27
 
 :stats
 Cons.HeadOption l1
@@ -86,6 +89,7 @@ Cons.HeadOption l1
 //│ constrain calls  : 47
 //│ annoying  calls  : 25
 //│ subtyping calls  : 68
+//│ mkDeep calls     : 27
 
 :stats
 l2 = Cons { head = 0; tail = l1 }
@@ -93,6 +97,7 @@ l2 = Cons { head = 0; tail = l1 }
 //│ constrain calls  : 23
 //│ annoying  calls  : 3
 //│ subtyping calls  : 106
+//│ mkDeep calls     : 9
 
 :stats
 Cons.HeadOption l2
@@ -100,6 +105,7 @@ Cons.HeadOption l2
 //│ constrain calls  : 48
 //│ annoying  calls  : 25
 //│ subtyping calls  : 68
+//│ mkDeep calls     : 27
 
 :stats
 l3 = Cons { head = 0-1; tail = l2 }
@@ -107,6 +113,7 @@ l3 = Cons { head = 0-1; tail = l2 }
 //│ constrain calls  : 41
 //│ annoying  calls  : 3
 //│ subtyping calls  : 126
+//│ mkDeep calls     : 9
 
 :stats
 Cons.HeadOption l3
@@ -114,6 +121,7 @@ Cons.HeadOption l3
 //│ constrain calls  : 54
 //│ annoying  calls  : 25
 //│ subtyping calls  : 71
+//│ mkDeep calls     : 27
 
 
 :stats
@@ -124,6 +132,7 @@ rec def lr1 = Cons { head = 0; tail = lr1 }
 //│ constrain calls  : 26
 //│ annoying  calls  : 3
 //│ subtyping calls  : 43
+//│ mkDeep calls     : 9
 
 :stats
 Cons.HeadOption lr1
@@ -131,6 +140,7 @@ Cons.HeadOption lr1
 //│ constrain calls  : 43
 //│ annoying  calls  : 22
 //│ subtyping calls  : 53
+//│ mkDeep calls     : 18
 
 :stats
 rec def lr2 = Cons { head = 0; tail = Cons { head = 1; tail = Cons { head = 3; tail = lr2 } } }
@@ -140,6 +150,7 @@ rec def lr2 = Cons { head = 0; tail = Cons { head = 1; tail = Cons { head = 3; t
 //│ constrain calls  : 70
 //│ annoying  calls  : 9
 //│ subtyping calls  : 113
+//│ mkDeep calls     : 27
 
 :stats
 Cons.HeadOption lr2
@@ -147,6 +158,7 @@ Cons.HeadOption lr2
 //│ constrain calls  : 48
 //│ annoying  calls  : 25
 //│ subtyping calls  : 68
+//│ mkDeep calls     : 27
 
 
 :e

@@ -12,13 +12,17 @@ abstract class TyperHelpers { Typer: Typer =>
   protected var annoyingCalls = 0
   protected var subtypingCalls = 0
   protected var constructedTypes = 0
-  def stats: (Int, Int, Int, Int) =
-    (constrainCalls, annoyingCalls, subtypingCalls, constructedTypes)
+  protected var mkDeepCount = 0
+  protected var mkDeepTime: Long = 0L
+  def stats: (Int, Int, Int, Int, Int, Long) =
+    (constrainCalls, annoyingCalls, subtypingCalls, constructedTypes, mkDeepCount, mkDeepTime)
   def resetStats(): Unit = {
     constrainCalls = 0
     annoyingCalls  = 0
     subtypingCalls = 0
     constructedTypes = 0
+    mkDeepCount = 0
+    mkDeepTime = 0L
   }
   
   private val noPostTrace: Any => String = _ => ""

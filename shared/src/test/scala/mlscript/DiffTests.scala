@@ -180,7 +180,7 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
             while (System.nanoTime() - beginTime < 5000000000L) go
             warm = true
           }
-          (for { _ <- 0 until 50 } yield go) tap { _ => 
+          (for { _ <- 0 until 10 } yield go) tap { _ => 
             timing = false
             ctx = oldCtx
           }
@@ -591,11 +591,14 @@ class DiffTests extends org.scalatest.funsuite.AnyFunSuite with org.scalatest.Pa
             }
             
             if (mode.stats) {
-              val (co, an, su, ty) = typer.stats
+              val (co, an, su, ty, mk, mkt) = typer.stats
               output(s"constrain calls  : " + co)
               output(s"annoying  calls  : " + an)
               output(s"subtyping calls  : " + su)
               // output(s"constructed types: " + ty)
+              output(s"mkDeep calls     : $mk")
+              if (mode.time)
+                output(s"mkDeep time      : ${mkt / 100000 / 10.0} ms")
             }
 
             if (mode.time)

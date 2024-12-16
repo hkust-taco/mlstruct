@@ -181,6 +181,7 @@ c = c6
 //│ constrain calls  : 95
 //│ annoying  calls  : 28
 //│ subtyping calls  : 176
+//│ mkDeep calls     : 36
 
 
 // Reproduction of an issue found while trying out TypeRef ctor typing:
